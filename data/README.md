@@ -9,6 +9,6 @@ This directory holds **Method 1** SQLite files created on your machine when usin
 
 **Method 2 (Docker Compose)** stores its database in the Docker volume `matrix_data` at `/app/data/matrix.db` inside the container. It does **not** use this folder unless you add a custom bind mount (not in the default setup).
 
-Copy [`.env.example`](../.env.example) to `.env` for local dev — never commit `.env`, `.env.docker`, or any `*.db` file.
+Copy [`.env.example`](../.env.example) to `.env` for local dev — never commit `.env`, `docker/.env`, or any `*.db` file.
 
 See [docs/database.md](../docs/database.md) for migrations, verify, and backup notes.

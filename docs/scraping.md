@@ -30,7 +30,7 @@ Needs `STEAM_API_KEY` and `DATABASE_URL` only.
 
 **Instance-wide** tables, not per profile. Filled automatically on a fresh DB:
 
-- **Docker:** after migrate, [`docker-entrypoint.sh`](../docker-entrypoint.sh) → `bootstrap-anticheat-catalogs.ts`
+- **Docker:** after migrate, [`docker/entrypoint.sh`](../docker/entrypoint.sh) → `bootstrap-anticheat-catalogs.ts`
 - **Server start:** [`instrumentation.ts`](../src/instrumentation.ts) if still empty
 - **After import:** background bootstrap if missing
 

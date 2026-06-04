@@ -38,7 +38,7 @@ COPY --from=builder /app/db ./db
 COPY --from=builder --chown=nextjs:nodejs /app/dist/docker ./dist/docker
 COPY --from=prod-deploy --chown=nextjs:nodejs /deploy/node_modules/better-sqlite3 ./node_modules/better-sqlite3
 
-COPY docker-entrypoint.sh /docker-entrypoint.sh
+COPY docker/entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
 EXPOSE 3000

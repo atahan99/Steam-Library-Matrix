@@ -2,6 +2,8 @@
 set -e
 
 mkdir -p /app/data
+chown -R nextjs:nodejs /app/data
+chmod 775 /app/data
 
 if [ -z "$DATABASE_URL" ]; then
   export DATABASE_URL="file:/app/data/matrix.db"

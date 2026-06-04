@@ -17,7 +17,7 @@ Required for import, dashboard, and enrichment (`STEAM_API_KEY` is separate). Th
 | Method | Env file | Database location |
 | --- | --- | --- |
 | Local dev | `.env` from [`.env.example`](../.env.example) | `./data/matrix.db` ([data/README.md](../data/README.md)) |
-| Docker Compose | `.env.docker` from [`.env.docker.example`](../.env.docker.example) | `/app/data/matrix.db` in volume `matrix_data` |
+| Docker Compose | `docker/.env` from [`docker/.env.example`](../docker/.env.example) | `/app/data/matrix.db` in volume `matrix_data` |
 
 Not shared unless you add a custom bind mount (not in the default setup).
 

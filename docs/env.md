@@ -7,7 +7,7 @@ Configuration comes from the process environment. In Docker standalone builds, t
 | Deployment | `DATABASE_URL` | API access | Jobs |
 | --- | --- | --- | --- |
 | Local / home lab | `file:./data/matrix.db` | `SLM_ALLOW_OPEN_API=true` typical | `pnpm dev:all` (do **not** set `SLM_EMBED_JOB_WORKER`) |
-| Docker home lab | `file:/app/data/matrix.db` | `SLM_ALLOW_OPEN_API=true` in `.env.docker` | `SLM_EMBED_JOB_WORKER=true` |
+| Docker home lab | `file:/app/data/matrix.db` | `SLM_ALLOW_OPEN_API=true` in `docker/.env` | `SLM_EMBED_JOB_WORKER=true` |
 | Public internet | same per method | `SLM_API_SECRET=<random>` — omit `SLM_ALLOW_OPEN_API` | same as above |
 
 Threat model and route behavior: [security.md](./security.md#threat-model). Job pipeline order: [scraping.md](./scraping.md#job-pipeline-order).
@@ -37,7 +37,7 @@ With `SLM_API_SECRET` and without `SLM_ALLOW_OPEN_API`, Data Status uses **serve
 
 | Variable | Default | Description |
 | --- | --- | --- |
-| `SLM_EMBED_JOB_WORKER` | (unset) | `true` = in-process worker in Next.js (60s interval). Set in `.env.docker`; **omit** for local `pnpm dev:all`. |
+| `SLM_EMBED_JOB_WORKER` | (unset) | `true` = in-process worker in Next.js (60s interval). Set in `docker/.env`; **omit** for local `pnpm dev:all`. |
 | `SLM_WORKER_MAX_JOBS_PER_TICK` | `5` | Max jobs per worker tick (~50s budget each). |
 | `SLM_DEV_CRON_MS` | `5000` in `dev:jobs` | Poll interval for `pnpm dev:jobs` / `dev-cron-loop.ts`. |
 | `SLM_DEV_JOBS_HTTP` | (unset) | `true` = `dev:jobs` polls `/api/cron/process-jobs` over HTTP instead of in-process worker. |
@@ -95,6 +95,6 @@ All variables above are **server-only**. The app does not expose API secrets via
 | Target | Template | Gitignored file |
 | --- | --- | --- |
 | Local dev (Method 1) | [`.env.example`](../.env.example) | `.env` |
-| Docker Compose (Method 2) | [`.env.docker.example`](../.env.docker.example) | `.env.docker` |
+| Docker Compose (Method 2) | [`docker/.env.example`](../docker/.env.example) | `docker/.env` |
 
-Never commit `.env`, `.env.docker`, or SQLite files under `data/`.
+Never commit `.env`, `docker/.env`, or SQLite files under `data/`.

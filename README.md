@@ -9,12 +9,12 @@ Built with Next.js, shadcn/ui, SQLite (Drizzle), and the Steam Web API. **Self-h
 | | Local dev (Method 1) | Docker (Method 2) |
 | --- | --- | --- |
 | **Use for** | Day-to-day work, hot reload | LAN or server self-host |
-| **Env file** | `cp .env.example .env` | `cp .env.docker.example .env.docker` |
+| **Env file** | `cp .env.example .env` | `cp docker/.env.example docker/.env` |
 | **Database** | `./data/matrix.db` | Docker volume `matrix_data` |
-| **Start** | `pnpm db:migrate` → `pnpm dev:all` | `docker compose up --build -d` |
-| **Jobs** | Inline worker via `dev:all` | `SLM_EMBED_JOB_WORKER=true` in `.env.docker` |
+| **Start** | `pnpm db:migrate` → `pnpm dev:all` | `pnpm docker:up` |
+| **Jobs** | Inline worker via `dev:all` | `SLM_EMBED_JOB_WORKER=true` in `docker/.env` |
 
-Never commit `.env`, `.env.docker`, or `data/*.db`.
+Never commit `.env`, `docker/.env`, or `data/*.db`.
 
 ### Local dev
 
@@ -34,8 +34,8 @@ Open [http://localhost:3000](http://localhost:3000). `dev:all` runs Next.js plus
 **Requires:** Docker Compose, Steam API key
 
 ```bash
-cp .env.docker.example .env.docker   # set STEAM_API_KEY
-docker compose up --build -d
+cp docker/.env.example docker/.env   # set STEAM_API_KEY
+pnpm docker:up
 ```
 
 Migrations run on startup. This uses a **separate** DB from local dev. See [docs/self-hosting.md](docs/self-hosting.md) for backups, TLS, and hardening.

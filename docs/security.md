@@ -46,7 +46,8 @@ IP from `X-Forwarded-For` (first hop) or `X-Real-IP` — configure your reverse 
 
 - `script-src 'self' 'nonce-{nonce}' 'strict-dynamic'`
 - `style-src 'self' 'nonce-{nonce}'` (Recharts via [`NonceProvider`](../src/components/security/nonce-provider.tsx))
-- Dev: `'unsafe-eval'` (HMR) and `'unsafe-inline'` on styles only
+- `style-src-attr 'unsafe-inline'` (React `style={{…}}` — orbit layout, neon card, charts)
+- Dev: `'unsafe-eval'` (HMR) and `'unsafe-inline'` on `style-src` only
 
 ## Scraping
 
@@ -55,7 +56,7 @@ IP from `X-Forwarded-For` (first hop) or `X-Real-IP` — configure your reverse 
 
 ## Secrets
 
-- Never commit `.env` / `.env.docker`
+- Never commit `.env` / `docker/.env`
 - Never `NEXT_PUBLIC_*` for `SLM_API_SECRET`
 - Rotate `SLM_API_SECRET` if leaked; restart containers
 

@@ -25,6 +25,6 @@ Steam Library Matrix runs as **local dev** (`pnpm dev:all`) or **Docker + SQLite
 ## Quick start
 
 - **Local:** copy [`.env.example`](../.env.example) → `.env`, set `STEAM_API_KEY`, then `pnpm db:migrate` and `pnpm dev:all` ([README](../README.md#local-dev)).
-- **Docker:** copy [`.env.docker.example`](../.env.docker.example) → `.env.docker`, then `docker compose up --build -d` ([self-hosting](./self-hosting.md#quick-start-lan)).
+- **Docker:** copy [`docker/.env.example`](../docker/.env.example) → `docker/.env`, then `pnpm docker:up` ([self-hosting](./self-hosting.md#quick-start-lan)).
 
 **Planned features:** [README § Planned](../README.md#planned).

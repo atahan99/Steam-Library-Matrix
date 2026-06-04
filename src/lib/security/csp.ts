@@ -20,9 +20,11 @@ export const buildContentSecurityPolicy = (
     ...(isDev ? ["'unsafe-eval'"] : []),
   ].join(" ")
 
+  // Production: nonce on <style> tags; allow style="" from React (orbit, charts, neon card).
   const styleSrc = isDev
     ? "'self' 'unsafe-inline'"
     : `'self' 'nonce-${nonce}'`
+  const styleSrcAttr = isDev ? null : "'unsafe-inline'"
 
   const directives = [
     "default-src 'self'",
@@ -32,6 +34,7 @@ export const buildContentSecurityPolicy = (
     "object-src 'none'",
     `script-src ${scriptSrc}`,
     `style-src ${styleSrc}`,
+    ...(styleSrcAttr ? [`style-src-attr ${styleSrcAttr}`] : []),
     "img-src 'self' https: data: blob:",
     "font-src 'self' https: data:",
     "connect-src 'self' https:",
