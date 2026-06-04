@@ -1,0 +1,65 @@
+[
+  {
+    "id": "cyberpunk",
+    "label": "Cyberpunk",
+    "slug": "cyberpunk",
+    "primary": "oklch(0.6726 0.2904 341.4084)",
+    "accent": "oklch(0.8903 0.1739 171.2690)"
+  },
+  {
+    "id": "catppuccin",
+    "label": "Catppuccin",
+    "slug": "catppuccin",
+    "primary": "oklch(0.7871 0.1187 304.7693)",
+    "accent": "oklch(0.8467 0.0833 210.2545)"
+  },
+  {
+    "id": "soft-pop",
+    "label": "Soft Pop",
+    "slug": "soft-pop",
+    "primary": "oklch(0.6801 0.1583 276.9349)",
+    "accent": "oklch(0.8790 0.1534 91.6054)"
+  },
+  {
+    "id": "caffeine",
+    "label": "Caffeine",
+    "slug": "caffeine",
+    "primary": "oklch(0.9247 0.0524 66.1732)",
+    "accent": "oklch(0.2850 0 0)"
+  },
+  {
+    "id": "wild-party",
+    "label": "Wild Party",
+    "registryId": "cmoj88c0h000404ld36zu87j8",
+    "primary": "oklch(0.6182 0.2788 321.6143)",
+    "accent": "oklch(0.7786 0.1489 226.0174)"
+  },
+  {
+    "id": "apotheosis-mint-midnight",
+    "label": "Apotheosis",
+    "registryId": "cmoo1mm4i000004l2amov6o38",
+    "primary": "oklch(0.5038 0.2937 285.3753)",
+    "accent": "oklch(0.3451 0.2089 279.9220)"
+  },
+  {
+    "id": "jarvis",
+    "label": "Jarvis",
+    "registryId": "cmp76ke73000904lb0ssz7wgu",
+    "primary": "oklch(0.8622 0.1218 211.1140)",
+    "accent": "oklch(0.7283 0.1643 59.9830)"
+  },
+  {
+    "id": "terminal",
+    "label": "Terminal",
+    "registryId": "cmll14cgf000204ky5ms2fdgj",
+    "primary": "oklch(0.8686 0.2776 144.4661)",
+    "accent": "oklch(0.8686 0.2776 144.4661)"
+  },
+  {
+    "id": "son-of-anton",
+    "label": "Son of Anton",
+    "registryId": "cmoq7v9qq000004jvcxuwgamd",
+    "primary": "oklch(0.8449 0.2108 148.3467)",
+    "accent": "oklch(0.3875 0.1266 25.3421)"
+  }
+]
