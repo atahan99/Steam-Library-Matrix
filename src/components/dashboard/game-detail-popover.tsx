@@ -10,6 +10,7 @@ import { SteamDeckBadge } from "@/components/badges/steam-deck-badge"
 import { DashboardNavIcon } from "@/components/dashboard/dashboard-nav-icon"
 import { useDashboard, useGameDetail } from "@/components/dashboard/dashboard-context"
 import { SteamIcon } from "@/components/icons/steam-icon"
+import { OsSupportIcons } from "@/components/tables/os-support-icons"
 import { Button } from "@/components/ui/button"
 import {
   Popover,
@@ -25,6 +26,12 @@ import {
   buildDashboardNavHref,
   dashboardTableNavItems,
 } from "@/lib/dashboard/dashboard-nav"
+import {
+  DETAIL_NA,
+  formatHltbMinutes,
+  getGenreLabelsForDetail,
+  getVrDetailDisplay,
+} from "@/lib/dashboard/game-detail-display"
 import { filterTableNavItemsForGame } from "@/lib/dashboard/game-table-membership"
 import { formatPlaytime } from "@/lib/utils/format-playtime"
 import { getSteamStoreUrl } from "@/lib/utils/steam-url"
@@ -45,9 +52,6 @@ const DetailRow = ({
   </div>
 )
 
-const formatHltb = (minutes?: number) =>
-  minutes && minutes > 0 ? formatPlaytime(minutes) : "—"
-
 const GameDetailBody = ({ game, steamid }: { game: DashboardGame; steamid: string }) => {
   const storeHref = game.storeUrl ?? getSteamStoreUrl(game.appid)
   const { closeGameDetail } = useGameDetail()
@@ -57,12 +61,8 @@ const GameDetailBody = ({ game, steamid }: { game: DashboardGame; steamid: strin
     game,
     { games, wishlistGames }
   )
-  const vr =
-    game.steamDetails?.vrOnly === true
-      ? "VR only"
-      : game.steamDetails?.vrSupported
-        ? "VR supported"
-        : "No VR"
+  const vrDisplay = getVrDetailDisplay(game.steamDetails)
+  const genreLabels = getGenreLabelsForDetail(game.steamDetails?.genres)
   const release = game.steamDetails?.releaseDate?.date
     ? new Date(game.steamDetails.releaseDate.date).toLocaleDateString()
     : "—"
@@ -117,20 +117,27 @@ const GameDetailBody = ({ game, steamid }: { game: DashboardGame; steamid: strin
             "—"
           )}
         </DetailRow>
+        <DetailRow label="OS">
+          <OsSupportIcons game={game} />
+        </DetailRow>
         <DetailRow label="HLTB">
           <ul className="flex flex-col gap-1">
             <li className="flex items-baseline justify-between gap-3">
               <span className="text-muted-foreground">Main</span>
-              <span className="tabular-nums">{formatHltb(game.hltb?.mainStoryMinutes)}</span>
+              <span className="tabular-nums">
+                {formatHltbMinutes(game.hltb?.mainStoryMinutes)}
+              </span>
             </li>
             <li className="flex items-baseline justify-between gap-3">
               <span className="text-muted-foreground">Extra</span>
-              <span className="tabular-nums">{formatHltb(game.hltb?.mainExtraMinutes)}</span>
+              <span className="tabular-nums">
+                {formatHltbMinutes(game.hltb?.mainExtraMinutes)}
+              </span>
             </li>
             <li className="flex items-baseline justify-between gap-3">
               <span className="text-muted-foreground">100%</span>
               <span className="tabular-nums">
-                {formatHltb(game.hltb?.completionistMinutes)}
+                {formatHltbMinutes(game.hltb?.completionistMinutes)}
               </span>
             </li>
           </ul>
@@ -147,21 +154,30 @@ const GameDetailBody = ({ game, steamid }: { game: DashboardGame; steamid: strin
             </p>
           ) : null}
         </DetailRow>
-        <DetailRow label="Linux / kernel">
-          <span>
-            {game.antiCheat?.nativeLinux === true
-              ? "Native Linux"
-              : game.antiCheat?.nativeLinux === false
-                ? "Proton only"
-                : "—"}
-            {game.antiCheat?.kernelLevel === true
-              ? " · Kernel-level"
-              : game.antiCheat?.kernelLevel === false
-                ? " · No kernel driver"
-                : ""}
-          </span>
+        <DetailRow label="Genre">
+          {genreLabels.length ? (
+            <ul className="flex list-none flex-col gap-0.5">
+              {genreLabels.map((label) => (
+                <li key={label} className="text-sm leading-snug">
+                  {label}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            DETAIL_NA
+          )}
         </DetailRow>
-        <DetailRow label="VR">{vr}</DetailRow>
+        <DetailRow label="VR">
+          {vrDisplay === "vr-only" ? (
+            "VR only"
+          ) : vrDisplay === "vr-supported" ? (
+            "VR supported"
+          ) : (
+            <span role="img" aria-label="No VR">
+              ❌
+            </span>
+          )}
+        </DetailRow>
         <DetailRow label="Release">{release}</DetailRow>
       </dl>
 
