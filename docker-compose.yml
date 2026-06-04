@@ -1,0 +1,26 @@
+services:
+  app:
+    build: .
+    env_file:
+      - .env.docker
+    ports:
+      - "3000:3000"
+    environment:
+      APP_ROOT: /app
+    volumes:
+      - matrix_data:/app/data
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3000/api/health').then((r)=>r.json()).then((j)=>process.exit(j.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  matrix_data:
