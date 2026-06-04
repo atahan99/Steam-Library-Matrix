@@ -1,0 +1,41 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+/dist/docker
+
+# misc
+.playwright-mcp/
+.firecrawl/
+.DS_Store
+.cursor/
+*.pem
+.env*.local
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env (commit .env.example and .env.docker.example only)
+.env
+.env.docker
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# vercel
+.vercel
+
+# sqlite data directory (keep data/README.md)
+/data/*
+!/data/README.md
