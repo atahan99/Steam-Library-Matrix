@@ -7,7 +7,7 @@ Configuration comes from the process environment. In Docker standalone builds, t
 | Deployment | `DATABASE_URL` | API access | Jobs |
 | --- | --- | --- | --- |
 | Local / home lab | `file:./data/matrix.db` | `SLM_ALLOW_OPEN_API=true` typical | `pnpm dev:all` (do **not** set `SLM_EMBED_JOB_WORKER`) |
-| Docker home lab | `file:/app/data/matrix.db` | `SLM_ALLOW_OPEN_API=true` in `docker/.env` | `SLM_EMBED_JOB_WORKER=true` |
+| Docker home lab | `file:/app/data/matrix.db` (host: `docker/db/`) | `SLM_ALLOW_OPEN_API=true` in `docker/.env` | `SLM_EMBED_JOB_WORKER=true` |
 | Public internet | same per method | `SLM_API_SECRET=<random>` — omit `SLM_ALLOW_OPEN_API` | same as above |
 
 Threat model and route behavior: [security.md](./security.md#threat-model). Job pipeline order: [scraping.md](./scraping.md#job-pipeline-order).
@@ -107,4 +107,6 @@ All variables above are **server-only**. The app does not expose API secrets via
 | Local dev (Method 1) | [`.env.example`](../.env.example) | `.env` |
 | Docker Compose (Method 2) | [`docker/.env.example`](../docker/.env.example) | `docker/.env` |
 
-Never commit `.env`, `docker/.env`, or SQLite files under `data/`.
+Never commit `.env`, `docker/.env`, `docker/db/*.db`, or SQLite files under `data/`.
+
+Maintainers: `pnpm docker:up` and `pnpm docker:down` wrap the same `docker compose -f docker/compose.yml` commands documented in the README.

@@ -16,15 +16,15 @@ Steam Library Matrix runs as **local dev** (`pnpm dev:all`) or **Docker + SQLite
 
 | Goal | Read |
 | --- | --- |
-| Run locally | [README § Local dev](../README.md#local-dev) → [env.md](./env.md) |
-| Deploy Docker | [self-hosting.md](./self-hosting.md) |
+| Run locally | [README § Option 1](../README.md#option-1-local-nextjs) → [env.md](./env.md) |
+| Deploy Docker | [README § Option 2](../README.md#option-2-docker-compose) · [self-hosting.md](./self-hosting.md) |
 | Understand data sources | [scraping.md](./scraping.md) |
 | Backup or migrate the DB | [database.md](./database.md) |
 | Lock down a public host | [security.md](./security.md) |
 
 ## Quick start
 
-- **Local:** copy [`.env.example`](../.env.example) → `.env`, set `STEAM_API_KEY`, then `pnpm db:migrate` and `pnpm dev:all` ([README](../README.md#local-dev)).
-- **Docker:** copy [`docker/.env.example`](../docker/.env.example) → `docker/.env`, then `pnpm docker:up` ([self-hosting](./self-hosting.md#quick-start-lan)).
+- **Local:** copy [`.env.example`](../.env.example) → `.env`, then `pnpm db:migrate` and `pnpm dev:all` ([README § Option 1](../README.md#option-1-local-nextjs)).
+- **Docker:** `docker/.env`, `docker/db/matrix.db`, `docker compose -f docker/compose.yml up --build -d` ([README § Option 2](../README.md#option-2-docker-compose)).
 
 **Planned features:** [README § Planned](../README.md#planned).

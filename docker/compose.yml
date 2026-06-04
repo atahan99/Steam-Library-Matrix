@@ -28,8 +28,9 @@ services:
       SLM_HLTB_STAGGER_MS: "300"
       SLM_HLTB_SYNC_DELAY_MS: "0"
       SLM_ENRICH_VERBOSE: "true"
+    # Host docker/db/ survives rebuilds — see README
     volumes:
-      - matrix_data:/app/data
+      - ./db:/app/data
     healthcheck:
       test:
         [
@@ -42,6 +43,3 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
-
-volumes:
-  matrix_data:

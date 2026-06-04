@@ -39,3 +39,10 @@ next-env.d.ts
 # sqlite data directory (keep data/README.md)
 /data/*
 !/data/README.md
+
+# Docker bind-mount database (see docker/db/README.md)
+docker/db/*.db
+docker/db/*.db-wal
+docker/db/*.db-shm
+!docker/db/matrix.db.example
+!docker/db/README.md

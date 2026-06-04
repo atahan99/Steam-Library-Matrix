@@ -16,7 +16,7 @@ The app imports **public** Steam library data. Anyone with a SteamID64 can view 
 Main risks on **public internet**:
 
 1. Anonymous callers triggering expensive enrichment / catalog sync
-2. Exposure of SQLite (`./data/matrix.db` or `matrix_data` volume)
+2. Exposure of SQLite (`./data/matrix.db` or `docker/db/` for Docker)
 3. Enumeration of cached JSON via `/api/dashboard/[steamid]`
 
 ## API guard
@@ -64,7 +64,7 @@ IP from `X-Forwarded-For` (first hop) or `X-Real-IP` — configure your reverse 
 
 - Entrypoint writes selected env to `/app/.env` for standalone Next.js
 - App runs as `nextjs` via `su-exec`
-- Protect `./data/` or `matrix_data`; backup `matrix.db` before upgrades
+- Protect `./data/` (local) or `docker/db/` (Docker); backup `matrix.db` before upgrades
 
 ## Security checklist
 

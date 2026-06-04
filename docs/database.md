@@ -1,6 +1,6 @@
 # Database setup
 
-**TL;DR:** `pnpm db:migrate` applies schema. Local dev (`./data/matrix.db`) and Docker (`matrix_data` volume) are **separate databases** — do not mix env files.
+**TL;DR:** `pnpm db:migrate` applies schema (local). Docker applies migrations on container start. Local (`./data/matrix.db`) and Docker (`docker/db/matrix.db`) are **separate databases** — do not mix env files.
 
 Steam Library Matrix uses **SQLite** ([better-sqlite3](https://github.com/WiseLibs/better-sqlite3)) with [Drizzle ORM](https://orm.drizzle.team/) and SQL migrations in [`db/migrations/`](../db/migrations/).
 
@@ -17,9 +17,9 @@ Required for import, dashboard, and enrichment (`STEAM_API_KEY` is separate). Th
 | Method | Env file | Database location |
 | --- | --- | --- |
 | Local dev | `.env` from [`.env.example`](../.env.example) | `./data/matrix.db` ([data/README.md](../data/README.md)) |
-| Docker Compose | `docker/.env` from [`docker/.env.example`](../docker/.env.example) | `/app/data/matrix.db` in volume `matrix_data` |
+| Docker Compose | `docker/.env` from [`docker/.env.example`](../docker/.env.example) | Host `docker/db/matrix.db` → `/app/data/matrix.db` (bind mount) |
 
-Not shared unless you add a custom bind mount (not in the default setup).
+Not shared unless you point both methods at the same path on purpose.
 
 ## Caching
 
@@ -54,11 +54,11 @@ Browse data (optional): `pnpm db:studio`.
 cp data/matrix.db data/matrix-backup-$(date +%F).db
 ```
 
-**Docker** (stack stopped or one-off):
+**Docker** (stack stopped):
 
 ```bash
-docker compose run --rm -v matrix_data:/data alpine \
-  sh -c 'cp /data/matrix.db /data/matrix-backup-$(date +%F).db'
+docker compose -f docker/compose.yml down
+cp docker/db/matrix.db "docker/db/matrix-backup-$(date +%F).db"
 ```
 
 For a clean restore, stop the app and copy `matrix.db` only (omit `-wal`/`-shm` unless you need a hot backup).
