@@ -32,8 +32,8 @@ describe("batch-config", () => {
     expect(getEmbedWorkerIntervalMs()).toBe(60_000)
   })
 
-  it("getWorkerMaxParallelTicks defaults to 2", () => {
-    expect(getWorkerMaxParallelTicks()).toBe(2)
+  it("getWorkerMaxParallelTicks defaults to 4", () => {
+    expect(getWorkerMaxParallelTicks()).toBe(4)
   })
 
   it("getWorkerStepBudgetMs defaults to 50000", () => {
@@ -50,7 +50,7 @@ describe("batch-config", () => {
 
   it("uses default batch sizes when env is unset", () => {
     expect(APP_DETAILS_BATCH).toBe(30)
-    expect(APP_DETAILS_CONCURRENCY).toBe(4)
+    expect(APP_DETAILS_CONCURRENCY).toBe(6)
     expect(PROTONDB_BATCH).toBe(50)
     expect(HLTB_BATCH).toBe(16)
     expect(ACHIEVEMENTS_BATCH).toBe(60)

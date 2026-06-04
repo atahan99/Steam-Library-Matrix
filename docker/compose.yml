@@ -16,7 +16,7 @@ services:
       SLM_EMBED_WORKER_MS: "5000"
       SLM_WORKER_MAX_JOBS_PER_TICK: "8"
       SLM_WORKER_TICK_BUDGET_MS: "50000"
-      SLM_WORKER_PARALLEL_TICKS: "2"
+      SLM_WORKER_PARALLEL_TICKS: "4"
       SLM_APP_DETAILS_BATCH: "30"
       SLM_APP_DETAILS_CONCURRENCY: "6"
       SLM_PROTONDB_BATCH: "50"
@@ -27,6 +27,7 @@ services:
       SLM_HLTB_CONCURRENCY: "6"
       SLM_HLTB_STAGGER_MS: "300"
       SLM_HLTB_SYNC_DELAY_MS: "0"
+      SLM_ENRICH_VERBOSE: "true"
     volumes:
       - matrix_data:/app/data
     healthcheck:

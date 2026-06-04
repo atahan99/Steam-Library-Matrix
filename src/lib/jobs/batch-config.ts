@@ -18,7 +18,7 @@ export const getWorkerStepBudgetMs = (): number => getWorkerTickBudgetMs()
 
 /** Max worker ticks in flight (overlap during network I/O). */
 export const getWorkerMaxParallelTicks = (): number =>
-  parsePositiveInt(process.env.SLM_WORKER_PARALLEL_TICKS, 2)
+  parsePositiveInt(process.env.SLM_WORKER_PARALLEL_TICKS, 4)
 
 /** App details batch size per job step. */
 export const APP_DETAILS_BATCH = parsePositiveInt(
@@ -29,7 +29,7 @@ export const APP_DETAILS_BATCH = parsePositiveInt(
 /** Max concurrent Steam Store app-detail fetches per step. */
 export const APP_DETAILS_CONCURRENCY = parsePositiveInt(
   process.env.SLM_APP_DETAILS_CONCURRENCY,
-  4
+  6
 )
 
 /** ProtonDB batch size per job step. */

@@ -6,22 +6,52 @@ vi.mock("@/lib/jobs/run-step", () => ({
   runEnrichmentJobStep: (...args: unknown[]) => mockRunEnrichmentJobStep(...args),
 }))
 
-vi.mock("@/lib/jobs/batch-config", () => ({
-  getWorkerMaxJobsPerTick: () => 5,
-  getWorkerStepBudgetMs: () => 50_000,
-  getWorkerTickBudgetMs: () => 50_000,
+vi.mock("@/lib/jobs/enqueue-coverage-followup", () => ({
+  enqueueCoverageFollowUpIfNeeded: vi.fn().mockResolvedValue(undefined),
 }))
 
-const pendingJob = {
-  id: "job-continued",
-  steamid: "76561198000000000",
-  kind: "achievements",
-  payload: { cursor: 0 },
-  attempts: 0,
-  startedAt: null as Date | null,
+vi.mock("@/lib/jobs/batch-config", () => ({
+  getWorkerMaxJobsPerTick: () => 8,
+  getWorkerStepBudgetMs: () => 50_000,
+}))
+
+type MockJob = {
+  id: string
+  steamid: string
+  kind: string
+  payload: Record<string, unknown>
+  attempts: number
+  startedAt: null
 }
 
-let claimCount = 0
+const pendingByKind: MockJob[] = [
+  {
+    id: "job-proton",
+    steamid: "76561198000000000",
+    kind: "protondb",
+    payload: { cursor: 0 },
+    attempts: 0,
+    startedAt: null,
+  },
+  {
+    id: "job-app",
+    steamid: "76561198000000000",
+    kind: "app_details",
+    payload: { cursor: 0 },
+    attempts: 0,
+    startedAt: null,
+  },
+  {
+    id: "job-hltb",
+    steamid: "76561198000000000",
+    kind: "hltb",
+    payload: { cursor: 0 },
+    attempts: 0,
+    startedAt: null,
+  },
+]
+
+let claimIndex = 0
 
 const chainAll = (rows: unknown[]) => ({
   all: () => rows,
@@ -34,10 +64,11 @@ const mockTx = {
         orderBy: () => ({
           limit: () =>
             chainAll(
-              claimCount < 5
+              claimIndex < pendingByKind.length
                 ? (() => {
-                    claimCount += 1
-                    return [{ ...pendingJob }]
+                    const job = pendingByKind[claimIndex]
+                    claimIndex += 1
+                    return job ? [{ ...job }] : []
                   })()
                 : []
             ),
@@ -48,7 +79,7 @@ const mockTx = {
   update: () => ({
     set: () => ({
       where: () => ({
-        returning: () => chainAll([{ id: pendingJob.id }]),
+        returning: () => chainAll([{ id: "ok" }]),
       }),
     }),
   }),
@@ -69,12 +100,12 @@ vi.mock("@/lib/db/client", () => ({
 
 describe("processEnrichmentJobsTick", () => {
   beforeEach(async () => {
-    claimCount = 0
+    claimIndex = 0
     mockRunEnrichmentJobStep.mockReset()
     mockRunEnrichmentJobStep.mockResolvedValue({
       done: false,
       payload: { cursor: 10 },
-      progress: { message: "Achievements 10/100" },
+      progress: { message: "continued" },
     })
     vi.spyOn(console, "log").mockImplementation(() => {})
   })
@@ -83,14 +114,20 @@ describe("processEnrichmentJobsTick", () => {
     vi.restoreAllMocks()
   })
 
-  it("runs multiple continued steps in one tick without early break", async () => {
+  it("runs one step per job kind in parallel", async () => {
     const { processEnrichmentJobsTick } = await import("@/lib/jobs/worker")
 
     const result = await processEnrichmentJobsTick()
 
-    expect(result.processed).toBe(5)
-    expect(result.continued).toBe(5)
-    expect(result.completed).toBe(0)
-    expect(mockRunEnrichmentJobStep).toHaveBeenCalledTimes(5)
+    expect(result.processed).toBe(3)
+    expect(result.continued).toBe(3)
+    expect(mockRunEnrichmentJobStep).toHaveBeenCalledTimes(3)
+
+    const kinds = mockRunEnrichmentJobStep.mock.calls.map(
+      (call) => (call[0] as { kind: string }).kind
+    )
+    expect(kinds).toContain("protondb")
+    expect(kinds).toContain("app_details")
+    expect(kinds).toContain("hltb")
   })
 })

@@ -39,12 +39,12 @@ With `SLM_API_SECRET` and without `SLM_ALLOW_OPEN_API`, Data Status uses **serve
 | --- | --- | --- |
 | `SLM_EMBED_JOB_WORKER` | (unset) | `true` = in-process worker in Next.js. **Docker Compose sets this by default.** Omit for local `pnpm dev:all`. |
 | `SLM_EMBED_WORKER_MS` | `60000` | Poll interval for embedded worker. **Compose default: `5000`** (same cadence as `dev:jobs`). |
-| `SLM_WORKER_MAX_JOBS_PER_TICK` | `8` | Max job steps claimed per worker tick. |
+| `SLM_WORKER_MAX_JOBS_PER_TICK` | `8` | Max job steps per tick; worker claims **at most one pending job per kind** and runs those steps in parallel (so `app_details` is not starved by ProtonDB/HLTB). |
 | `SLM_WORKER_TICK_BUDGET_MS` | `50000` | Wall-clock cap for one tick loop. |
-| `SLM_WORKER_PARALLEL_TICKS` | `2` | Overlapping ticks during network I/O. |
+| `SLM_WORKER_PARALLEL_TICKS` | `4` | Overlapping ticks during network I/O. |
 | `SLM_DEV_CRON_MS` | `5000` in `dev:jobs` | Poll interval for `pnpm dev:jobs` / `dev-cron-loop.ts`. |
 | `SLM_DEV_JOBS_HTTP` | (unset) | `true` = `dev:jobs` polls `/api/cron/process-jobs` over HTTP instead of in-process worker. |
-| `SLM_ENRICH_VERBOSE` | `true` in `dev:jobs` | Per-app `[enrich]` logs. Set `false` to quiet CLI. Also on when `SLM_CLI=1` (e.g. `pnpm sync:full`). |
+| `SLM_ENRICH_VERBOSE` | `true` in `dev:jobs` and **Docker Compose** | Per-app `[enrich]` logs and job step lines. Set `false` to quiet logs. Also on when `SLM_CLI=1` (e.g. `pnpm sync:full`) if unset. |
 | `SLM_HLTB_SYNC_DELAY_MS` | `0` | Optional delay before HLTB enqueue when not using import tier (legacy). |
 
 **Import vs full sync:** Library import and Data Status both enqueue the same import tier (ProtonDB, HLTB, app details, etc.) immediately. Details: [scraping.md § Job pipeline](./scraping.md#job-pipeline-order).
@@ -58,7 +58,7 @@ Defaults are defined in [`src/lib/jobs/batch-config.ts`](../src/lib/jobs/batch-c
 | Variable | Default | Description |
 | --- | --- | --- |
 | `SLM_APP_DETAILS_BATCH` | `30` | Steam Store app details per step |
-| `SLM_APP_DETAILS_CONCURRENCY` | `4` | Parallel store fetches per step |
+| `SLM_APP_DETAILS_CONCURRENCY` | `6` | Parallel store fetches per step |
 | `SLM_PROTONDB_BATCH` | `50` | ProtonDB entries per step |
 | `SLM_PROTONDB_CONCURRENCY` | `10` | Parallel ProtonDB fetches per step |
 | `SLM_HLTB_BATCH` | `16` | HLTB lookups per step |
@@ -73,7 +73,7 @@ Recommended for local `dev:all` (mirrors Docker Compose):
 ```env
 SLM_DEV_CRON_MS=5000
 SLM_WORKER_MAX_JOBS_PER_TICK=8
-SLM_WORKER_PARALLEL_TICKS=2
+SLM_WORKER_PARALLEL_TICKS=4
 SLM_APP_DETAILS_BATCH=30
 SLM_APP_DETAILS_CONCURRENCY=6
 SLM_PROTONDB_BATCH=50
