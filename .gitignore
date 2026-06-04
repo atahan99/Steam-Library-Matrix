@@ -9,7 +9,7 @@
 
 # production
 /build
-/dist/docker
+/dist/
 
 # misc
 .playwright-mcp/
