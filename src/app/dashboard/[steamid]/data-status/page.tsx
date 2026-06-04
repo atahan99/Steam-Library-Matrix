@@ -131,7 +131,7 @@ export default function DataStatusPage() {
 
       <DataStatusSection
         title="Compatibility"
-        description="Deck status and ProtonDB from Steam app details."
+        description="Steam Deck from store app details and the Deck compatibility API. ProtonDB is enriched separately."
       >
         <SourceStatusCard
           title="Steam Deck compatibility"

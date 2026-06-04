@@ -9,6 +9,10 @@ if [ -z "$DATABASE_URL" ]; then
   export DATABASE_URL="file:/app/data/matrix.db"
 fi
 
+if [ -z "$STEAM_API_KEY" ]; then
+  echo "[entrypoint] WARNING: STEAM_API_KEY is not set — Steam import will fail until you add it to docker/.env or the repo-root .env" >&2
+fi
+
 echo "[entrypoint] applying database migrations..."
 node dist/docker/db-migrate.cjs
 
@@ -19,37 +23,49 @@ if [ "$SLM_SKIP_CATALOG_BOOTSTRAP" != "true" ]; then
   fi
 fi
 
-if [ -n "$DATABASE_URL" ] || [ -n "$STEAM_API_KEY" ] || [ -n "$SLM_API_SECRET" ] || [ -n "$SLM_ALLOW_OPEN_API" ] || [ -n "$SLM_RATE_LIMIT_PER_MIN" ] || [ -n "$CRON_SECRET" ] || [ -n "$SLM_EMBED_JOB_WORKER" ]; then
+PERSIST_ENV_VARS="
+  DATABASE_URL
+  STEAM_API_KEY
+  SLM_API_SECRET
+  SLM_ALLOW_OPEN_API
+  SLM_RATE_LIMIT_PER_MIN
+  CRON_SECRET
+  SLM_EMBED_JOB_WORKER
+  SLM_EMBED_WORKER_MS
+  SLM_WORKER_MAX_JOBS_PER_TICK
+  SLM_WORKER_TICK_BUDGET_MS
+  SLM_WORKER_PARALLEL_TICKS
+  SLM_APP_DETAILS_BATCH
+  SLM_APP_DETAILS_CONCURRENCY
+  SLM_PROTONDB_BATCH
+  SLM_PROTONDB_CONCURRENCY
+  SLM_ACHIEVEMENTS_BATCH
+  SLM_ACHIEVEMENTS_CONCURRENCY
+  SLM_HLTB_BATCH
+  SLM_HLTB_CONCURRENCY
+  SLM_HLTB_STAGGER_MS
+  SLM_HLTB_SYNC_DELAY_MS
+"
+
+should_persist_env=false
+for var in $PERSIST_ENV_VARS; do
+  eval "val=\${$var}"
+  if [ -n "$val" ]; then
+    should_persist_env=true
+    break
+  fi
+done
+
+if [ "$should_persist_env" = true ]; then
   : > /app/.env.production
   : > /app/.env
-  if [ -n "$DATABASE_URL" ]; then
-    printf '%s\n' "DATABASE_URL=${DATABASE_URL}" >> /app/.env.production
-    printf '%s\n' "DATABASE_URL=${DATABASE_URL}" >> /app/.env
-  fi
-  if [ -n "$STEAM_API_KEY" ]; then
-    printf '%s\n' "STEAM_API_KEY=${STEAM_API_KEY}" >> /app/.env.production
-    printf '%s\n' "STEAM_API_KEY=${STEAM_API_KEY}" >> /app/.env
-  fi
-  if [ -n "$SLM_API_SECRET" ]; then
-    printf '%s\n' "SLM_API_SECRET=${SLM_API_SECRET}" >> /app/.env.production
-    printf '%s\n' "SLM_API_SECRET=${SLM_API_SECRET}" >> /app/.env
-  fi
-  if [ -n "$SLM_ALLOW_OPEN_API" ]; then
-    printf '%s\n' "SLM_ALLOW_OPEN_API=${SLM_ALLOW_OPEN_API}" >> /app/.env.production
-    printf '%s\n' "SLM_ALLOW_OPEN_API=${SLM_ALLOW_OPEN_API}" >> /app/.env
-  fi
-  if [ -n "$SLM_RATE_LIMIT_PER_MIN" ]; then
-    printf '%s\n' "SLM_RATE_LIMIT_PER_MIN=${SLM_RATE_LIMIT_PER_MIN}" >> /app/.env.production
-    printf '%s\n' "SLM_RATE_LIMIT_PER_MIN=${SLM_RATE_LIMIT_PER_MIN}" >> /app/.env
-  fi
-  if [ -n "$CRON_SECRET" ]; then
-    printf '%s\n' "CRON_SECRET=${CRON_SECRET}" >> /app/.env.production
-    printf '%s\n' "CRON_SECRET=${CRON_SECRET}" >> /app/.env
-  fi
-  if [ -n "$SLM_EMBED_JOB_WORKER" ]; then
-    printf '%s\n' "SLM_EMBED_JOB_WORKER=${SLM_EMBED_JOB_WORKER}" >> /app/.env.production
-    printf '%s\n' "SLM_EMBED_JOB_WORKER=${SLM_EMBED_JOB_WORKER}" >> /app/.env
-  fi
+  for var in $PERSIST_ENV_VARS; do
+    eval "val=\${$var}"
+    if [ -n "$val" ]; then
+      printf '%s\n' "${var}=${val}" >> /app/.env.production
+      printf '%s\n' "${var}=${val}" >> /app/.env
+    fi
+  done
 fi
 
 exec su-exec nextjs "$@"

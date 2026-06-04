@@ -54,6 +54,59 @@ const buildCatalogSource = (
   percent: ready ? 100 : 0,
 })
 
+const buildDenuvoCatalogSource = (stats: {
+  count: number
+  complete: boolean
+  errorMessage?: string
+}): SyncStatusSourceRow => {
+  const ready = stats.count > 0 && stats.complete
+  const label = stats.errorMessage
+    ? `Denuvo catalog — ${stats.errorMessage}`
+    : "Denuvo catalog"
+
+  if (ready) {
+    return buildCatalogSource("denuvo_catalog", label, true)
+  }
+
+  const percent =
+    stats.count > 0 && !stats.complete
+      ? Math.min(99, Math.round((stats.count / 376) * 100))
+      : 0
+
+  return {
+    key: "denuvo_catalog",
+    label,
+    total: 1,
+    withData: stats.count > 0 ? 1 : 0,
+    processed: 0,
+    missing: 1,
+    percent,
+  }
+}
+
+const resolveSteamDeckProcessed = (
+  enrichTotal: number,
+  deckWithData: number,
+  activeJobs: ActiveJobSummary[]
+): number => {
+  const appDetailsJob = activeJobs.find(
+    (job) =>
+      job.kind === "app_details" &&
+      (job.status === "running" || job.status === "pending")
+  )
+  const progress = appDetailsJob?.progress
+  const cursor =
+    typeof progress?.checked === "number"
+      ? progress.checked
+      : undefined
+
+  if (cursor != null) {
+    return Math.min(Math.max(cursor, deckWithData), enrichTotal)
+  }
+
+  return deckWithData
+}
+
 const buildCountSource = (
   key: string,
   label: string,
@@ -173,11 +226,13 @@ export const buildDashboardSyncStatus = async (
   const levvvelReady =
     anticheatCatalog.levvvel.rowCount > 0 &&
     anticheatCatalog.levvvel.complete
-  const denuvoReady =
-    denuvoCatalog.count > 0 && denuvoCatalog.complete
-
   const libraryProcessed = profile.lastSyncedAt ? libraryTotal : 0
   const wishlistProcessed = profile.wishlistLastSyncedAt ? wishlistTotal : 0
+  const steamDeckProcessed = resolveSteamDeckProcessed(
+    enrichTotal,
+    deckWithData,
+    activeJobs
+  )
 
   const sources: SyncStatusSourceRow[] = [
     buildCountSource(
@@ -206,13 +261,13 @@ export const buildDashboardSyncStatus = async (
       "steam_deck",
       "Steam Deck",
       enrichTotal,
-      deckWithData,
+      steamDeckProcessed,
       deckWithData
     ),
     mapEnrichmentSource("protondb", "ProtonDB", coverage.protondb, protonWithData),
     buildCatalogSource("awacy_catalog", "AWACY catalog", awacyReady),
     buildCatalogSource("levvvel_catalog", "Levvvel catalog", levvvelReady),
-    buildCatalogSource("denuvo_catalog", "Denuvo catalog", denuvoReady),
+    buildDenuvoCatalogSource(denuvoCatalog),
     mapEnrichmentSource(
       "anticheat",
       "Anti-cheat link",

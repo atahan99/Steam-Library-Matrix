@@ -22,7 +22,7 @@ describe("enqueueAppDetailsAfterImport", () => {
     expect(mockedFastSync).not.toHaveBeenCalled()
   })
 
-  it("enqueues FAST sync with force false and returns app_details job", async () => {
+  it("enqueues import-tier sync with force false and returns app_details job", async () => {
     mockedFastSync.mockResolvedValue([
       { kind: "anticheat_catalog", id: "job-0", status: "created" },
       { kind: "app_details", id: "job-1", status: "created" },

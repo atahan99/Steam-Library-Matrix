@@ -6,11 +6,8 @@ import {
 } from "@/lib/db/anticheat-catalog"
 import {
   getDenuvoCatalogStats,
-  isDenuvoCatalogStale,
-  replaceDenuvoAntiTamperCatalog,
 } from "@/lib/db/denuvo-catalog"
 import { finishRefreshLog, startRefreshLog } from "@/lib/db/refresh-log"
-import { scrapeDenuvoCuratorCatalog } from "@/lib/steam/scrape-denuvo-curator"
 import {
   fetchAwacyGamesRaw,
   fetchLevvvelKernelGames,
@@ -48,25 +45,83 @@ const buildCatalogSyncMessage = (result: SyncAnticheatCatalogsResult): string =>
   return parts.join(" | ")
 }
 
+const isAwacyLevvvelFresh = (
+  stats: Awaited<ReturnType<typeof getAnticheatCatalogStats>>,
+  force?: boolean
+): boolean => {
+  if (force) return false
+
+  const awacyStale = isAnticheatCatalogStale(stats.awacy.lastSyncedAt)
+  const levvvelStale = isAnticheatCatalogStale(stats.levvvel.lastSyncedAt)
+
+  return (
+    stats.awacy.rowCount > 0 &&
+    !awacyStale &&
+    stats.levvvel.rowCount > 0 &&
+    !levvvelStale &&
+    stats.levvvel.complete
+  )
+}
+
+const syncAwacyBranch = async (): Promise<{
+  awacyCount: number
+  awacyLastSyncedAt?: string
+  awacyError?: string
+}> => {
+  const awacyResult = await fetchAwacyGamesRaw()
+  if (!awacyResult.entries.length) {
+    return {
+      awacyCount: 0,
+      awacyError:
+        awacyResult.error ?? "AWACY games.json returned 0 rows",
+    }
+  }
+
+  const awacySaved = await replaceAwacyCatalog(awacyResult.entries)
+  return {
+    awacyCount: awacySaved.count,
+    awacyLastSyncedAt: awacySaved.lastSyncedAt,
+  }
+}
+
+const syncLevvvelBranch = async (): Promise<{
+  levvvelCount: number
+  levvvelLastSyncedAt?: string
+  levvvelComplete: boolean
+  levvvelError?: string
+}> => {
+  const levvvelDataset = await fetchLevvvelKernelGames()
+  let levvvelComplete = levvvelDataset.complete
+  let levvvelError: string | undefined
+
+  if (!levvvelDataset.complete) {
+    levvvelError =
+      levvvelDataset.error ??
+      `Levvvel kernel list incomplete (${levvvelDataset.rows.length} rows)`
+  }
+
+  const levvvelSaved = await replaceLevvvelCatalog(
+    levvvelDataset.rows,
+    levvvelDataset.complete,
+    levvvelError
+  )
+
+  return {
+    levvvelCount: levvvelSaved.count,
+    levvvelLastSyncedAt: levvvelSaved.lastSyncedAt,
+    levvvelComplete,
+    levvvelError,
+  }
+}
+
 export const syncAnticheatCatalogs = async (
   steamid: string,
   options?: { force?: boolean }
 ): Promise<SyncAnticheatCatalogsResult> => {
   const stats = await getAnticheatCatalogStats()
   const denuvoStats = await getDenuvoCatalogStats()
-  const awacyStale = isAnticheatCatalogStale(stats.awacy.lastSyncedAt)
-  const levvvelStale = isAnticheatCatalogStale(stats.levvvel.lastSyncedAt)
-  const denuvoStale = isDenuvoCatalogStale(denuvoStats.lastSyncedAt)
 
-  if (
-    !options?.force &&
-    stats.awacy.rowCount > 0 &&
-    !awacyStale &&
-    stats.levvvel.rowCount > 0 &&
-    !levvvelStale &&
-    denuvoStats.count > 0 &&
-    !denuvoStale
-  ) {
+  if (isAwacyLevvvelFresh(stats, options?.force)) {
     return {
       awacyCount: stats.awacy.rowCount,
       levvvelCount: stats.levvvel.rowCount,
@@ -85,102 +140,91 @@ export const syncAnticheatCatalogs = async (
   const logId = await startRefreshLog(steamid, "anticheat_catalog")
   refreshAntiCheatCaches()
 
+  const awacyStale = isAnticheatCatalogStale(stats.awacy.lastSyncedAt)
+  const levvvelStale = isAnticheatCatalogStale(stats.levvvel.lastSyncedAt)
+  const needsAwacy =
+    Boolean(options?.force) ||
+    stats.awacy.rowCount === 0 ||
+    awacyStale
+  const needsLevvvel =
+    Boolean(options?.force) ||
+    stats.levvvel.rowCount === 0 ||
+    levvvelStale ||
+    !stats.levvvel.complete
+
   let awacyError: string | undefined
   let levvvelError: string | undefined
-  let denuvoAntiTamperError: string | undefined
   let awacyCount = stats.awacy.rowCount
   let levvvelCount = stats.levvvel.rowCount
-  let denuvoAntiTamperCount = denuvoStats.count
   let awacyLastSyncedAt = stats.awacy.lastSyncedAt
   let levvvelLastSyncedAt = stats.levvvel.lastSyncedAt
-  let denuvoAntiTamperLastSyncedAt = denuvoStats.lastSyncedAt
   let levvvelComplete = stats.levvvel.complete
-  let denuvoAntiTamperComplete = denuvoStats.complete
 
   try {
-    const awacyResult = await fetchAwacyGamesRaw()
-    if (!awacyResult.entries.length) {
-      awacyError =
-        awacyResult.error ?? "AWACY games.json returned 0 rows"
+    const [awacyOutcome, levvvelOutcome] = await Promise.all([
+      needsAwacy
+        ? syncAwacyBranch()
+        : Promise.resolve({
+            awacyCount,
+            awacyLastSyncedAt,
+            awacyError: undefined as string | undefined,
+          }),
+      needsLevvvel
+        ? syncLevvvelBranch()
+        : Promise.resolve({
+            levvvelCount,
+            levvvelLastSyncedAt,
+            levvvelComplete,
+            levvvelError: stats.levvvel.errorMessage,
+          }),
+    ])
+
+    awacyCount = awacyOutcome.awacyCount
+    awacyLastSyncedAt = awacyOutcome.awacyLastSyncedAt
+    awacyError = awacyOutcome.awacyError
+
+    levvvelCount = levvvelOutcome.levvvelCount
+    levvvelLastSyncedAt = levvvelOutcome.levvvelLastSyncedAt
+    levvvelComplete = levvvelOutcome.levvvelComplete
+    levvvelError = levvvelOutcome.levvvelError
+
+    if (awacyError) {
       await finishRefreshLog(logId, "failed", buildCatalogSyncMessage({
         awacyCount: 0,
         levvvelCount: 0,
-        denuvoAntiTamperCount: 0,
+        denuvoAntiTamperCount: denuvoStats.count,
         levvvelComplete: false,
-        denuvoAntiTamperComplete: false,
+        denuvoAntiTamperComplete: denuvoStats.complete,
         awacyError,
       }))
       return {
         awacyCount: 0,
         levvvelCount: 0,
-        denuvoAntiTamperCount: 0,
+        denuvoAntiTamperCount: denuvoStats.count,
         levvvelComplete: false,
-        denuvoAntiTamperComplete: false,
+        denuvoAntiTamperComplete: denuvoStats.complete,
         awacyError,
       }
     }
 
-    const awacySaved = await replaceAwacyCatalog(awacyResult.entries)
-    awacyCount = awacySaved.count
-    awacyLastSyncedAt = awacySaved.lastSyncedAt
-
-    const levvvelDataset = await fetchLevvvelKernelGames()
-    levvvelComplete = levvvelDataset.complete
-    if (!levvvelDataset.complete) {
-      levvvelError =
-        levvvelDataset.error ??
-        `Levvvel kernel list incomplete (${levvvelDataset.rows.length} rows)`
-    }
-
-    const levvvelSaved = await replaceLevvvelCatalog(
-      levvvelDataset.rows,
-      levvvelDataset.complete,
-      levvvelError
-    )
-    levvvelCount = levvvelSaved.count
-    levvvelLastSyncedAt = levvvelSaved.lastSyncedAt
-
-    try {
-      const denuvoScraped = await scrapeDenuvoCuratorCatalog()
-      denuvoAntiTamperComplete = denuvoScraped.complete
-      if (!denuvoScraped.appids.length) {
-        denuvoAntiTamperError =
-          denuvoScraped.error ?? "No app IDs scraped from Denuvo curator"
-      } else if (!denuvoScraped.complete) {
-        denuvoAntiTamperError = denuvoScraped.error
-      }
-
-      if (denuvoScraped.appids.length) {
-        const denuvoSaved = await replaceDenuvoAntiTamperCatalog(
-          denuvoScraped.appids,
-          denuvoScraped.complete,
-          denuvoAntiTamperError
-        )
-        denuvoAntiTamperCount = denuvoSaved.count
-        denuvoAntiTamperLastSyncedAt = denuvoSaved.lastSyncedAt
-      }
-    } catch (denuvoErr) {
-      denuvoAntiTamperError =
-        denuvoErr instanceof Error
-          ? denuvoErr.message
-          : "Denuvo curator sync failed"
-    }
-
+    const refreshedDenuvo = await getDenuvoCatalogStats()
     const result: SyncAnticheatCatalogsResult = {
       awacyCount,
       levvvelCount,
-      denuvoAntiTamperCount,
+      denuvoAntiTamperCount: refreshedDenuvo.count,
       awacyLastSyncedAt,
       levvvelLastSyncedAt,
-      denuvoAntiTamperLastSyncedAt,
+      denuvoAntiTamperLastSyncedAt: refreshedDenuvo.lastSyncedAt,
       levvvelComplete,
-      denuvoAntiTamperComplete,
+      denuvoAntiTamperComplete: refreshedDenuvo.complete,
       levvvelError,
-      denuvoAntiTamperError,
+      denuvoAntiTamperError: refreshedDenuvo.errorMessage,
     }
 
     const status =
-      awacyError || levvvelError || denuvoAntiTamperError ? "partial" : "success"
+      awacyError || levvvelError || refreshedDenuvo.errorMessage
+        ? "partial"
+        : "success"
     await finishRefreshLog(logId, status, buildCatalogSyncMessage(result))
     return result
   } catch (err) {

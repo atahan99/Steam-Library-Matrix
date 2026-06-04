@@ -1,22 +1,27 @@
 import { and, asc, eq, lte, lt, sql } from "drizzle-orm"
 import { getDb } from "@/lib/db/client"
 import { enrichmentJobs } from "@/lib/db/schema"
-import { getWorkerMaxJobsPerTick } from "@/lib/jobs/batch-config"
+import {
+  getWorkerMaxJobsPerTick,
+  getWorkerStepBudgetMs,
+  getWorkerTickBudgetMs,
+} from "@/lib/jobs/batch-config"
 import {
   enrichLogJob,
   formatWorkerTickLog,
   isEnrichVerbose,
 } from "@/lib/jobs/enrich-logger"
+import { enqueueCoverageFollowUpIfNeeded } from "@/lib/jobs/enqueue-coverage-followup"
 import { runEnrichmentJobStep } from "@/lib/jobs/run-step"
 import type { EnrichmentJobKind, JobPayload } from "@/lib/jobs/types"
 
 const WORKER_ID = `worker-${process.pid}`
-const TIME_BUDGET_MS = 50_000
 const STALE_LOCK_MS = 10 * 60_000
 
 /** Lower number = higher priority when claiming pending jobs. */
 const JOB_KIND_PRIORITY_SQL = sql`CASE ${enrichmentJobs.kind}
   WHEN 'anticheat_catalog' THEN 0
+  WHEN 'denuvo_catalog' THEN 0
   WHEN 'wishlist' THEN 1
   WHEN 'achievements' THEN 2
   WHEN 'anticheat' THEN 3
@@ -95,6 +100,8 @@ const claimNextJob = (): {
 export const processEnrichmentJobsTick = async (): Promise<WorkerTickResult> => {
   const db = getDb()
   const maxJobsPerTick = getWorkerMaxJobsPerTick()
+  const stepBudgetMs = getWorkerStepBudgetMs()
+  const tickBudgetMs = getWorkerTickBudgetMs()
   const result: WorkerTickResult = {
     processed: 0,
     completed: 0,
@@ -102,13 +109,14 @@ export const processEnrichmentJobsTick = async (): Promise<WorkerTickResult> => 
     failed: 0,
   }
 
-  const deadline = Date.now() + TIME_BUDGET_MS
+  const tickDeadline = Date.now() + tickBudgetMs
 
-  for (let n = 0; n < maxJobsPerTick && Date.now() < deadline; n += 1) {
+  for (let n = 0; n < maxJobsPerTick && Date.now() < tickDeadline; n += 1) {
     const job = claimNextJob()
     if (!job) break
 
     result.processed += 1
+    const stepDeadlineMs = Date.now() + stepBudgetMs
 
     enrichLogJob("start", {
       kind: job.kind,
@@ -121,7 +129,7 @@ export const processEnrichmentJobsTick = async (): Promise<WorkerTickResult> => 
         steamid: job.steamid,
         kind: job.kind as EnrichmentJobKind,
         payload: job.payload,
-        deadlineMs: deadline,
+        deadlineMs: stepDeadlineMs,
       })
 
       if (step.done) {
@@ -144,6 +152,16 @@ export const processEnrichmentJobsTick = async (): Promise<WorkerTickResult> => 
           jobId: job.id,
           message: step.progress.message,
         })
+        try {
+          await enqueueCoverageFollowUpIfNeeded({
+            steamid: job.steamid,
+            kind: job.kind as EnrichmentJobKind,
+            progress: step.progress,
+            payload: step.payload,
+          })
+        } catch (followUpError) {
+          console.error("[worker] coverage follow-up enqueue failed", followUpError)
+        }
       } else {
         await db
           .update(enrichmentJobs)
@@ -209,6 +227,7 @@ export const processEnrichmentJobsTick = async (): Promise<WorkerTickResult> => 
 }
 
 export const logWorkerTickSummary = (result: WorkerTickResult): void => {
-  if (!isEnrichVerbose() && result.processed === 0) return
-  console.log(formatWorkerTickLog(result))
+  if (result.processed > 0 || !isEnrichVerbose()) {
+    console.log(formatWorkerTickLog(result))
+  }
 }

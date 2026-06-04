@@ -1,11 +1,8 @@
+import { isDenuvoCatalogSyncNeeded } from "@/lib/anticheat/sync-denuvo-catalog"
 import {
   getAnticheatCatalogStats,
   isAnticheatCatalogStale,
 } from "@/lib/db/anticheat-catalog"
-import {
-  getDenuvoCatalogStats,
-  isDenuvoCatalogStale,
-} from "@/lib/db/denuvo-catalog"
 import { getUnionProfileAppids } from "@/lib/db/profile-appids"
 import { enqueueEnrichmentJob } from "@/lib/jobs/enqueue"
 import type { EnrichmentJobKind } from "@/lib/jobs/types"
@@ -44,18 +41,15 @@ export const isAnticheatCatalogSyncNeeded = async (
   if (force) return true
 
   const stats = await getAnticheatCatalogStats()
-  const denuvoStats = await getDenuvoCatalogStats()
   const awacyStale = isAnticheatCatalogStale(stats.awacy.lastSyncedAt)
   const levvvelStale = isAnticheatCatalogStale(stats.levvvel.lastSyncedAt)
-  const denuvoStale = isDenuvoCatalogStale(denuvoStats.lastSyncedAt)
 
   if (
     stats.awacy.rowCount > 0 &&
     !awacyStale &&
     stats.levvvel.rowCount > 0 &&
     !levvvelStale &&
-    denuvoStats.count > 0 &&
-    !denuvoStale
+    stats.levvvel.complete
   ) {
     return false
   }
@@ -88,6 +82,19 @@ export const enqueueProfileWarmup = async (
       kind: "anticheat_catalog",
       id: catalogJob.id,
       status: catalogJob.status,
+    })
+  }
+
+  if (await isDenuvoCatalogSyncNeeded(force)) {
+    const denuvoJob = await enqueueEnrichmentJob({
+      steamid: input.ownerSteamid,
+      kind: "denuvo_catalog",
+      payload: { force },
+    })
+    jobs.push({
+      kind: "denuvo_catalog",
+      id: denuvoJob.id,
+      status: denuvoJob.status,
     })
   }
 

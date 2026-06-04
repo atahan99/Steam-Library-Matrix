@@ -9,6 +9,7 @@ const STEAM_STORE_USER_AGENT =
 
 const PAGE_SIZE = 50
 const REQUEST_GAP_MS = 200
+const PAGE_MAX_ATTEMPTS = 4
 
 const curatorRecommendationsUrl = (clanId: number) =>
   `https://store.steampowered.com/curator/${clanId}/ajaxgetcuratorrecommendations/`
@@ -58,6 +59,21 @@ const fetchCuratorPage = async (
   }
 }
 
+const fetchCuratorPageWithRetry = async (
+  clanId: number,
+  start: number,
+  count: number
+): Promise<CuratorRecommendationsResponse | null> => {
+  for (let attempt = 0; attempt < PAGE_MAX_ATTEMPTS; attempt += 1) {
+    const json = await fetchCuratorPage(clanId, start, count)
+    if (json?.success === 1) return json
+    if (attempt < PAGE_MAX_ATTEMPTS - 1) {
+      await wait(REQUEST_GAP_MS * (attempt + 2))
+    }
+  }
+  return null
+}
+
 export type FetchDenuvoCuratorCatalogResult = {
   appids: number[]
   complete: boolean
@@ -73,14 +89,18 @@ export const fetchDenuvoCuratorCatalog = async (
   let start = 0
 
   for (;;) {
-    const json = await fetchCuratorPage(clanId, start, PAGE_SIZE)
-    if (!json || json.success !== 1) {
+    const json = await fetchCuratorPageWithRetry(clanId, start, PAGE_SIZE)
+    if (!json) {
       if (appids.size === 0) {
         return {
           appids: [],
           complete: false,
           error: "Steam curator recommendations API request failed",
         }
+      }
+      if (reportedTotal !== undefined && start < reportedTotal) {
+        await wait(REQUEST_GAP_MS * 2)
+        continue
       }
       break
     }

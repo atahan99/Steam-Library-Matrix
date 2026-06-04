@@ -13,13 +13,19 @@ import type {
   SteamWishlistRawItem,
 } from "@/types/steam"
 
+export const STEAM_API_KEY_ERROR_MESSAGE =
+  "STEAM_API_KEY is not configured. Register a key at https://steamcommunity.com/dev/apikey (domain: localhost), then add it to docker/.env or your local .env."
+
+export const isSteamApiKeyConfigured = (): boolean =>
+  Boolean(
+    getRuntimeEnv("STEAM_API_KEY") ?? getRuntimeEnv("STEAM_WEB_API_KEY")
+  )
+
 const getSteamApiKey = (): string => {
   const key =
     getRuntimeEnv("STEAM_API_KEY") ?? getRuntimeEnv("STEAM_WEB_API_KEY") ?? ""
   if (!key) {
-    throw new Error(
-      "STEAM_API_KEY is not configured. Register a key at https://steamcommunity.com/dev/apikey (domain: localhost) and add it to .env."
-    )
+    throw new Error(STEAM_API_KEY_ERROR_MESSAGE)
   }
   return key
 }

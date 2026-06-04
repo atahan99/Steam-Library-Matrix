@@ -1,4 +1,5 @@
 import { syncAnticheatCatalogs } from "@/lib/anticheat/sync-catalogs"
+import { syncDenuvoCatalogOnly } from "@/lib/anticheat/sync-denuvo-catalog"
 import { getProfileGamesForEnrichment } from "@/lib/db/profile-appids"
 import { resolveAppidsForSource } from "@/lib/enrichment/resolve-enrichment-appids"
 import {
@@ -12,6 +13,7 @@ import { runAppDetailsBatch } from "@/lib/jobs/steps/app-details-step"
 import { runHltbBatch } from "@/lib/jobs/steps/hltb-step"
 import {
   APP_DETAILS_BATCH,
+  APP_DETAILS_CONCURRENCY,
   ANTICHEAT_BATCH,
   ACHIEVEMENTS_BATCH,
   ACHIEVEMENTS_CONCURRENCY,
@@ -86,12 +88,43 @@ export const runEnrichmentJobStep = async (input: {
     }
     case "anticheat_catalog": {
       enrichLog(`anticheat_catalog sync steamid=${input.steamid} force=${force}`)
-      await syncAnticheatCatalogs(input.steamid, { force })
+      const catalogResult = await syncAnticheatCatalogs(input.steamid, { force })
+      const catalogDone =
+        Boolean(catalogResult.skipped) ||
+        (!catalogResult.awacyError &&
+          catalogResult.levvvelComplete &&
+          !catalogResult.levvvelError)
       enrichLog(`anticheat_catalog sync completed steamid=${input.steamid}`)
       return {
-        done: true,
+        done: catalogDone,
         payload: input.payload,
-        progress: { message: "Anti-cheat catalog sync completed" },
+        progress: {
+          message: catalogDone
+            ? "Anti-cheat catalog sync completed"
+            : catalogResult.levvvelError ??
+              "Anti-cheat catalog sync incomplete",
+        },
+        error: catalogDone ? undefined : catalogResult.levvvelError,
+      }
+    }
+    case "denuvo_catalog": {
+      enrichLog(`denuvo_catalog sync steamid=${input.steamid} force=${force}`)
+      const denuvoResult = await syncDenuvoCatalogOnly(input.steamid, { force })
+      const denuvoDone =
+        Boolean(denuvoResult.skipped) ||
+        (denuvoResult.denuvoAntiTamperComplete &&
+          !denuvoResult.denuvoAntiTamperError)
+      enrichLog(`denuvo_catalog sync completed steamid=${input.steamid}`)
+      return {
+        done: denuvoDone,
+        payload: input.payload,
+        progress: {
+          message: denuvoDone
+            ? "Denuvo catalog sync completed"
+            : denuvoResult.denuvoAntiTamperError ??
+              "Denuvo catalog sync incomplete",
+        },
+        error: denuvoDone ? undefined : denuvoResult.denuvoAntiTamperError,
       }
     }
     case "protondb": {
@@ -342,7 +375,8 @@ export const runEnrichmentJobStep = async (input: {
         cursor,
         APP_DETAILS_BATCH,
         input.deadlineMs,
-        force
+        force,
+        APP_DETAILS_CONCURRENCY
       )
       const nextCursor = cursor + batch.processed
       const nextStats = mergeProgress({

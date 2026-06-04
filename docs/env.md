@@ -37,16 +37,19 @@ With `SLM_API_SECRET` and without `SLM_ALLOW_OPEN_API`, Data Status uses **serve
 
 | Variable | Default | Description |
 | --- | --- | --- |
-| `SLM_EMBED_JOB_WORKER` | (unset) | `true` = in-process worker in Next.js (60s interval). Set in `docker/.env`; **omit** for local `pnpm dev:all`. |
-| `SLM_WORKER_MAX_JOBS_PER_TICK` | `5` | Max jobs per worker tick (~50s budget each). |
+| `SLM_EMBED_JOB_WORKER` | (unset) | `true` = in-process worker in Next.js. **Docker Compose sets this by default.** Omit for local `pnpm dev:all`. |
+| `SLM_EMBED_WORKER_MS` | `60000` | Poll interval for embedded worker. **Compose default: `5000`** (same cadence as `dev:jobs`). |
+| `SLM_WORKER_MAX_JOBS_PER_TICK` | `8` | Max job steps claimed per worker tick. |
+| `SLM_WORKER_TICK_BUDGET_MS` | `50000` | Wall-clock cap for one tick loop. |
+| `SLM_WORKER_PARALLEL_TICKS` | `2` | Overlapping ticks during network I/O. |
 | `SLM_DEV_CRON_MS` | `5000` in `dev:jobs` | Poll interval for `pnpm dev:jobs` / `dev-cron-loop.ts`. |
 | `SLM_DEV_JOBS_HTTP` | (unset) | `true` = `dev:jobs` polls `/api/cron/process-jobs` over HTTP instead of in-process worker. |
 | `SLM_ENRICH_VERBOSE` | `true` in `dev:jobs` | Per-app `[enrich]` logs. Set `false` to quiet CLI. Also on when `SLM_CLI=1` (e.g. `pnpm sync:full`). |
-| `SLM_HLTB_SYNC_DELAY_MS` | `120000` | Delay before HLTB jobs on full sync (FAST tier runs first). |
+| `SLM_HLTB_SYNC_DELAY_MS` | `0` | Optional delay before HLTB enqueue when not using import tier (legacy). |
 
-**Import vs full sync:** Library import auto-enqueues FAST jobs only (no HLTB). Data Status / full sync adds HLTB with `runAfter`. Details: [scraping.md § Job pipeline](./scraping.md#job-pipeline-order).
+**Import vs full sync:** Library import and Data Status both enqueue the same import tier (ProtonDB, HLTB, app details, etc.) immediately. Details: [scraping.md § Job pipeline](./scraping.md#job-pipeline-order).
 
-Local: `pnpm dev:all` runs Next + inline worker. Docker: embedded worker. Aggressive drain: `pnpm sync:full [steamid]`.
+Local: `pnpm dev:all` runs Next + `dev:jobs` (5s poll). Docker: embedded worker via [`docker/compose.yml`](../docker/compose.yml) (5s poll + larger batches by default). Aggressive drain: `pnpm sync:full [steamid]`.
 
 ## Batch tuning
 
@@ -54,22 +57,29 @@ Defaults are defined in [`src/lib/jobs/batch-config.ts`](../src/lib/jobs/batch-c
 
 | Variable | Default | Description |
 | --- | --- | --- |
-| `SLM_APP_DETAILS_BATCH` | `20` | Steam Store app details per step |
-| `SLM_PROTONDB_BATCH` | `40` | ProtonDB entries per step |
-| `SLM_PROTONDB_CONCURRENCY` | `8` | Parallel ProtonDB fetches per step |
-| `SLM_HLTB_BATCH` | `12` | HLTB lookups per step |
-| `SLM_HLTB_CONCURRENCY` | `4` | Parallel HLTB lookups per step |
+| `SLM_APP_DETAILS_BATCH` | `30` | Steam Store app details per step |
+| `SLM_APP_DETAILS_CONCURRENCY` | `4` | Parallel store fetches per step |
+| `SLM_PROTONDB_BATCH` | `50` | ProtonDB entries per step |
+| `SLM_PROTONDB_CONCURRENCY` | `10` | Parallel ProtonDB fetches per step |
+| `SLM_HLTB_BATCH` | `16` | HLTB lookups per step |
+| `SLM_HLTB_CONCURRENCY` | `6` | Parallel HLTB lookups per step |
+| `SLM_HLTB_STAGGER_MS` | `300` | Stagger between parallel HLTB calls |
 | `SLM_ACHIEVEMENTS_BATCH` | `60` | Achievement stats per step |
-| `SLM_ACHIEVEMENTS_CONCURRENCY` | `6` | Parallel Steam achievement calls per step |
+| `SLM_ACHIEVEMENTS_CONCURRENCY` | `8` | Parallel Steam achievement calls per step |
 | `SLM_ANTICHEAT_BATCH` | `50` | Anti-cheat catalog-link entries per step |
 
-Example (local):
+Recommended for local `dev:all` (mirrors Docker Compose):
 
 ```env
 SLM_DEV_CRON_MS=5000
-SLM_ACHIEVEMENTS_BATCH=60
-SLM_PROTONDB_BATCH=40
-SLM_HLTB_BATCH=12
+SLM_WORKER_MAX_JOBS_PER_TICK=8
+SLM_WORKER_PARALLEL_TICKS=2
+SLM_APP_DETAILS_BATCH=30
+SLM_APP_DETAILS_CONCURRENCY=6
+SLM_PROTONDB_BATCH=50
+SLM_PROTONDB_CONCURRENCY=10
+SLM_HLTB_BATCH=16
+SLM_HLTB_CONCURRENCY=6
 ```
 
 ## Catalog and import flags
@@ -77,7 +87,7 @@ SLM_HLTB_BATCH=12
 | Variable | Description |
 | --- | --- |
 | `SLM_SKIP_CATALOG_BOOTSTRAP` | `true` disables auto AWACY / Levvvel / Denuvo catalog sync on start. Manual: Data Status or `pnpm bootstrap:anticheat-catalogs`. |
-| `SLM_SKIP_AUTO_APP_DETAILS` | `true` skips auto FAST-tier jobs after import/refresh. HLTB is never auto-queued on import. |
+| `SLM_SKIP_AUTO_APP_DETAILS` | `true` skips auto import-tier jobs after import/refresh. |
 
 ## Optional behavior
 

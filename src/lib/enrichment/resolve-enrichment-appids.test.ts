@@ -105,7 +105,7 @@ describe("resolveAppidsForSource", () => {
       force: false,
     })
 
-    expect(appids).toEqual([1, 2, 4])
+    expect(appids).toEqual([2, 1, 4])
   })
 
   it("returns hltb rows with missingOnly and TTL filtering", async () => {

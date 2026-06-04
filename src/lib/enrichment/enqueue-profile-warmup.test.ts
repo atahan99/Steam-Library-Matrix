@@ -5,9 +5,8 @@ vi.mock("@/lib/db/anticheat-catalog", () => ({
   isAnticheatCatalogStale: vi.fn(),
 }))
 
-vi.mock("@/lib/db/denuvo-catalog", () => ({
-  getDenuvoCatalogStats: vi.fn(),
-  isDenuvoCatalogStale: vi.fn(),
+vi.mock("@/lib/anticheat/sync-denuvo-catalog", () => ({
+  isDenuvoCatalogSyncNeeded: vi.fn(),
 }))
 
 vi.mock("@/lib/db/profile-appids", () => ({
@@ -22,10 +21,7 @@ import {
   getAnticheatCatalogStats,
   isAnticheatCatalogStale,
 } from "@/lib/db/anticheat-catalog"
-import {
-  getDenuvoCatalogStats,
-  isDenuvoCatalogStale,
-} from "@/lib/db/denuvo-catalog"
+import { isDenuvoCatalogSyncNeeded } from "@/lib/anticheat/sync-denuvo-catalog"
 import { getUnionProfileAppids } from "@/lib/db/profile-appids"
 import { enqueueEnrichmentJob } from "@/lib/jobs/enqueue"
 import {
@@ -37,9 +33,8 @@ import {
 const mockedUnion = vi.mocked(getUnionProfileAppids)
 const mockedEnqueue = vi.mocked(enqueueEnrichmentJob)
 const mockedAwacyStats = vi.mocked(getAnticheatCatalogStats)
-const mockedDenuvoStats = vi.mocked(getDenuvoCatalogStats)
 const mockedAwacyStale = vi.mocked(isAnticheatCatalogStale)
-const mockedDenuvoStale = vi.mocked(isDenuvoCatalogStale)
+const mockedDenuvoNeeded = vi.mocked(isDenuvoCatalogSyncNeeded)
 
 const owner = "76561198000000001"
 const compare = "76561198000000002"
@@ -54,13 +49,8 @@ const freshCatalogStats = () => {
       lastSyncedAt: "2020-01-01",
     },
   })
-  mockedDenuvoStats.mockResolvedValue({
-    count: 5,
-    complete: true,
-    lastSyncedAt: "2020-01-01",
-  })
   mockedAwacyStale.mockReturnValue(false)
-  mockedDenuvoStale.mockReturnValue(false)
+  mockedDenuvoNeeded.mockResolvedValue(false)
 }
 
 describe("isAnticheatCatalogSyncNeeded", () => {
@@ -126,7 +116,7 @@ describe("enqueueProfileWarmup", () => {
       awacy: { source: "awacy", rowCount: 0, complete: false },
       levvvel: { source: "levvvel", rowCount: 0, complete: false },
     })
-    mockedDenuvoStats.mockResolvedValue({ count: 0, complete: false })
+    mockedDenuvoNeeded.mockResolvedValue(true)
     mockedUnion.mockResolvedValue([42])
     mockedEnqueue.mockResolvedValue({ id: "catalog-job", status: "created" })
 
@@ -139,6 +129,11 @@ describe("enqueueProfileWarmup", () => {
     expect(mockedEnqueue).toHaveBeenCalledWith({
       steamid: owner,
       kind: "anticheat_catalog",
+      payload: { force: false },
+    })
+    expect(mockedEnqueue).toHaveBeenCalledWith({
+      steamid: owner,
+      kind: "denuvo_catalog",
       payload: { force: false },
     })
     expect(jobs[0]).toEqual({

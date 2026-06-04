@@ -73,19 +73,19 @@ describe("runEnrichmentJobStep protondb cursor", () => {
       1,
       appids,
       0,
-      40,
+      50,
       deadlineMs,
       true,
-      8
+      10
     )
     expect(mockedRunProtonDbBatch).toHaveBeenNthCalledWith(
       2,
       appids,
       40,
-      40,
+      50,
       deadlineMs,
       true,
-      8
+      10
     )
   })
 

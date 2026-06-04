@@ -1,5 +1,13 @@
 import { NextResponse } from "next/server"
+import { STEAM_API_KEY_ERROR_MESSAGE } from "@/lib/steam/steam-api"
 import { getErrorMessage } from "@/lib/utils/get-error-message"
+
+export const shouldExposeApiErrorMessage = (error: unknown): boolean => {
+  const detail = getErrorMessage(error)
+  if (detail === STEAM_API_KEY_ERROR_MESSAGE) return true
+  if (detail.startsWith("This Steam profile")) return true
+  return false
+}
 
 type ApiErrorOptions = {
   publicMessage?: string
@@ -18,10 +26,12 @@ export const toApiErrorResponse = (
 
   console.error("[api]", detail, error)
 
-  const message =
-    !isProd || options.exposeMessage
-      ? detail || options.publicMessage || "Request failed"
-      : options.publicMessage ?? "An unexpected error occurred"
+  const expose =
+    options.exposeMessage || (!isProd && Boolean(detail)) || shouldExposeApiErrorMessage(error)
+
+  const message = expose
+    ? detail || options.publicMessage || "Request failed"
+    : options.publicMessage ?? "An unexpected error occurred"
 
   return NextResponse.json({ error: message }, { status })
 }

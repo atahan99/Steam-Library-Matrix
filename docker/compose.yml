@@ -3,12 +3,30 @@ services:
     build:
       context: ..
       dockerfile: docker/Dockerfile
+    # docker/.env first; repo-root .env second (fills STEAM_API_KEY if docker/.env left it blank)
     env_file:
       - .env
+      - ../.env
     ports:
       - "3000:3000"
     environment:
       APP_ROOT: /app
+      # Fast enrichment defaults (match pnpm dev:all; override in docker/.env)
+      SLM_EMBED_JOB_WORKER: "true"
+      SLM_EMBED_WORKER_MS: "5000"
+      SLM_WORKER_MAX_JOBS_PER_TICK: "8"
+      SLM_WORKER_TICK_BUDGET_MS: "50000"
+      SLM_WORKER_PARALLEL_TICKS: "2"
+      SLM_APP_DETAILS_BATCH: "30"
+      SLM_APP_DETAILS_CONCURRENCY: "6"
+      SLM_PROTONDB_BATCH: "50"
+      SLM_PROTONDB_CONCURRENCY: "10"
+      SLM_ACHIEVEMENTS_BATCH: "60"
+      SLM_ACHIEVEMENTS_CONCURRENCY: "8"
+      SLM_HLTB_BATCH: "16"
+      SLM_HLTB_CONCURRENCY: "6"
+      SLM_HLTB_STAGGER_MS: "300"
+      SLM_HLTB_SYNC_DELAY_MS: "0"
     volumes:
       - matrix_data:/app/data
     healthcheck:

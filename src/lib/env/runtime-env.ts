@@ -40,7 +40,9 @@ const readEnvVarFromFiles = (name: string): string | undefined => {
 export const getRuntimeEnv = (name: string): string | undefined => {
   const fromProcess = process.env[name]?.trim()
   if (fromProcess) return fromProcess
-  return readEnvVarFromFiles(name)
+  const fromFiles = readEnvVarFromFiles(name)
+  if (fromFiles) return fromFiles
+  return undefined
 }
 
 let inNextRequestScope: boolean | undefined

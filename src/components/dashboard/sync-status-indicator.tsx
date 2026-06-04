@@ -163,6 +163,14 @@ export const DashboardStatusButton = ({
               </p>
             ) : null}
 
+            {status.idleIncomplete ? (
+              <p className="text-[11px] text-amber-700 dark:text-amber-300">
+                Sync idle — {status.incompleteSourceCount ?? 0} source
+                {(status.incompleteSourceCount ?? 0) === 1 ? "" : "s"} incomplete.
+                Use Data Status to force refresh.
+              </p>
+            ) : null}
+
             {status.isComplete ? (
               <p className="text-xs text-emerald-600 dark:text-emerald-400">
                 All sources synced

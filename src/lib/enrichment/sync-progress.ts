@@ -25,6 +25,7 @@ const ENRICHMENT_JOB_KINDS = new Set([
   "achievements",
   "wishlist",
   "anticheat_catalog",
+  "denuvo_catalog",
 ])
 
 export type SyncStatusSourceRow = {
@@ -50,6 +51,9 @@ export type SyncProgressSnapshot = {
   isComplete: boolean
   isActive: boolean
   activeJobCount: number
+  /** Queue empty but one or more sources still below 100%. */
+  idleIncomplete?: boolean
+  incompleteSourceCount?: number
   sources: SyncStatusSourceRow[]
 }
 
@@ -88,6 +92,13 @@ export const computeSyncProgressFromSources = (input: {
   const isActive =
     input.enrichTotal > 0 &&
     (activeEnrichmentJobs.length > 0 || !allMissingDone)
+  const incompleteSourceCount = input.sources.filter(
+    (source) => source.percent < 100
+  ).length
+  const idleIncomplete =
+    activeEnrichmentJobs.length === 0 &&
+    incompleteSourceCount > 0 &&
+    !isComplete
 
   return {
     enrichTotal: input.enrichTotal,
@@ -97,6 +108,8 @@ export const computeSyncProgressFromSources = (input: {
     isComplete,
     isActive,
     activeJobCount: activeEnrichmentJobs.length,
+    idleIncomplete,
+    incompleteSourceCount,
     sources: input.sources,
   }
 }

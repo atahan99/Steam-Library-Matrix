@@ -1,9 +1,7 @@
 process.env.SLM_CLI = "1"
 
-import {
-  logWorkerTickSummary,
-  processEnrichmentJobsTick,
-} from "@/lib/jobs/worker"
+import { scheduleEnrichmentWorkerTick } from "@/lib/jobs/worker-tick-scheduler"
+import { getWorkerMaxParallelTicks } from "@/lib/jobs/batch-config"
 
 if (!process.env.SLM_ENRICH_VERBOSE?.trim()) {
   process.env.SLM_ENRICH_VERBOSE = "true"
@@ -28,13 +26,8 @@ if (useHttp && !secret) {
 
 let intervalId: ReturnType<typeof setInterval> | null = null
 
-const pollInline = async () => {
-  try {
-    const result = await processEnrichmentJobsTick()
-    logWorkerTickSummary(result)
-  } catch (error) {
-    console.error("[dev:jobs] worker tick failed", error)
-  }
+const pollInline = () => {
+  scheduleEnrichmentWorkerTick()
 }
 
 const pollHttp = async () => {
@@ -53,7 +46,7 @@ const pollHttp = async () => {
   }
 }
 
-const poll = useHttp ? pollHttp : pollInline
+const poll = useHttp ? () => void pollHttp() : pollInline
 
 const handleShutdown = () => {
   if (intervalId) clearInterval(intervalId)
@@ -64,10 +57,10 @@ const handleShutdown = () => {
 process.on("SIGINT", handleShutdown)
 process.on("SIGTERM", handleShutdown)
 
-void poll()
-intervalId = setInterval(() => void poll(), DEV_CRON_MS)
+poll()
+intervalId = setInterval(poll, DEV_CRON_MS)
 
 const mode = useHttp ? "HTTP cron" : "inline worker"
 console.log(
-  `[dev:jobs] ${mode} every ${DEV_CRON_MS / 1000}s (verbose enrich logs on, Ctrl+C to stop)`
+  `[dev:jobs] ${mode} every ${DEV_CRON_MS / 1000}s (parallelTicks=${getWorkerMaxParallelTicks()}, verbose enrich logs on, Ctrl+C to stop)`
 )

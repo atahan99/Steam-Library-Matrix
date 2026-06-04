@@ -6,27 +6,31 @@ import {
 } from "@/lib/dashboard/full-profile-sync"
 
 describe("profile sync job tiers", () => {
-  it("FAST tier excludes hltb", () => {
-    expect(FAST_SYNC_JOB_ORDER).not.toContain("hltb")
+  it("import tier includes hltb before app_details", () => {
+    expect(FAST_SYNC_JOB_ORDER).toContain("hltb")
+    const hltbIdx = FAST_SYNC_JOB_ORDER.indexOf("hltb")
+    const protonIdx = FAST_SYNC_JOB_ORDER.indexOf("protondb")
+    const appDetailsIdx = FAST_SYNC_JOB_ORDER.indexOf("app_details")
+    expect(protonIdx).toBeLessThan(hltbIdx)
+    expect(hltbIdx).toBeLessThan(appDetailsIdx)
     expect(FAST_SYNC_JOB_ORDER).toEqual([
       "anticheat_catalog",
+      "denuvo_catalog",
       "wishlist",
       "achievements",
       "anticheat",
       "protondb",
+      "hltb",
       "app_details",
     ])
   })
 
-  it("SLOW tier is hltb only", () => {
-    expect(SLOW_SYNC_JOB_ORDER).toEqual(["hltb"])
+  it("SLOW tier is empty (HLTB moved to import tier)", () => {
+    expect(SLOW_SYNC_JOB_ORDER).toEqual([])
   })
 
-  it("FULL sync is FAST + SLOW", () => {
-    expect(FULL_SYNC_JOB_ORDER).toEqual([
-      ...FAST_SYNC_JOB_ORDER,
-      ...SLOW_SYNC_JOB_ORDER,
-    ])
+  it("FULL sync matches import tier", () => {
+    expect(FULL_SYNC_JOB_ORDER).toEqual([...FAST_SYNC_JOB_ORDER])
   })
 
   it("queues catalog before profile anti-cheat", () => {

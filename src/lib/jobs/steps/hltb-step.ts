@@ -1,4 +1,5 @@
 import { enrichSingleHowLongToBeatGame } from "@/lib/enrichment/howlongtobeat"
+import { getHltbStaggerMs } from "@/lib/jobs/batch-config"
 import { enrichLogBatch, enrichLogResult } from "@/lib/jobs/enrich-logger"
 import { runConcurrentBatch } from "@/lib/jobs/run-concurrent-batch"
 
@@ -21,7 +22,7 @@ export const runHltbBatch = async (
     batchSize,
     deadlineMs,
     concurrency,
-    staggerMs: concurrency > 1 ? HLTB_STAGGER_MS : 0,
+    staggerMs: concurrency > 1 ? getHltbStaggerMs() : 0,
     runOne: async (row) => {
       const result = await enrichSingleHowLongToBeatGame(row.appid, row.name, {
         applyDelay: concurrency <= 1,
@@ -39,5 +40,3 @@ export const runHltbBatch = async (
     processed: batch.processed,
   }
 }
-
-const HLTB_STAGGER_MS = 400

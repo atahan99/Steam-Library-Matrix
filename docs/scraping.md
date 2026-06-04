@@ -63,13 +63,13 @@ flowchart LR
 ```
 
 1. **Steam-native (fast):** `anticheat_catalog`, `wishlist`, `achievements`, `anticheat` (catalog match from SQLite)
-2. **Third-party (batched):** `protondb`, `hltb` (HLTB only on full sync, delayed by `SLM_HLTB_SYNC_DELAY_MS`)
-3. **Heavy store:** `app_details` (platforms / Deck compat)
-4. **Denuvo pass:** second phase of `anticheat` (store HTML, deferred)
+2. **Third-party (batched, concurrent steps):** `protondb`, `hltb`
+3. **Heavy store:** `app_details` (platforms / Deck compat; concurrent fetches per step)
+4. **Denuvo pass:** second phase of `anticheat` (store HTML, sequential)
 
-Worker uses the same priority and runs batches until the ~50s tick budget. Tunables: [env.md § Background jobs](./env.md#background-jobs) and [batch-config.ts](../src/lib/jobs/batch-config.ts).
+Worker uses job-kind priority, per-step ~50s budgets, and optional overlapping ticks. Tunables: [env.md § Background jobs](./env.md#background-jobs) and [batch-config.ts](../src/lib/jobs/batch-config.ts).
 
-**Post-import** auto-enqueues FAST jobs only (no HLTB). **Full sync** (Data Status) queues HLTB with `runAfter`.
+**Post-import** and **full sync** both enqueue the full import tier immediately (including HLTB).
 
 ## Compare warmup
 

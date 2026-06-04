@@ -34,14 +34,16 @@ Docker files live under [`docker/`](../docker/) (`Dockerfile`, `compose.yml`, `e
 
 5. Import a public Steam profile at http://localhost:3000.
 
-[`docker/compose.yml`](../docker/compose.yml) loads **only** `docker/.env` — not local `.env` or `./data/matrix.db`. Worker and job env: [env.md § Background jobs](./env.md#background-jobs).
+[`docker/compose.yml`](../docker/compose.yml) loads `docker/.env`, then the repo-root `.env` (root wins on duplicate keys). You can set `STEAM_API_KEY` in either file; avoid a blank `STEAM_API_KEY=` in `docker/.env` or it will override a key from root. Compose does **not** use `./data/matrix.db`. Worker env: [env.md § Background jobs](./env.md#background-jobs).
+
+Check readiness: `curl -s http://localhost:3000/api/health` — `steamApiKey` should be `"ok"` before importing.
 
 ## Production hardening
 
 Beyond localhost:
 
 1. Set `SLM_API_SECRET` — omit `SLM_ALLOW_OPEN_API`.
-2. Keep `SLM_EMBED_JOB_WORKER=true` (default in `docker/.env.example`).
+2. Keep `SLM_EMBED_JOB_WORKER=true` (enabled in `docker/compose.yml` with 5s worker poll and tuned batch sizes).
 
 ```bash
 openssl rand -hex 32

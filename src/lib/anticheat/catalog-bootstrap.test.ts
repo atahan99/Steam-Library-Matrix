@@ -9,7 +9,7 @@ describe("needsAnticheatCatalogBootstrap", () => {
     expect(
       needsAnticheatCatalogBootstrap({
         awacy: { rowCount: 0 },
-        levvvel: { rowCount: 100 },
+        levvvel: { rowCount: 100, complete: true },
       })
     ).toBe(true)
   })
@@ -18,16 +18,27 @@ describe("needsAnticheatCatalogBootstrap", () => {
     expect(
       needsAnticheatCatalogBootstrap({
         awacy: { rowCount: 50 },
-        levvvel: { rowCount: 0 },
+        levvvel: { rowCount: 0, complete: false },
       })
     ).toBe(true)
   })
 
-  it("returns false when both catalogs have rows", () => {
+  it("returns true when Denuvo is incomplete", () => {
     expect(
       needsAnticheatCatalogBootstrap({
         awacy: { rowCount: 50 },
-        levvvel: { rowCount: 30 },
+        levvvel: { rowCount: 30, complete: true },
+        denuvo: { count: 50, complete: false },
+      })
+    ).toBe(true)
+  })
+
+  it("returns false when AWACY, Levvvel, and Denuvo are ready", () => {
+    expect(
+      needsAnticheatCatalogBootstrap({
+        awacy: { rowCount: 50 },
+        levvvel: { rowCount: 30, complete: true },
+        denuvo: { count: 376, complete: true },
       })
     ).toBe(false)
   })

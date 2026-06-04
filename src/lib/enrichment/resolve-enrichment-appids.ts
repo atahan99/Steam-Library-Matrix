@@ -154,7 +154,7 @@ const filterAppDetailsAppids = async (
     }
   }
 
-  return appids.filter((appid) => {
+  const filtered = appids.filter((appid) => {
     const row = byAppid.get(appid)
     if (!row) return true
     const deckStored = row.steamDeckCompatibility
@@ -165,6 +165,35 @@ const filterAppDetailsAppids = async (
       APP_DETAILS_TTL_HOURS
     )
     return !cacheFresh || needsDeckRefresh || needsPlatformRefresh
+  })
+
+  return sortAppDetailsDeckPriority(filtered, byAppid)
+}
+
+const DECK_SORT_UNKNOWN = 0
+const DECK_SORT_KNOWN = 1
+const DECK_SORT_MISSING_ROW = 2
+
+const sortAppDetailsDeckPriority = (
+  appids: number[],
+  byAppid: Map<
+    number,
+    {
+      lastCheckedAt: Date | null
+      steamDeckCompatibility: string | null
+      platforms: unknown
+    }
+  >
+): number[] => {
+  return [...appids].sort((a, b) => {
+    const rank = (appid: number) => {
+      const row = byAppid.get(appid)
+      if (!row) return DECK_SORT_MISSING_ROW
+      const deck = row.steamDeckCompatibility
+      if (!deck || deck === "unknown") return DECK_SORT_UNKNOWN
+      return DECK_SORT_KNOWN
+    }
+    return rank(a) - rank(b)
   })
 }
 

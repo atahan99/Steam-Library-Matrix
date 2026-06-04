@@ -8,6 +8,8 @@ vi.mock("@/lib/jobs/run-step", () => ({
 
 vi.mock("@/lib/jobs/batch-config", () => ({
   getWorkerMaxJobsPerTick: () => 5,
+  getWorkerStepBudgetMs: () => 50_000,
+  getWorkerTickBudgetMs: () => 50_000,
 }))
 
 const pendingJob = {

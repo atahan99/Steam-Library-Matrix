@@ -6,6 +6,7 @@ export const ENRICHMENT_JOB_KINDS = [
   "anticheat",
   "wishlist",
   "anticheat_catalog",
+  "denuvo_catalog",
 ] as const
 
 export type EnrichmentJobKind = (typeof ENRICHMENT_JOB_KINDS)[number]

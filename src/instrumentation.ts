@@ -33,17 +33,17 @@ export const register = async () => {
   if (globalState[EMBED_WORKER_GLOBAL_KEY]) return
   globalState[EMBED_WORKER_GLOBAL_KEY] = true
 
-  const { processEnrichmentJobsTick } = await import("@/lib/jobs/worker")
+  const { getEmbedWorkerIntervalMs, getWorkerMaxParallelTicks } = await import(
+    "@/lib/jobs/batch-config"
+  )
+  const { scheduleEnrichmentWorkerTick } = await import(
+    "@/lib/jobs/worker-tick-scheduler"
+  )
+  const intervalMs = getEmbedWorkerIntervalMs()
 
-  const runTick = async () => {
-    try {
-      await processEnrichmentJobsTick()
-    } catch (error) {
-      console.error("[instrumentation] enrichment job tick failed", error)
-    }
-  }
-
-  void runTick()
-  setInterval(() => void runTick(), 60_000)
-  console.log("[instrumentation] embedded enrichment job worker started")
+  scheduleEnrichmentWorkerTick()
+  setInterval(() => scheduleEnrichmentWorkerTick(), intervalMs)
+  console.log(
+    `[instrumentation] embedded enrichment job worker started (interval=${intervalMs}ms, parallelTicks=${getWorkerMaxParallelTicks()})`
+  )
 }

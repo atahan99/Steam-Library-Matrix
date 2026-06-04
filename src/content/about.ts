@@ -277,7 +277,7 @@ export const aboutHowItWorks = {
       step: 3,
       title: "Enrich on demand",
       description:
-        "Global anti-cheat catalogs (AWACY, Levvvel, Denuvo Watch) sync separately from profile linking. ProtonDB, HLTB, and app details refresh from Data Status — not all sources run on import.",
+        "After import, enrichment runs in the background (ProtonDB, HLTB, achievements, anti-cheat, app details). Data Status can force a full refresh of every source.",
     },
     {
       step: 4,
