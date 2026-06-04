@@ -1,5 +1,7 @@
 # Database setup
 
+**TL;DR:** `pnpm db:migrate` applies schema. Local dev (`./data/matrix.db`) and Docker (`matrix_data` volume) are **separate databases** — do not mix env files.
+
 Steam Library Matrix uses **SQLite** ([better-sqlite3](https://github.com/WiseLibs/better-sqlite3)) with [Drizzle ORM](https://orm.drizzle.team/) and SQL migrations in [`db/migrations/`](../db/migrations/).
 
 ## Environment
@@ -8,34 +10,25 @@ Steam Library Matrix uses **SQLite** ([better-sqlite3](https://github.com/WiseLi
 DATABASE_URL=file:./data/matrix.db
 ```
 
-Required for import, dashboard, and enrichment. `STEAM_API_KEY` is separate.
-
-The `file:` prefix is optional but recommended. Relative paths resolve from the project root (or `APP_ROOT` in Docker).
-
-On first connect the app enables WAL journaling and foreign keys.
+Required for import, dashboard, and enrichment (`STEAM_API_KEY` is separate). The `file:` prefix is optional; relative paths resolve from the project root (or `APP_ROOT` in Docker). First connect enables WAL and foreign keys.
 
 ## Two databases (do not mix)
 
 | Method | Env file | Database location |
-|--------|----------|-------------------|
-| Local dev | `.env` from [`.env.example`](../.env.example) | `./data/matrix.db` on your host ([data/README.md](../data/README.md)) |
+| --- | --- | --- |
+| Local dev | `.env` from [`.env.example`](../.env.example) | `./data/matrix.db` ([data/README.md](../data/README.md)) |
 | Docker Compose | `.env.docker` from [`.env.docker.example`](../.env.docker.example) | `/app/data/matrix.db` in volume `matrix_data` |
 
-They are **not** shared unless you add a custom bind mount (not part of the default setup).
+Not shared unless you add a custom bind mount (not in the default setup).
 
 ## Caching
 
-All durable data lives in SQLite. Enrichment tables store `last_checked_at` timestamps; refresh jobs skip rows inside each source TTL (for example 720 hours for HowLongToBeat). There is no separate Redis or in-memory dashboard cache.
+All durable data lives in SQLite. Enrichment rows use `last_checked_at`; refresh skips rows inside each source TTL (e.g. 720h for HLTB). No Redis or separate dashboard cache.
 
-### Appid-shared enrichment cache
+**Per-appid enrichment** (`steam_app_details`, `protondb_entries`, etc.) is keyed by appid, not profile — overlapping libraries share one row per game within TTL. Profile data (`profile_games`, wishlists, playtime) stays per `steamid`.
 
-Per-game enrichment (`steam_app_details`, `protondb_entries`, `howlongtobeat_entries`, `anticheat_entries`, `achievement_stats`) is keyed by **appid**, not by Steam profile. Multiple profiles on the same instance share one row per game. Importing a second account that overlaps your library does not duplicate network fetches for games already cached within TTL.
-
-Profile-specific data (`profile_games`, wishlists, playtime) remains per `steamid`. Job rows in `enrichment_jobs` are owned by the profile that enqueued them, but the data they write is global per appid.
-
-### Typical database size
-
-A single-instance database usually stays in the **tens of MB** range: one row per appid your profiles actually own, plus small global catalog tables. It does **not** grow toward a full Steam catalog (~100k+ titles). Size scales with unique appids across imported libraries, not with the number of compare profiles.
+- Typical size: **tens of MB** — scales with unique appids you import, not full Steam catalog size
+- Shared cache across profiles: [scraping.md § Global vs per-appid](./scraping.md#global-vs-per-appid)
 
 ## Apply schema
 
@@ -45,11 +38,13 @@ pnpm db:migrate
 
 Runs ordered migrations and records them in `schema_migrations`.
 
-Verify tables and Drizzle column mapping:
+Verify tables and Drizzle mapping:
 
 ```bash
 pnpm db:verify
 ```
+
+Browse data (optional): `pnpm db:studio`.
 
 ## Backup and restore
 
@@ -59,18 +54,18 @@ pnpm db:verify
 cp data/matrix.db data/matrix-backup-$(date +%F).db
 ```
 
-**Docker** (stack stopped or via one-off container):
+**Docker** (stack stopped or one-off):
 
 ```bash
 docker compose run --rm -v matrix_data:/data alpine \
   sh -c 'cp /data/matrix.db /data/matrix-backup-$(date +%F).db'
 ```
 
-For a clean restore, stop the app first and copy `matrix.db` only (omit `-wal`/`-shm` unless you know you need a hot backup).
+For a clean restore, stop the app and copy `matrix.db` only (omit `-wal`/`-shm` unless you need a hot backup).
 
 ## Troubleshooting
 
-- **Missing tables** — run `pnpm db:migrate`.
-- **`no such column`** — run `pnpm db:verify`; if schema was fixed, delete `data/matrix.db` and migrate again on local dev.
-- **Permission errors on `./data`** — ensure the directory is writable; migrate creates it.
-- **Wishlist / catalog errors** — confirm migrations applied (`pnpm db:verify`).
+- **Missing tables** — `pnpm db:migrate`
+- **`no such column`** — `pnpm db:verify`; if schema was fixed, delete `data/matrix.db` and migrate again (local dev)
+- **Permission errors on `./data`** — directory must be writable; migrate creates it
+- **Wishlist / catalog errors** — confirm migrations applied (`pnpm db:verify`)

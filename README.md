@@ -6,15 +6,13 @@ Built with Next.js, shadcn/ui, SQLite (Drizzle), and the Steam Web API. **Self-h
 
 ## Choose how to run
 
-
-|              | Local dev                          | Docker                                       |
-| ------------ | ---------------------------------- | -------------------------------------------- |
-| **Use for**  | Day-to-day work, hot reload        | LAN or server self-host                      |
-| **Env file** | `cp .env.example .env`             | `cp .env.docker.example .env.docker`         |
-| **Database** | `./data/matrix.db`                 | Docker volume `matrix_data`                  |
-| **Start**    | `pnpm db:migrate` → `pnpm dev:all` | `docker compose up --build -d`               |
-| **Jobs**     | Inline worker via `dev:all`        | `SLM_EMBED_JOB_WORKER=true` in `.env.docker` |
-
+| | Local dev (Method 1) | Docker (Method 2) |
+| --- | --- | --- |
+| **Use for** | Day-to-day work, hot reload | LAN or server self-host |
+| **Env file** | `cp .env.example .env` | `cp .env.docker.example .env.docker` |
+| **Database** | `./data/matrix.db` | Docker volume `matrix_data` |
+| **Start** | `pnpm db:migrate` → `pnpm dev:all` | `docker compose up --build -d` |
+| **Jobs** | Inline worker via `dev:all` | `SLM_EMBED_JOB_WORKER=true` in `.env.docker` |
 
 Never commit `.env`, `.env.docker`, or `data/*.db`.
 
@@ -61,27 +59,20 @@ Wishlist import needs a wishlist visible to the Steam Web API.
 
 ## Security
 
-
-| Where           | Suggested env                                         |
-| --------------- | ----------------------------------------------------- |
-| Home LAN        | `SLM_ALLOW_OPEN_API=true`                             |
-| Public internet | `SLM_API_SECRET=<random>` — omit `SLM_ALLOW_OPEN_API` |
-
-
-Details: [docs/env.md](docs/env.md), [docs/security.md](docs/security.md).
+Home LAN vs public internet: see [docs/security.md](docs/security.md#deployment-quick-pick) and [docs/env.md](docs/env.md#required).
 
 ## Scripts
 
+| Command | Description |
+| --- | --- |
+| `pnpm dev:all` | Dev server + job worker |
+| `pnpm dev` | Dev server only |
+| `pnpm db:migrate` | Apply SQL migrations |
+| `pnpm db:verify` | Verify schema |
+| `pnpm test` | Unit tests |
+| `pnpm bootstrap` | Import + enrich via CLI |
 
-| Command           | Description             |
-| ----------------- | ----------------------- |
-| `pnpm dev:all`    | Dev server + job worker |
-| `pnpm dev`        | Dev server only         |
-| `pnpm db:migrate` | Apply SQL migrations    |
-| `pnpm db:verify`  | Verify schema           |
-| `pnpm test`       | Unit tests              |
-| `pnpm bootstrap`  | Import + enrich via CLI |
-
+More tuning: [docs/env.md](docs/env.md). Full list: `package.json` scripts.
 
 ## Planned
 
@@ -97,14 +88,15 @@ Not implemented yet — rough order, may change.
 - Price history / deals hooks
 - Pluggable enrichment sources ([docs/scraping.md](docs/scraping.md))
 - Backlog goals beyond Random Picker
-- Documentation
 
+## Documentation
 
-
-- [docs/README.md](docs/README.md) — index
+- [docs/README.md](docs/README.md) — index and reading order
+- [docs/self-hosting.md](docs/self-hosting.md) — Docker deploy
+- [docs/env.md](docs/env.md) — environment variables
 - [docs/database.md](docs/database.md) — SQLite, migrate, backup
-- [docs/scraping.md](docs/scraping.md) — data sources
-- [docs/security.md](docs/security.md) — API guard, rate limits
+- [docs/scraping.md](docs/scraping.md) — data sources and enrichment
+- [docs/security.md](docs/security.md) — API guard, rate limits, CSP
 
 ## License
 

@@ -1,79 +1,90 @@
 # Scraping and HTTP data sources
 
-## Overview
+Server-side data uses public APIs, `fetch`, and HTML parsing where needed. **No browser automation** in the app.
 
-Server-side data comes from public APIs, `fetch`, and HTML parsing where needed. The app does not run a browser for scrapes.
+## What we fetch
 
 | Data | How it is loaded |
-|------|------------------|
-| Your Steam library / wishlist / achievements | Steam Web API (`STEAM_API_KEY`) |
-| Windows / Linux / **Mac** on Library & Mac page | Steam store **app details** (`POST /api/enrich/app-details` → `platforms.*`) |
+| --- | --- |
+| Library / wishlist / achievements | Steam Web API (`STEAM_API_KEY`) |
+| Windows / Linux / Mac (Library & Mac page) | Steam store app details → `platforms.*` |
 | ProtonDB | ProtonDB API |
 | HowLongToBeat | HLTB client |
 | AWACY anti-cheat | Public JSON |
 | Levvvel kernel list | `fetch` + HTML parse |
-| Denuvo anti-tamper catalog | Steam Store curator AJAX API |
-| SteamDB calculator | **External link** on Overview ([`calculator-url.ts`](../src/lib/steamdb/calculator-url.ts)) — opens steamdb.info in a new tab; no server scrape or cookie |
+| Denuvo anti-tamper catalog | Steam Store curator AJAX |
+| SteamDB calculator | **External link** on Overview — no server scrape ([`calculator-url.ts`](../src/lib/steamdb/calculator-url.ts)) |
 
-Mac support in the UI comes from **`platforms.mac`** in app details (not a separate macOS store scrape).
+Mac in the UI comes from **`platforms.mac`** in app details (not a separate macOS scrape).
 
-## Mac / Linux / Windows in your library
+## Platforms in your library
 
-**Steam app details** enqueue automatically after library import/refresh (`app_details` job). You can also run them from Data Status or `pnpm bootstrap`. That calls Steam’s store API per game and stores `platforms.windows`, `platforms.linux`, and `platforms.mac`.
+**App details** run after import/refresh (`app_details` job), from Data Status, or `pnpm bootstrap`. Stores `platforms.windows`, `platforms.linux`, `platforms.mac`.
 
 - **Library** OS column: app details only
-- **Mac Support** page: games where `platforms.mac` is true
+- **Mac Support** page: `platforms.mac === true`
 
-No extra env vars beyond `STEAM_API_KEY` and `DATABASE_URL`.
+Needs `STEAM_API_KEY` and `DATABASE_URL` only.
 
-## Denuvo anti-tamper catalog (global)
+## Global catalogs (AWACY / Levvvel / Denuvo)
 
-Synced via Steam’s `ajaxgetcuratorrecommendations` endpoint ([`fetch-denuvo-curator-catalog.ts`](../src/lib/steam/fetch-denuvo-curator-catalog.ts)). Triggered from anti-cheat catalog sync on Data Status.
+**Instance-wide** tables, not per profile. Filled automatically on a fresh DB:
 
-## Global anti-cheat catalogs (AWACY / Levvvel / Denuvo)
+- **Docker:** after migrate, [`docker-entrypoint.sh`](../docker-entrypoint.sh) → `bootstrap-anticheat-catalogs.ts`
+- **Server start:** [`instrumentation.ts`](../src/instrumentation.ts) if still empty
+- **After import:** background bootstrap if missing
 
-These tables are **shared for the whole instance**, not per Steam profile. On a fresh database they are filled automatically:
+Manual refresh: Data Status. Disable auto: `SLM_SKIP_CATALOG_BOOTSTRAP=true`.
 
-- **Docker:** after `db:migrate`, [`docker-entrypoint.sh`](../docker-entrypoint.sh) runs `scripts/bootstrap-anticheat-catalogs.ts`
-- **Any server start:** [`src/instrumentation.ts`](../src/instrumentation.ts) retries if catalogs are still empty
-- **After profile import:** background bootstrap if catalogs were missing
+Denuvo catalog: [`fetch-denuvo-curator-catalog.ts`](../src/lib/steam/fetch-denuvo-curator-catalog.ts) via `ajaxgetcuratorrecommendations`.
 
-Manual refresh remains on Data Status. Set `SLM_SKIP_CATALOG_BOOTSTRAP=true` to disable auto sync (tests or air-gapped installs).
-
-## Per-library enrichment vs global catalogs
-
-Enrichment is split into two layers:
+## Global vs per-appid
 
 | Layer | Tables | Scope |
-|-------|--------|--------|
-| **Global catalogs** | `awacy_catalog`, `levvvel_catalog`, `denuvo_catalog` | Whole instance — one copy shared by every profile |
-| **Per-appid cache** | `steam_app_details`, `protondb_entries`, `howlongtobeat_entries`, `anticheat_entries`, `achievement_stats` | Keyed by Steam **appid**, not Steam ID |
+| --- | --- | --- |
+| **Global catalogs** | `awacy_catalog`, `levvvel_catalog`, `denuvo_catalog` | One copy for the whole instance |
+| **Per-appid cache** | `steam_app_details`, `protondb_entries`, `howlongtobeat_entries`, `anticheat_entries`, `achievement_stats` | Keyed by **appid**, shared across profiles |
 
-When you import or refresh a library, background jobs enqueue only for **your** profile’s appids (or a scoped subset). Rows in the per-appid tables are **shared**: if two profiles both own appid `570`, the second profile reuses cached ProtonDB / app details / HLTB / anti-cheat rows with no extra network calls (TTL permitting).
+Jobs enqueue only for **your** profile’s appids (or compare warmup scope). If two profiles own appid `570`, the second reuses cached rows within TTL. Targets resolved in [`resolve-enrichment-appids.ts`](../src/lib/enrichment/resolve-enrichment-appids.ts).
 
-Global catalogs are required for anti-cheat matching but are not duplicated per profile. Per-appid jobs resolve targets via [`resolve-enrichment-appids.ts`](../src/lib/enrichment/resolve-enrichment-appids.ts); compare warmup passes an explicit `scopeAppids` list (union of selected profiles).
+**Not built:** full Steam catalog scrape — only appids from imported libraries (or compare scope) are enriched.
 
-**Not built:** scraping the full Steam catalog into SQLite. Only appids that appear in at least one imported profile (or compare warmup scope) are enriched.
+WAL, TTL, and DB size: [database.md § Caching](./database.md#caching).
+
+## Job pipeline order
+
+```mermaid
+flowchart LR
+  tier1[Tier1 Steam-native]
+  tier2[Tier2 ProtonDB and HLTB]
+  tier3[Tier3 App details]
+  tier4[Tier4 Denuvo pass]
+  tier1 --> tier2 --> tier3 --> tier4
+```
+
+1. **Steam-native (fast):** `anticheat_catalog`, `wishlist`, `achievements`, `anticheat` (catalog match from SQLite)
+2. **Third-party (batched):** `protondb`, `hltb` (HLTB only on full sync, delayed by `SLM_HLTB_SYNC_DELAY_MS`)
+3. **Heavy store:** `app_details` (platforms / Deck compat)
+4. **Denuvo pass:** second phase of `anticheat` (store HTML, deferred)
+
+Worker uses the same priority and runs batches until the ~50s tick budget. Tunables: [env.md § Background jobs](./env.md#background-jobs) and [batch-config.ts](../src/lib/jobs/batch-config.ts).
+
+**Post-import** auto-enqueues FAST jobs only (no HLTB). **Full sync** (Data Status) queues HLTB with `runAfter`.
 
 ## Compare warmup
 
-The Compare page shows games that appear in **every** selected profile (library intersection). Enrichment columns (ProtonDB, HLTB, anti-cheat, platforms) read SQLite only — no live third-party fetches on render.
+Compare shows games in **every** selected profile (intersection). Columns read SQLite only — no live third-party fetches on render.
 
-When compare profiles are ready:
+| Endpoint | Purpose |
+| --- | --- |
+| `POST /api/dashboard/{ownerSteamid}/warmup` | Body `{ steamids, missingOnly?, force?, kinds? }` — union libraries, enqueue scoped jobs. Returns `{ jobs: [{ kind, id, status }] }`. |
+| `GET /api/dashboard/{ownerSteamid}/compare-status?compareIds=…` | `{ intersectAppids, unionAppids, coverage, activeJobs }`. Coverage uses **intersect** appids. |
 
-1. **`POST /api/dashboard/{ownerSteamid}/warmup`** — body `{ steamids: [owner, ...compareIds], missingOnly?: boolean, force?: boolean, kinds?: string[] }`. Unions libraries via `getUnionProfileAppids`, enqueues one scoped job per kind with `scopeAppids`. Returns `{ jobs: [{ kind, id, status }] }`. At most 4 steamids (owner + 3 compare profiles).
-2. **`GET /api/dashboard/{ownerSteamid}/compare-status?compareIds=id1,id2`** — returns `{ intersectAppids, unionAppids, coverage, activeJobs }`. Coverage counts use the **intersect** appids (what the Compare table displays). No outbound HTTP to ProtonDB, HLTB, etc.
+- Max **4** steamids (owner + 3 compare profiles)
+- UI banner polls compare-status every 5s while jobs run
+- **Refresh compare data** triggers warmup manually
+- Auto warmup on load: `NEXT_PUBLIC_SLM_COMPARE_AUTO_WARMUP=true` at build time (default off)
 
-On the Compare UI, a banner polls compare-status every 5s while jobs run. **Refresh compare data** triggers warmup manually. Automatic warmup on page load is gated by `NEXT_PUBLIC_SLM_COMPARE_AUTO_WARMUP=true` (default off — set at build time in `.env` if you want auto-queue without clicking refresh).
+## Scripts
 
-See [env.md](./env.md) for worker batch sizes, concurrency caps, and `SLM_*` job tuning.
-
-## Enrichment speed
-
-Background jobs are tiered so **Steam-native** work (achievements, anti-cheat catalog linking from SQLite) completes before heavy **Steam store app details**. ProtonDB and HLTB use **concurrent batch steps**; anti-cheat runs a fast catalog match pass first and defers per-game Denuvo store checks to a second phase of the same job.
-
-After import, FAST-tier jobs run via the job queue (`pnpm dev:all` locally, `SLM_EMBED_JOB_WORKER=true` in Docker). Use `pnpm sync:full [steamid]` to drain the queue aggressively without waiting on the dev poller interval.
-
-## Local scripts
-
-Scripts under `scripts/` use the same HTTP libraries as the app. They do not require a browser.
+`scripts/` use the same HTTP stack as the app — no browser required.

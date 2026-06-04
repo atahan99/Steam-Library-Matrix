@@ -1,17 +1,24 @@
 # Self-hosting (Docker — Method 2)
 
-Steam Library Matrix ships as a single-container Docker image with embedded SQLite and a background enrichment worker. This path is **separate** from local Next.js dev ([README](../README.md) Method 1).
+**TL;DR**
+
+1. `cp .env.docker.example .env.docker`
+2. Set `STEAM_API_KEY` and `CRON_SECRET` (`openssl rand -hex 32`)
+3. `docker compose up --build -d`
+4. Open http://localhost:3000 — health: `GET /api/health`
+
+Single-container image with embedded SQLite and enrichment worker. **Separate** from local Next.js dev ([README § Local dev](../README.md#local-dev)).
 
 ## Prerequisites
 
 - Docker and Docker Compose
-- A [Steam Web API key](https://steamcommunity.com/dev/apikey)
+- [Steam Web API key](https://steamcommunity.com/dev/apikey)
 
 ## Quick start (LAN)
 
-1. Copy [`.env.docker.example`](../.env.docker.example) to `.env.docker` (never commit `.env.docker`).
-2. Set `STEAM_API_KEY` and `CRON_SECRET` (`openssl rand -hex 32`).
-3. For home lab refreshes without Bearer tokens:
+1. Copy [`.env.docker.example`](../.env.docker.example) → `.env.docker` (never commit `.env.docker`).
+2. Set `STEAM_API_KEY` and `CRON_SECRET`.
+3. Home lab (no Bearer on enrich routes):
 
    ```env
    SLM_ALLOW_OPEN_API=true
@@ -23,18 +30,16 @@ Steam Library Matrix ships as a single-container Docker image with embedded SQLi
    docker compose up --build -d
    ```
 
-5. Open http://localhost:3000 and import a public Steam profile.
+5. Import a public Steam profile at http://localhost:3000.
 
-`docker-compose.yml` loads **only** `.env.docker` — not your local `.env` or `./data/matrix.db`.
+`docker-compose.yml` loads **only** `.env.docker` — not local `.env` or `./data/matrix.db`. Worker and job env: [env.md § Background jobs](./env.md#background-jobs).
 
 ## Production hardening
 
-For anything exposed beyond localhost:
+Beyond localhost:
 
-1. Set `SLM_API_SECRET` in `.env.docker` and **omit** `SLM_ALLOW_OPEN_API`.
-2. Set `SLM_EMBED_JOB_WORKER=true` (default in `.env.docker.example`) so enrichment jobs run in-process inside the container. Set `CRON_SECRET` only if you poll `GET /api/cron/process-jobs` externally; the embedded worker does not require it.
-
-Generate secrets:
+1. Set `SLM_API_SECRET` — omit `SLM_ALLOW_OPEN_API`.
+2. Keep `SLM_EMBED_JOB_WORKER=true` (default in `.env.docker.example`).
 
 ```bash
 openssl rand -hex 32
@@ -49,55 +54,48 @@ curl -X POST http://your-host/api/enrich/protondb \
   -d '{"steamid":"76561198000000000","force":true}'
 ```
 
+Full checklist: [security.md § Security checklist](./security.md#security-checklist).
+
 ## Reverse proxy
 
-Terminate TLS in front of the app (port 3000):
+Terminate TLS in front of port 3000:
 
-- **Caddy**: `reverse_proxy app:3000`
-- **Nginx**: `proxy_pass` with `X-Forwarded-For` / `X-Real-IP` (used for rate limiting)
-- **Traefik**: Docker labels on the `app` service
+- **Caddy:** `reverse_proxy app:3000`
+- **Nginx:** `proxy_pass` with `X-Forwarded-For` / `X-Real-IP`
+- **Traefik:** Docker labels on `app`
 
 ## Volumes and data
 
-- Compose volume `matrix_data` holds `/app/data/matrix.db` (and WAL sidecars when running).
-- This is **not** the same file as local dev `./data/matrix.db`.
-- Back up before upgrades:
+- Volume `matrix_data` → `/app/data/matrix.db` (and WAL sidecars when running)
+- **Not** the same as local `./data/matrix.db`
+- Backup before upgrades:
 
   ```bash
   docker compose run --rm -v matrix_data:/data alpine \
     sh -c 'cp /data/matrix.db /data/matrix-backup-$(date +%F).db'
   ```
 
+Details: [database.md](./database.md).
+
 ## Upgrades
 
-1. Back up `matrix.db` in the volume.
+1. Back up `matrix.db` in the volume
 2. `docker compose up --build -d`
-3. Migrations run via `docker-entrypoint.sh`.
+3. Migrations via `docker-entrypoint.sh`
 4. `curl -s http://localhost:3000/api/health`
-
-## Security checklist
-
-- [ ] Set `SLM_API_SECRET` when the app is public
-- [ ] Omit `SLM_ALLOW_OPEN_API` on public deployments
-- [ ] Set `CRON_SECRET` in `.env.docker` only when using external cron polling (optional with embedded worker)
-- [ ] Run `pnpm audit` periodically on build hosts
-- [ ] TLS on the reverse proxy
-- [ ] Restrict host access to port 3000 (firewall / reverse proxy only)
 
 ## Data sources
 
-HTTP APIs and fetches only (no browser automation). SteamDB account value is an external link on Overview. See [scraping.md](./scraping.md) and [env.md](./env.md).
+HTTP APIs and fetches only. SteamDB account value is an external Overview link. See [scraping.md](./scraping.md) and [env.md](./env.md).
 
 ## Health
 
 - `GET /api/health` → `{ ok: true, db: "ok" | "unconfigured" | "error" }`
-- The `app` service healthcheck calls this endpoint on startup
+- Compose healthcheck hits this on startup
 
 ## Image size
 
-The production image uses Next.js **standalone** output for the app runtime plus only **`better-sqlite3`** (native module, not bundled by Next). Entrypoint migrations and catalog bootstrap run from **precompiled** `dist/docker/*.cjs` bundles — not `tsx` or TypeScript sources. Build toolchains (`python3`, `make`, `g++`) compile native deps in earlier stages only; the final runner stage is slim.
-
-To inspect size after building:
+Production uses Next.js **standalone** output plus **`better-sqlite3`** (native, not bundled by Next). Migrations and catalog bootstrap run from precompiled `dist/docker/*.cjs` — not `tsx` in the runner image.
 
 ```bash
 docker compose build
@@ -106,4 +104,4 @@ docker images steam-library-matrix-app --format '{{.Size}}'
 
 ## Local development
 
-For hot reload and feature work, use Method 1 in the [README](../README.md) — not this Docker path.
+Hot reload and feature work: [README § Local dev](../README.md#local-dev) (Method 1), not this Docker path.
