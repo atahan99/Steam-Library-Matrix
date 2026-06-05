@@ -1,20 +1,26 @@
 {
   "version": 4,
-  "generatedAt": "2026-06-05T05:17:01.095Z",
+  "generatedAt": "2026-06-05T05:56:16.347Z",
   "items": {
     "10": {
       "appid": 10,
       "name": "Counter-Strike",
+      "iconUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/10/header.jpg?t=1745368572",
+      "logoUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/10/header.jpg?t=1745368572",
       "storeUrl": "https://store.steampowered.com/app/10"
     },
     "70": {
       "appid": 70,
       "name": "Half-Life",
+      "iconUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/70/header.jpg?t=1745368462",
+      "logoUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/70/header.jpg?t=1745368462",
       "storeUrl": "https://store.steampowered.com/app/70"
     },
     "220": {
       "appid": 220,
       "name": "Half-Life 2",
+      "iconUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/220/header.jpg?t=1745368545",
+      "logoUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/220/header.jpg?t=1745368545",
       "storeUrl": "https://store.steampowered.com/app/220"
     },
     "240": {
@@ -34,6 +40,8 @@
     "500": {
       "appid": 500,
       "name": "Left 4 Dead",
+      "iconUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/500/header.jpg?t=1745368560",
+      "logoUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/500/header.jpg?t=1745368560",
       "storeUrl": "https://store.steampowered.com/app/500"
     },
     "550": {
@@ -46,6 +54,8 @@
     "570": {
       "appid": 570,
       "name": "Dota 2",
+      "iconUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/570/header.jpg?t=1769535998",
+      "logoUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/570/header.jpg?t=1769535998",
       "storeUrl": "https://store.steampowered.com/app/570"
     },
     "620": {
@@ -65,11 +75,15 @@
     "2630": {
       "appid": 2630,
       "name": "Call of Duty® 2",
+      "iconUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2630/header.jpg?t=1731698337",
+      "logoUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2630/header.jpg?t=1731698337",
       "storeUrl": "https://store.steampowered.com/app/2630"
     },
     "2640": {
       "appid": 2640,
       "name": "Call of Duty: United Offensive",
+      "iconUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2640/header.jpg?t=1731699751",
+      "logoUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2640/header.jpg?t=1731699751",
       "storeUrl": "https://store.steampowered.com/app/2640"
     },
     "2990": {
@@ -83,22 +97,28 @@
       "appid": 3130,
       "name": "Men of War: Red Tide",
       "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/3130/adb9ffe400f8279ccbf8a7109857761976372369.jpg",
+      "logoUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3130/7aeddc19b81225d2cd22fda69a9f97bc378d2ce1/header.jpg?t=1773656494",
       "storeUrl": "https://store.steampowered.com/app/3130/"
     },
     "3320": {
       "appid": 3320,
       "name": "Insaniquarium! Deluxe",
       "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/3320/fb45c0144e6717e18c6c4e59605b4350ffa3cfde.jpg",
+      "logoUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3320/header.jpg?t=1615205929",
       "storeUrl": "https://store.steampowered.com/app/3320/"
     },
     "3590": {
       "appid": 3590,
       "name": "Plants vs. Zombies GOTY Edition",
+      "iconUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3590/header.jpg?t=1777394124",
+      "logoUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3590/header.jpg?t=1777394124",
       "storeUrl": "https://store.steampowered.com/app/3590"
     },
     "3830": {
       "appid": 3830,
       "name": "Psychonauts",
+      "iconUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3830/header.jpg?t=1776379310",
+      "logoUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3830/header.jpg?t=1776379310",
       "storeUrl": "https://store.steampowered.com/app/3830"
     },
     "3900": {

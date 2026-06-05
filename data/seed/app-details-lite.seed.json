@@ -1,10 +1,11 @@
 {
   "version": 4,
-  "generatedAt": "2026-06-05T05:17:01.095Z",
+  "generatedAt": "2026-06-05T05:56:16.347Z",
   "items": {
-    "240": {
-      "appid": 240,
-      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/240/header.jpg?t=1745368575",
+    "10": {
+      "appid": 10,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/10/header.jpg?t=1745368572",
+      "type": "game",
       "developers": [
         "Valve"
       ],
@@ -17,6 +18,264 @@
           "description": "Action"
         }
       ],
+      "categories": [
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 49,
+          "description": "PvP"
+        },
+        {
+          "id": 36,
+          "description": "Online PvP"
+        },
+        {
+          "id": 37,
+          "description": "Shared/Split Screen PvP"
+        },
+        {
+          "id": 66,
+          "description": "Color Alternatives"
+        },
+        {
+          "id": 68,
+          "description": "Custom Volume Controls"
+        },
+        {
+          "id": 75,
+          "description": "Keyboard Only Option"
+        },
+        {
+          "id": 69,
+          "description": "Stereo Sound"
+        },
+        {
+          "id": 8,
+          "description": "Valve Anti-Cheat enabled"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": true,
+        "linux": true
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "Nov 1, 2000"
+      },
+      "steamDeckCompatibility": "playable",
+      "checkedAt": "2026-06-05T05:31:38.217Z"
+    },
+    "70": {
+      "appid": 70,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/70/header.jpg?t=1745368462",
+      "type": "game",
+      "developers": [
+        "Valve"
+      ],
+      "publishers": [
+        "Valve"
+      ],
+      "genres": [
+        {
+          "id": "1",
+          "description": "Action"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 49,
+          "description": "PvP"
+        },
+        {
+          "id": 36,
+          "description": "Online PvP"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 66,
+          "description": "Color Alternatives"
+        },
+        {
+          "id": 68,
+          "description": "Custom Volume Controls"
+        },
+        {
+          "id": 78,
+          "description": "Adjustable Difficulty"
+        },
+        {
+          "id": 75,
+          "description": "Keyboard Only Option"
+        },
+        {
+          "id": 74,
+          "description": "Playable without Timed Input"
+        },
+        {
+          "id": 79,
+          "description": "Save Anytime"
+        },
+        {
+          "id": 69,
+          "description": "Stereo Sound"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 8,
+          "description": "Valve Anti-Cheat enabled"
+        },
+        {
+          "id": 41,
+          "description": "Remote Play on Phone"
+        },
+        {
+          "id": 42,
+          "description": "Remote Play on Tablet"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": true,
+        "linux": true
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "Nov 19, 1998"
+      },
+      "steamDeckCompatibility": "verified",
+      "checkedAt": "2026-06-05T05:31:41.407Z"
+    },
+    "220": {
+      "appid": 220,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/220/header.jpg?t=1745368545",
+      "type": "game",
+      "developers": [
+        "Valve"
+      ],
+      "publishers": [
+        "Valve"
+      ],
+      "genres": [
+        {
+          "id": "1",
+          "description": "Action"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 29,
+          "description": "Steam Trading Cards"
+        },
+        {
+          "id": 13,
+          "description": "Captions available"
+        },
+        {
+          "id": 30,
+          "description": "Steam Workshop"
+        },
+        {
+          "id": 67,
+          "description": "Camera Comfort"
+        },
+        {
+          "id": 68,
+          "description": "Custom Volume Controls"
+        },
+        {
+          "id": 78,
+          "description": "Adjustable Difficulty"
+        },
+        {
+          "id": 74,
+          "description": "Playable without Timed Input"
+        },
+        {
+          "id": 79,
+          "description": "Save Anytime"
+        },
+        {
+          "id": 69,
+          "description": "Stereo Sound"
+        },
+        {
+          "id": 65,
+          "description": "Subtitle Options"
+        },
+        {
+          "id": 70,
+          "description": "Surround Sound"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 16,
+          "description": "Includes Source SDK"
+        },
+        {
+          "id": 14,
+          "description": "Commentary available"
+        },
+        {
+          "id": 41,
+          "description": "Remote Play on Phone"
+        },
+        {
+          "id": 42,
+          "description": "Remote Play on Tablet"
+        },
+        {
+          "id": 44,
+          "description": "Remote Play Together"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        },
+        {
+          "id": 63,
+          "description": "Steam Timeline"
+        }
+      ],
       "platforms": {
         "windows": true,
         "mac": false,
@@ -24,14 +283,101 @@
       },
       "releaseDate": {
         "coming_soon": false,
-        "date": "1 Nov, 2004"
+        "date": "Nov 16, 2004"
+      },
+      "steamDeckCompatibility": "verified",
+      "checkedAt": "2026-06-05T05:31:44.596Z"
+    },
+    "240": {
+      "appid": 240,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/240/header.jpg?t=1745368575",
+      "type": "game",
+      "developers": [
+        "Valve"
+      ],
+      "publishers": [
+        "Valve"
+      ],
+      "genres": [
+        {
+          "id": "1",
+          "description": "Action"
+        }
+      ],
+      "categories": [
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 27,
+          "description": "Cross-Platform Multiplayer"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 67,
+          "description": "Camera Comfort"
+        },
+        {
+          "id": 66,
+          "description": "Color Alternatives"
+        },
+        {
+          "id": 68,
+          "description": "Custom Volume Controls"
+        },
+        {
+          "id": 69,
+          "description": "Stereo Sound"
+        },
+        {
+          "id": 65,
+          "description": "Subtitle Options"
+        },
+        {
+          "id": 70,
+          "description": "Surround Sound"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 8,
+          "description": "Valve Anti-Cheat enabled"
+        },
+        {
+          "id": 15,
+          "description": "Stats"
+        },
+        {
+          "id": 16,
+          "description": "Includes Source SDK"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": true
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "Nov 1, 2004"
       },
       "steamDeckCompatibility": "playable",
-      "checkedAt": "2026-06-04T15:14:00.116Z"
+      "checkedAt": "2026-06-05T05:31:48.147Z"
     },
     "440": {
       "appid": 440,
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/440/header.jpg?t=1757348372",
+      "type": "game",
       "developers": [
         "Valve"
       ],
@@ -48,6 +394,84 @@
           "description": "Free To Play"
         }
       ],
+      "categories": [
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 27,
+          "description": "Cross-Platform Multiplayer"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 29,
+          "description": "Steam Trading Cards"
+        },
+        {
+          "id": 13,
+          "description": "Captions available"
+        },
+        {
+          "id": 30,
+          "description": "Steam Workshop"
+        },
+        {
+          "id": 35,
+          "description": "In-App Purchases"
+        },
+        {
+          "id": 67,
+          "description": "Camera Comfort"
+        },
+        {
+          "id": 66,
+          "description": "Color Alternatives"
+        },
+        {
+          "id": 68,
+          "description": "Custom Volume Controls"
+        },
+        {
+          "id": 69,
+          "description": "Stereo Sound"
+        },
+        {
+          "id": 70,
+          "description": "Surround Sound"
+        },
+        {
+          "id": 18,
+          "description": "Partial Controller Support"
+        },
+        {
+          "id": 8,
+          "description": "Valve Anti-Cheat enabled"
+        },
+        {
+          "id": 15,
+          "description": "Stats"
+        },
+        {
+          "id": 17,
+          "description": "Includes level editor"
+        },
+        {
+          "id": 14,
+          "description": "Commentary available"
+        },
+        {
+          "id": 41,
+          "description": "Remote Play on Phone"
+        },
+        {
+          "id": 42,
+          "description": "Remote Play on Tablet"
+        }
+      ],
       "platforms": {
         "windows": true,
         "mac": false,
@@ -55,14 +479,15 @@
       },
       "releaseDate": {
         "coming_soon": false,
-        "date": "10 Oct, 2007"
+        "date": "Oct 10, 2007"
       },
       "steamDeckCompatibility": "playable",
-      "checkedAt": "2026-06-04T12:17:46.915Z"
+      "checkedAt": "2026-06-05T05:31:51.053Z"
     },
-    "550": {
-      "appid": 550,
-      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/550/header.jpg?t=1772742214",
+    "500": {
+      "appid": 500,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/500/header.jpg?t=1745368560",
+      "type": "game",
       "developers": [
         "Valve"
       ],
@@ -75,6 +500,234 @@
           "description": "Action"
         }
       ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 9,
+          "description": "Co-op"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 13,
+          "description": "Captions available"
+        },
+        {
+          "id": 67,
+          "description": "Camera Comfort"
+        },
+        {
+          "id": 66,
+          "description": "Color Alternatives"
+        },
+        {
+          "id": 68,
+          "description": "Custom Volume Controls"
+        },
+        {
+          "id": 78,
+          "description": "Adjustable Difficulty"
+        },
+        {
+          "id": 69,
+          "description": "Stereo Sound"
+        },
+        {
+          "id": 70,
+          "description": "Surround Sound"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 8,
+          "description": "Valve Anti-Cheat enabled"
+        },
+        {
+          "id": 15,
+          "description": "Stats"
+        },
+        {
+          "id": 25,
+          "description": "Steam Leaderboards"
+        },
+        {
+          "id": 16,
+          "description": "Includes Source SDK"
+        },
+        {
+          "id": 14,
+          "description": "Commentary available"
+        },
+        {
+          "id": 43,
+          "description": "Remote Play on TV"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "Nov 17, 2008"
+      },
+      "steamDeckCompatibility": "playable",
+      "checkedAt": "2026-06-05T05:31:54.208Z"
+    },
+    "550": {
+      "appid": 550,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/550/header.jpg?t=1772742214",
+      "type": "game",
+      "developers": [
+        "Valve"
+      ],
+      "publishers": [
+        "Valve"
+      ],
+      "genres": [
+        {
+          "id": "1",
+          "description": "Action"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 49,
+          "description": "PvP"
+        },
+        {
+          "id": 36,
+          "description": "Online PvP"
+        },
+        {
+          "id": 9,
+          "description": "Co-op"
+        },
+        {
+          "id": 38,
+          "description": "Online Co-op"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 29,
+          "description": "Steam Trading Cards"
+        },
+        {
+          "id": 13,
+          "description": "Captions available"
+        },
+        {
+          "id": 30,
+          "description": "Steam Workshop"
+        },
+        {
+          "id": 67,
+          "description": "Camera Comfort"
+        },
+        {
+          "id": 66,
+          "description": "Color Alternatives"
+        },
+        {
+          "id": 68,
+          "description": "Custom Volume Controls"
+        },
+        {
+          "id": 78,
+          "description": "Adjustable Difficulty"
+        },
+        {
+          "id": 74,
+          "description": "Playable without Timed Input"
+        },
+        {
+          "id": 69,
+          "description": "Stereo Sound"
+        },
+        {
+          "id": 70,
+          "description": "Surround Sound"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 8,
+          "description": "Valve Anti-Cheat enabled"
+        },
+        {
+          "id": 15,
+          "description": "Stats"
+        },
+        {
+          "id": 16,
+          "description": "Includes Source SDK"
+        },
+        {
+          "id": 14,
+          "description": "Commentary available"
+        },
+        {
+          "id": 41,
+          "description": "Remote Play on Phone"
+        },
+        {
+          "id": 42,
+          "description": "Remote Play on Tablet"
+        },
+        {
+          "id": 43,
+          "description": "Remote Play on TV"
+        },
+        {
+          "id": 44,
+          "description": "Remote Play Together"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        },
+        {
+          "id": 63,
+          "description": "Steam Timeline"
+        }
+      ],
       "platforms": {
         "windows": true,
         "mac": false,
@@ -82,14 +735,97 @@
       },
       "releaseDate": {
         "coming_soon": false,
-        "date": "16 Nov, 2009"
+        "date": "Nov 16, 2009"
       },
       "steamDeckCompatibility": "verified",
-      "checkedAt": "2026-06-04T15:14:00.550Z"
+      "checkedAt": "2026-06-05T05:31:57.455Z"
+    },
+    "570": {
+      "appid": 570,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/570/header.jpg?t=1769535998",
+      "type": "game",
+      "developers": [
+        "Valve"
+      ],
+      "publishers": [
+        "Valve"
+      ],
+      "genres": [
+        {
+          "id": "1",
+          "description": "Action"
+        },
+        {
+          "id": "2",
+          "description": "Strategy"
+        },
+        {
+          "id": "37",
+          "description": "Free To Play"
+        }
+      ],
+      "categories": [
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 9,
+          "description": "Co-op"
+        },
+        {
+          "id": 29,
+          "description": "Steam Trading Cards"
+        },
+        {
+          "id": 30,
+          "description": "Steam Workshop"
+        },
+        {
+          "id": 40,
+          "description": "SteamVR Collectibles"
+        },
+        {
+          "id": 35,
+          "description": "In-App Purchases"
+        },
+        {
+          "id": 67,
+          "description": "Camera Comfort"
+        },
+        {
+          "id": 66,
+          "description": "Color Alternatives"
+        },
+        {
+          "id": 68,
+          "description": "Custom Volume Controls"
+        },
+        {
+          "id": 8,
+          "description": "Valve Anti-Cheat enabled"
+        },
+        {
+          "id": 63,
+          "description": "Steam Timeline"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": true,
+        "linux": true
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "Jul 9, 2013"
+      },
+      "steamDeckCompatibility": "playable",
+      "checkedAt": "2026-06-05T05:32:00.610Z"
     },
     "620": {
       "appid": 620,
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/620/header.jpg?t=1745363004",
+      "type": "game",
       "developers": [
         "Valve"
       ],
@@ -106,6 +842,116 @@
           "description": "Adventure"
         }
       ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 9,
+          "description": "Co-op"
+        },
+        {
+          "id": 38,
+          "description": "Online Co-op"
+        },
+        {
+          "id": 39,
+          "description": "Shared/Split Screen Co-op"
+        },
+        {
+          "id": 24,
+          "description": "Shared/Split Screen"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 29,
+          "description": "Steam Trading Cards"
+        },
+        {
+          "id": 13,
+          "description": "Captions available"
+        },
+        {
+          "id": 51,
+          "description": "Steam Workshop"
+        },
+        {
+          "id": 30,
+          "description": "Steam Workshop"
+        },
+        {
+          "id": 67,
+          "description": "Camera Comfort"
+        },
+        {
+          "id": 68,
+          "description": "Custom Volume Controls"
+        },
+        {
+          "id": 74,
+          "description": "Playable without Timed Input"
+        },
+        {
+          "id": 79,
+          "description": "Save Anytime"
+        },
+        {
+          "id": 69,
+          "description": "Stereo Sound"
+        },
+        {
+          "id": 70,
+          "description": "Surround Sound"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 15,
+          "description": "Stats"
+        },
+        {
+          "id": 17,
+          "description": "Includes level editor"
+        },
+        {
+          "id": 14,
+          "description": "Commentary available"
+        },
+        {
+          "id": 41,
+          "description": "Remote Play on Phone"
+        },
+        {
+          "id": 42,
+          "description": "Remote Play on Tablet"
+        },
+        {
+          "id": 43,
+          "description": "Remote Play on TV"
+        },
+        {
+          "id": 44,
+          "description": "Remote Play Together"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
       "platforms": {
         "windows": true,
         "mac": false,
@@ -113,10 +959,10 @@
       },
       "releaseDate": {
         "coming_soon": false,
-        "date": "18 Apr, 2011"
+        "date": "Apr 18, 2011"
       },
       "steamDeckCompatibility": "verified",
-      "checkedAt": "2026-06-04T15:14:00.480Z"
+      "checkedAt": "2026-06-05T05:32:03.874Z"
     },
     "730": {
       "appid": 730,
@@ -224,6 +1070,90 @@
       "steamDeckCompatibility": "playable",
       "checkedAt": "2026-06-05T05:10:21.152Z"
     },
+    "2630": {
+      "appid": 2630,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2630/header.jpg?t=1731698337",
+      "type": "game",
+      "developers": [
+        "Infinity Ward"
+      ],
+      "publishers": [
+        "Activision"
+      ],
+      "genres": [
+        {
+          "id": "1",
+          "description": "Action"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": true,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "Oct 13, 2006"
+      },
+      "steamDeckCompatibility": "unknown",
+      "checkedAt": "2026-06-05T05:54:33.852Z"
+    },
+    "2640": {
+      "appid": 2640,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2640/header.jpg?t=1731699751",
+      "type": "game",
+      "developers": [
+        "Gray Matter Studios"
+      ],
+      "publishers": [
+        "Activision"
+      ],
+      "genres": [
+        {
+          "id": "1",
+          "description": "Action"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "Oct 13, 2006"
+      },
+      "steamDeckCompatibility": "unknown",
+      "checkedAt": "2026-06-05T05:54:36.376Z"
+    },
     "2990": {
       "appid": 2990,
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2990/header.jpg?t=1765237363",
@@ -252,6 +1182,225 @@
       },
       "steamDeckCompatibility": "verified",
       "checkedAt": "2026-06-04T15:14:00.885Z"
+    },
+    "3130": {
+      "appid": 3130,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3130/7aeddc19b81225d2cd22fda69a9f97bc378d2ce1/header.jpg?t=1773656494",
+      "type": "game",
+      "developers": [
+        "Fulqrum Publishing"
+      ],
+      "publishers": [
+        "Fulqrum Publishing"
+      ],
+      "genres": [
+        {
+          "id": "2",
+          "description": "Strategy"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 49,
+          "description": "PvP"
+        },
+        {
+          "id": 47,
+          "description": "LAN PvP"
+        },
+        {
+          "id": 9,
+          "description": "Co-op"
+        },
+        {
+          "id": 48,
+          "description": "LAN Co-op"
+        },
+        {
+          "id": 29,
+          "description": "Steam Trading Cards"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "Nov 1, 2009"
+      },
+      "steamDeckCompatibility": "unknown",
+      "checkedAt": "2026-06-05T05:54:38.755Z"
+    },
+    "3320": {
+      "appid": 3320,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3320/header.jpg?t=1615205929",
+      "type": "game",
+      "developers": [
+        "PopCap Games, Inc."
+      ],
+      "publishers": [
+        "PopCap Games, Inc.",
+        "Electronic Arts"
+      ],
+      "genres": [
+        {
+          "id": "4",
+          "description": "Casual"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "Aug 30, 2006"
+      },
+      "steamDeckCompatibility": "unknown",
+      "checkedAt": "2026-06-05T05:54:41.277Z"
+    },
+    "3590": {
+      "appid": 3590,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3590/header.jpg?t=1777394124",
+      "type": "game",
+      "developers": [
+        "PopCap Games, Inc."
+      ],
+      "publishers": [
+        "PopCap Games, Inc.",
+        "Electronic Arts"
+      ],
+      "genres": [
+        {
+          "id": "2",
+          "description": "Strategy"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 41,
+          "description": "Remote Play on Phone"
+        },
+        {
+          "id": 42,
+          "description": "Remote Play on Tablet"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": true,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "May 5, 2009"
+      },
+      "steamDeckCompatibility": "unknown",
+      "checkedAt": "2026-06-05T05:54:43.764Z"
+    },
+    "3830": {
+      "appid": 3830,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3830/header.jpg?t=1776379310",
+      "type": "game",
+      "developers": [
+        "Double Fine Productions"
+      ],
+      "publishers": [
+        "Double Fine Productions",
+        "Xbox Game Studios"
+      ],
+      "genres": [
+        {
+          "id": "1",
+          "description": "Action"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 29,
+          "description": "Steam Trading Cards"
+        },
+        {
+          "id": 18,
+          "description": "Partial Controller Support"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 41,
+          "description": "Remote Play on Phone"
+        },
+        {
+          "id": 42,
+          "description": "Remote Play on Tablet"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": true,
+        "linux": true
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "Oct 11, 2006"
+      },
+      "steamDeckCompatibility": "unknown",
+      "checkedAt": "2026-06-05T05:54:46.341Z"
     },
     "4000": {
       "appid": 4000,
