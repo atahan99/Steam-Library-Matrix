@@ -3,7 +3,6 @@
 import { useState } from "react"
 import { MAX_COMPARE_PROFILES } from "@/lib/compare/compare-storage"
 import type { CompareProfileEntry } from "@/hooks/use-compare-profiles"
-import { useCompareStorage } from "@/hooks/use-compare-storage"
 import { useDashboard } from "@/components/dashboard/dashboard-context"
 import { AddProfileSheet } from "@/components/compare/add-profile-sheet"
 import {

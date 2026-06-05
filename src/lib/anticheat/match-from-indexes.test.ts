@@ -42,7 +42,6 @@ describe("matchAntiCheatFromIndexes", () => {
   })
 
   it("sets kernel_level false only when levvvel catalog is complete", () => {
-    const awacy = indexAwacyEntries([])
     const incomplete = indexLevvvelRows([], false)
     const complete = indexLevvvelRows([], true)
 

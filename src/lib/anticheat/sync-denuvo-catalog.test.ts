@@ -18,7 +18,6 @@ vi.mock("@/lib/steam/scrape-denuvo-curator", () => ({
 import {
   getDenuvoCatalogStats,
   isDenuvoCatalogStale,
-  replaceDenuvoAntiTamperCatalog,
 } from "@/lib/db/denuvo-catalog"
 import { scrapeDenuvoCuratorCatalog } from "@/lib/steam/scrape-denuvo-curator"
 import {
@@ -29,7 +28,6 @@ import {
 const mockedStats = vi.mocked(getDenuvoCatalogStats)
 const mockedStale = vi.mocked(isDenuvoCatalogStale)
 const mockedScrape = vi.mocked(scrapeDenuvoCuratorCatalog)
-const mockedReplace = vi.mocked(replaceDenuvoAntiTamperCatalog)
 
 describe("isDenuvoCatalogSyncNeeded", () => {
   afterEach(() => vi.clearAllMocks())

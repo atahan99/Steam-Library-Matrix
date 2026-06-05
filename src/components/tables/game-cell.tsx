@@ -92,7 +92,6 @@ export const GameCell = ({
 }
 
 export const GameIconCell = ({
-  appid,
   iconUrl,
 }: {
   appid: number

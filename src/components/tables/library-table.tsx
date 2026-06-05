@@ -13,10 +13,7 @@ import { TableExportMenu } from "@/components/tables/table-export-button"
 import { TableFilterSpacer } from "@/components/tables/table-filter-field"
 import { TableGameSearchInput } from "@/components/tables/table-game-search-input"
 import { TableSortControls } from "@/components/tables/table-sort-controls"
-import {
-  useDashboardCollection,
-  useGameDetail,
-} from "@/components/dashboard/dashboard-context"
+import { useGameDetail } from "@/components/dashboard/dashboard-context"
 import { useDashboardTableParams } from "@/hooks/use-dashboard-table-params"
 import { useTableGames } from "@/hooks/use-table-games"
 import {
@@ -136,7 +133,6 @@ export const LibraryTable = ({
 }: LibraryTableProps = {}) => {
   const contextGames = useTableGames()
   const games = gamesOverride ?? contextGames
-  const { collection } = useDashboardCollection()
   const { openGameDetail } = useGameDetail()
   const [url, setUrl] = useDashboardTableParams(parseLibraryUrl, serializeLibraryUrl)
   const {

@@ -2,10 +2,7 @@
 
 import { useMemo } from "react"
 import { TriangleAlertIcon } from "lucide-react"
-import {
-  useDashboardCollection,
-  useGameDetail,
-} from "@/components/dashboard/dashboard-context"
+import { useGameDetail } from "@/components/dashboard/dashboard-context"
 import { useDashboardTableParams } from "@/hooks/use-dashboard-table-params"
 import {
   parseCommaList,
@@ -173,7 +170,6 @@ const formatKernelLevel = (game: DashboardGame): string => {
 
 export const AntiCheatTable = () => {
   const games = useTableGames()
-  const { collection } = useDashboardCollection()
   const { openGameDetail } = useGameDetail()
   const [url, setUrl] = useDashboardTableParams(
     parseAntiCheatUrl,

@@ -1,10 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import {
-  useDashboardCollection,
-  useGameDetail,
-} from "@/components/dashboard/dashboard-context"
+import { useGameDetail } from "@/components/dashboard/dashboard-context"
 import { useDashboardTableParams } from "@/hooks/use-dashboard-table-params"
 import {
   parseCommaList,
@@ -164,7 +161,6 @@ const compareVrGames = (
 
 export const VrTable = () => {
   const games = useTableGames()
-  const { collection } = useDashboardCollection()
   const { openGameDetail } = useGameDetail()
   const [url, setUrl] = useDashboardTableParams(parseVrUrl, serializeVrUrl)
   const [vrSupported, setVrSupported] = useState(false)

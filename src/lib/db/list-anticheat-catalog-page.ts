@@ -1,4 +1,4 @@
-import { count, desc, eq, ilike, inArray } from "drizzle-orm"
+import { count, eq, ilike, inArray } from "drizzle-orm"
 import { getDb } from "@/lib/db/client"
 import {
   anticheatCatalogMeta,

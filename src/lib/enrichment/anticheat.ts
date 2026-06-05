@@ -187,8 +187,7 @@ export const enrichSingleAnticheat = async (
   if (phase === "catalog") {
     const catalogTamper = resolveDenuvoAntiTamper(
       appid,
-      context.denuvoCatalogAppids,
-      context.denuvoCatalogComplete
+      context.denuvoCatalogAppids
     )
     if (catalogTamper === true) {
       denuvoFields = {
@@ -221,8 +220,7 @@ export const enrichSingleAnticheat = async (
       let tamper = resolveDenuvoAntiTamperFromStatus(denuvoStatus)
       const catalogTamper = resolveDenuvoAntiTamper(
         appid,
-        context.denuvoCatalogAppids,
-        context.denuvoCatalogComplete
+        context.denuvoCatalogAppids
       )
       if (tamper !== true && catalogTamper === true) {
         tamper = true
