@@ -3,6 +3,7 @@ import { ExternalLinkIcon } from "lucide-react"
 import {
   aboutAffiliation,
   aboutAttributions,
+  aboutDataProvenance,
   aboutDataSources,
   aboutFeatures,
   aboutHero,
@@ -213,6 +214,30 @@ export const AboutPageContent = ({ embedded = false }: AboutPageContentProps) =>
                 ))}
               </TableBody>
             </Table>
+          </CardContent>
+        </Card>
+      </section>
+
+      <section aria-labelledby="about-provenance-heading">
+        <Card {...aboutCardProps}>
+          <CardHeader>
+            <CardTitle id="about-provenance-heading">
+              {aboutDataProvenance.title}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {aboutDataProvenance.paragraphs.map((paragraph) => (
+              <p key={paragraph.slice(0, 48)} className="text-sm text-muted-foreground">
+                {paragraph}
+              </p>
+            ))}
+            <ul className="flex flex-wrap gap-2">
+              {aboutDataProvenance.bundledSources.map((source) => (
+                <li key={source}>
+                  <Badge variant="secondary">{source}</Badge>
+                </li>
+              ))}
+            </ul>
           </CardContent>
         </Card>
       </section>

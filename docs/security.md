@@ -4,8 +4,8 @@
 
 | Where | Suggested env |
 | --- | --- |
-| Home LAN / private | `SLM_ALLOW_OPEN_API=true`, `CRON_SECRET=<random>` |
-| Public internet | `SLM_API_SECRET=<random>` — **omit** `SLM_ALLOW_OPEN_API` |
+| Home LAN / private | `CRON_SECRET=<random>` (for `dev:jobs` or external cron) |
+| Public internet | Reverse proxy with TLS + auth; restrict direct port access |
 
 Variable reference: [env.md](./env.md). Docker checklist: [self-hosting.md § Security checklist](./self-hosting.md#security-checklist).
 
@@ -15,17 +15,18 @@ The app imports **public** Steam library data. Anyone with a SteamID64 can view 
 
 Main risks on **public internet**:
 
-1. Anonymous callers triggering expensive enrichment / catalog sync
-2. Exposure of SQLite (`./data/matrix.db` or `docker/db/` for Docker)
+1. Anonymous callers triggering expensive enrichment / catalog sync (the `/api/jobs` queue is open)
+2. Exposure of SQLite (`./data/matrix.db` local, or the `matrix_db` Docker volume)
 3. Enumeration of cached JSON via `/api/dashboard/[steamid]`
 
-## API guard
+## API access
 
-When `SLM_API_SECRET` is set and `SLM_ALLOW_OPEN_API` is not `true`:
+There is **no in-app Bearer guard** on import, refresh, dashboard, or enrichment routes.
 
-- Expensive POST routes require `Authorization: Bearer <SLM_API_SECRET>`
-- `/api/steam/import` and `/api/steam/refresh` stay open for landing import
-- Data Status uses server actions when the guard is on (no secret in the browser)
+- `GET /api/cron/process-jobs` always requires `Authorization: Bearer <CRON_SECRET>`.
+- All other routes — `POST /api/jobs`, `/api/steam/import`, `/api/steam/refresh`, `/api/dashboard/*` — are **open** (rate-limited only).
+
+This app is **LAN-first**: for public exposure, terminate TLS and enforce auth at a reverse proxy and restrict network access (see the checklist below).
 
 ## Background jobs
 
@@ -58,22 +59,20 @@ IP from `X-Forwarded-For` (first hop) or `X-Real-IP` — configure your reverse 
 ## Secrets
 
 - Never commit `.env` / `docker/.env`
-- Never `NEXT_PUBLIC_*` for `SLM_API_SECRET`
-- Rotate `SLM_API_SECRET` if leaked; restart containers
+- Never `NEXT_PUBLIC_*` for `CRON_SECRET` or `STEAM_API_KEY`
+- Rotate `CRON_SECRET` if leaked; restart containers
 
 ## Docker
 
 - Entrypoint writes selected env to `/app/.env` for standalone Next.js
 - App runs as `nextjs` via `su-exec`
-- Protect `./data/` (local) or `docker/db/` (Docker); backup `matrix.db` before upgrades
+- Protect `./data/` (local) or the `matrix_db` volume (Docker); backup `matrix.db` before upgrades
 
 ## Security checklist
 
-- [ ] `SLM_API_SECRET` when the app is public
-- [ ] Omit `SLM_ALLOW_OPEN_API` on public deployments
+- [ ] TLS + auth on a reverse proxy (the app's own routes are open except cron)
+- [ ] Restrict direct access to the app's published port (3001 for Docker, 3000 for local dev)
 - [ ] `CRON_SECRET` only if using external cron polling (optional with embedded worker)
-- [ ] TLS on reverse proxy
-- [ ] Restrict direct access to port 3000
 - [ ] Run `pnpm audit` on build hosts periodically
 
 Docker-specific steps: [self-hosting.md](./self-hosting.md).

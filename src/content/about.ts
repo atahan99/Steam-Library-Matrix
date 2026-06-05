@@ -256,6 +256,23 @@ export const aboutDataSources: AboutDataSource[] = [
   },
 ]
 
+export const aboutDataProvenance = {
+  title: "Data provenance",
+  paragraphs: [
+    "Bundled files under data/seed/ are cached, derived metadata shipped with this repo for first-run performance — not original data owned by Steam Library Matrix.",
+    "They are built from live sources (Steam Web API and storefront, ProtonDB, HowLongToBeat, Are We Anti-Cheat Yet, Levvvel, and the Denuvo Watch Steam curator) and refreshed over time as you import profiles and run enrichment.",
+    "All rights in game names, compatibility reports, completion times, anti-cheat lists, and store metadata remain with Valve, ProtonDB, HowLongToBeat, AWACY, Levvvel, and the respective curators and communities.",
+  ],
+  bundledSources: [
+    "Steam Web API & Steam storefront",
+    "ProtonDB",
+    "HowLongToBeat",
+    "Are We Anti-Cheat Yet (AWACY)",
+    "Levvvel",
+    "Denuvo Watch (Steam curator)",
+  ],
+}
+
 export const aboutHowItWorks = {
   title: "How it works",
   intro:
@@ -360,6 +377,11 @@ export const aboutAttributions: AboutAttribution[] = [
     name: "Levvvel",
     url: LEVVVEL_KERNEL_URL,
     credit: "Kernel-level anti-cheat reference list",
+  },
+  {
+    name: "Denuvo Watch",
+    url: "https://store.steampowered.com/curator/26095454-Denuvo-Watch/",
+    credit: "Denuvo Anti-Tamper curator list (Steam app IDs)",
   },
   {
     name: "Valve / Steam",

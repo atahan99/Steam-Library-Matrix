@@ -4,6 +4,8 @@
 
 **Self-hosted only** — no cloud database or hosted backend.
 
+> **New here?** [docs/architecture.md](docs/architecture.md) explains how the whole thing works end to end — import, the background enrichment queue, cross-source matching, and the bundled seed.
+
 ## Tech stack
 
 | Layer | Technologies |
@@ -55,7 +57,6 @@ Edit `.env`:
 | --- | --- |
 | `STEAM_API_KEY` | Key from above |
 | `CRON_SECRET` | `openssl rand -hex 32` |
-| `SLM_ALLOW_OPEN_API` | `true` for home LAN only |
 
 ```bash
 pnpm db:migrate
@@ -85,7 +86,6 @@ Edit `docker/.env`:
 | --- | --- |
 | `STEAM_API_KEY` | Key from above |
 | `CRON_SECRET` | `openssl rand -hex 32` |
-| `SLM_ALLOW_OPEN_API` | `true` for home LAN only |
 
 The entrypoint creates `matrix.db` from the bundled template on first start — no manual copy step.
 
@@ -125,23 +125,7 @@ docker compose -f docker/compose.yml exec app cp /app/data/db/matrix.db /tmp/mat
 docker cp "$(docker compose -f docker/compose.yml ps -q app)":/tmp/matrix-backup.db ./matrix-backup.db
 ```
 
-**Migrating an older database**
-
-From `.slm-docker-data/` (previous layout):
-
-```bash
-cp -n .slm-docker-data/matrix.db docker/db/matrix.db
-```
-
-From the legacy Docker volume `matrix_data`:
-
-```bash
-docker compose -f docker/compose.yml down
-mkdir -p docker/db
-docker run --rm -v matrix_data:/from -v "$(pwd)/docker/db:/to" alpine \
-  sh -c 'cp -a /from/matrix.db /to/matrix.db 2>/dev/null || true'
-docker compose -f docker/compose.yml up --build -d
-```
+**Migrating an older database** (from a previous bind-mount layout into the `matrix_db` volume): see [docker/db/README.md § Migrate from bind mount](docker/db/README.md).
 
 ---
 
@@ -202,11 +186,13 @@ Not implemented yet — rough order, may change.
 ## Documentation
 
 - [docs/README.md](docs/README.md) — index and reading order
+- [docs/architecture.md](docs/architecture.md) — how the system works (overview + deep dives)
 - [docs/self-hosting.md](docs/self-hosting.md) — Docker hardening, TLS, proxy
 - [docs/env.md](docs/env.md) — environment variables
 - [docs/database.md](docs/database.md) — SQLite, migrate, backup
 - [docs/scraping.md](docs/scraping.md) — data sources and enrichment
 - [docs/security.md](docs/security.md) — API guard, rate limits, CSP
+- [docs/scaling.md](docs/scaling.md) — single-user design and public-deploy notes
 
 ## License
 

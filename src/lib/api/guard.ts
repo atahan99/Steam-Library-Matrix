@@ -46,23 +46,6 @@ export const verifyBearerSecret = (
   return null
 }
 
-/** True when SLM_API_SECRET is set and SLM_ALLOW_OPEN_API is not true. */
-export const isApiGuardRequired = (): boolean => {
-  const secret = getRuntimeEnv("SLM_API_SECRET")?.trim()
-  const allowOpen = getRuntimeEnv("SLM_ALLOW_OPEN_API") === "true"
-  return Boolean(secret) && !allowOpen
-}
-
-export const requireApiAuth = (request: Request): NextResponse | null => {
-  if (!isApiGuardRequired()) return null
-
-  return verifyBearerSecret(request, getRuntimeEnv("SLM_API_SECRET")?.trim(), {
-    missingAuthMessage:
-      "Authorization required. Send Authorization: Bearer <SLM_API_SECRET>, or set SLM_ALLOW_OPEN_API=true for private LAN deployments.",
-    invalidSecretMessage: "Invalid API secret",
-  })
-}
-
 export const requireCronAuth = (request: Request): NextResponse | null =>
   verifyBearerSecret(request, getRuntimeEnv("CRON_SECRET")?.trim(), {
     missingSecretResponse: NextResponse.json(

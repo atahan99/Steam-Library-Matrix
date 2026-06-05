@@ -6,9 +6,9 @@ Configuration comes from the process environment. In Docker standalone builds, t
 
 | Deployment | `DATABASE_URL` | API access | Jobs |
 | --- | --- | --- | --- |
-| Local / home lab | `file:./data/matrix.db` | `SLM_ALLOW_OPEN_API=true` typical | `pnpm dev:all` (do **not** set `SLM_EMBED_JOB_WORKER`) |
-| Docker home lab | `file:/app/data/matrix.db` (host: `docker/db/`) | `SLM_ALLOW_OPEN_API=true` in `docker/.env` | `SLM_EMBED_JOB_WORKER=true` |
-| Public internet | same per method | `SLM_API_SECRET=<random>` — omit `SLM_ALLOW_OPEN_API` | same as above |
+| Local / home lab | `file:./data/matrix.db` | Open (rate-limited) | `pnpm dev:all` (do **not** set `SLM_EMBED_JOB_WORKER`) |
+| Docker home lab | `file:/app/data/db/matrix.db` (named volume `matrix_db`) | Open (rate-limited) | `SLM_EMBED_JOB_WORKER=true` |
+| Public internet | same per method | Open — **use a reverse proxy** for auth + TLS | same as above |
 
 Threat model and route behavior: [security.md](./security.md#threat-model). Job pipeline order: [scraping.md](./scraping.md#job-pipeline-order).
 
@@ -17,21 +17,23 @@ Threat model and route behavior: [security.md](./security.md#threat-model). Job 
 | Variable | Description |
 | --- | --- |
 | `STEAM_API_KEY` | Steam Web API key from [steamcommunity.com/dev/apikey](https://steamcommunity.com/dev/apikey). `STEAM_WEB_API_KEY` is an alias. |
-| `DATABASE_URL` | SQLite path, e.g. `file:./data/matrix.db` (local) or `file:/app/data/matrix.db` (Docker). |
+| `DATABASE_URL` | SQLite path, e.g. `file:./data/matrix.db` (local) or `file:/app/data/db/matrix.db` (Docker named volume). |
 | `CRON_SECRET` | Bearer token for `GET /api/cron/process-jobs`. Generate: `openssl rand -hex 32`. Required for `pnpm dev:jobs`; optional with embedded Docker worker. |
 
-## API security (`SLM_*`)
+## API access
+
+There is **no in-app Bearer guard** on import, refresh, dashboard, or enrichment routes. The only Bearer-protected route is the cron worker endpoint.
+
+| Route | Auth |
+| --- | --- |
+| `GET /api/cron/process-jobs` | `Authorization: Bearer <CRON_SECRET>` (always enforced) |
+| All other API routes | Open — rate-limited per IP only |
+
+For a **public** deployment, terminate TLS and enforce auth at a reverse proxy and restrict network access — this app is designed LAN-first.
 
 | Variable | Default | Description |
 | --- | --- | --- |
-| `SLM_API_SECRET` | (unset) | When set, expensive POST routes need `Authorization: Bearer <secret>` unless open API is allowed. |
-| `SLM_ALLOW_OPEN_API` | (unset) | `true` disables the Bearer requirement (typical private LAN). |
 | `SLM_RATE_LIMIT_PER_MIN` | `60` | Per-IP requests/min for general API routes. Expensive routes cap at 10/min. |
-
-- **Protected** (when guard is active): `/api/enrich/*`, `/api/anticheat/catalog-sync`, `/api/steam/wishlist-sync`
-- **Open** (landing UX): `/api/steam/import`, `/api/steam/refresh`
-
-With `SLM_API_SECRET` and without `SLM_ALLOW_OPEN_API`, Data Status uses **server actions** (no secret in the browser). Scripts should send the Bearer token. Do **not** use `NEXT_PUBLIC_*` for `SLM_API_SECRET`.
 
 ## Background jobs
 

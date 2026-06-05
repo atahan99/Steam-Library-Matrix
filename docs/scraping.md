@@ -69,13 +69,15 @@ Denuvo catalog: [`fetch-denuvo-curator-catalog.ts`](../src/lib/steam/fetch-denuv
 | `metadata-manifest.json` | version, counts, generatedAt |
 | `steam-games.seed.json` | appid, name, icon/store basics |
 | `denuvo.seed.json` | Denuvo status, confidence, source, evidence |
-| `app-details-lite.seed.json` | optional lite app details (no descriptions) |
+| `app-details-lite.seed.json` | app details: genres, categories, platforms, Deck rating, release (no long descriptions) |
 | `protondb.seed.json` | ProtonDB tier, confidence, reports, checkedAt |
 | `hltb.seed.json` | HLTB durations, match metadata, negative-cache rows |
 
 Flow: migrate → **seed hydrate** → catalog bootstrap → background enrichment for missing/stale/low-confidence rows.
 
 Refresh top sellers: `pnpm seed:fetch-top-appids`. Regenerate (includes live ProtonDB/HLTB prefetch): `pnpm seed:generate`. Export-only: `pnpm seed:generate --skip-prefetch`. Disable: `SLM_SKIP_SEED_HYDRATION=true`.
+
+**Attribution:** Bundled seed JSON is derived metadata from Steam (Web API + storefront), ProtonDB, HowLongToBeat, AWACY, Levvvel, and the Denuvo Watch curator. Steam Library Matrix does not claim ownership — rights remain with the original sources. The About page lists each provider and a data-provenance note for end users.
 
 **Generate seed metadata slowly and resumably.** A full ~2200-appid prefetch takes hours at the storefront rate limit. If Steam trips a cooldown, `seed:generate` stops cleanly, leaves partial rows in SQLite, and you re-run the same command later — TTL skips already-fresh appids. Prefer running bulk generation from a dedicated machine/IP or across several days. Name resolution uses keyed **GetAppList** (not storefront) for most appids; storefront `appdetails` is only a fallback.
 
@@ -91,8 +93,8 @@ Investigation script: `pnpm tsx --env-file=.env scripts/spike-store-getitems.ts`
 
 | Layer | Tables | Scope |
 | --- | --- | --- |
-| **Global catalogs** | `awacy_catalog`, `levvvel_catalog`, `denuvo_catalog` | One copy for the whole instance |
-| **Per-appid cache** | `steam_app_details`, `protondb_entries`, `howlongtobeat_entries`, `anticheat_entries`, `achievement_stats` | Keyed by **appid**, shared across profiles |
+| **Global catalogs** | `awacy_catalog`, `levvvel_kernel_catalog`, `denuvo_anti_tamper_catalog` | One copy for the whole instance |
+| **Per-appid cache** | `steam_app_details`, `protondb_entries`, `howlongtobeat_entries`, `anticheat_entries`, `profile_game_achievements` | Keyed by **appid** (achievements by `steamid`+`appid`), shared across profiles |
 
 Jobs enqueue only for **your** profile’s appids (or compare warmup scope). If two profiles own appid `570`, the second reuses cached rows within TTL. Targets resolved in [`resolve-enrichment-appids.ts`](../src/lib/enrichment/resolve-enrichment-appids.ts).
 

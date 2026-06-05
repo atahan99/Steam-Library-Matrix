@@ -17,19 +17,14 @@ Docker files: [`docker/`](../docker/) (`Dockerfile`, `compose.yml`, `entrypoint.
 
 1. Copy [`docker/.env.example`](../docker/.env.example) → `docker/.env`.
 2. Set `STEAM_API_KEY` and `CRON_SECRET` (`openssl rand -hex 32`).
-3. Home lab (no Bearer on enrich routes):
 
-   ```env
-   SLM_ALLOW_OPEN_API=true
-   ```
-
-5. From the repo root:
+3. From the repo root:
 
    ```bash
    docker compose -f docker/compose.yml up --build -d
    ```
 
-6. Import a public Steam profile at http://localhost:3001.
+4. Import a public Steam profile at http://localhost:3001.
 
 [`docker/compose.yml`](../docker/compose.yml) stores the live DB in the named volume `matrix_db` at `/app/data/db`. Configure secrets in `docker/.env` only for a self-contained deploy. Compose also loads repo-root `.env` if present (root wins on duplicate keys) — avoid a blank `STEAM_API_KEY=` in `docker/.env` if the key lives in root. Worker env: [env.md § Background jobs](./env.md#background-jobs).
 
@@ -37,23 +32,23 @@ Check readiness: `curl -s http://localhost:3001/api/health` — `steamApiKey` sh
 
 ## Production hardening
 
-Beyond localhost:
+This app is built for LAN / single-user self-hosting. If you expose it beyond localhost,
+the real protection is at the network edge:
 
-1. Set `SLM_API_SECRET` — omit `SLM_ALLOW_OPEN_API`.
-2. Keep `SLM_EMBED_JOB_WORKER=true` (enabled in `docker/compose.yml` with 5s worker poll and tuned batch sizes).
+1. Put it behind a **reverse proxy** that terminates TLS and enforces auth (basic auth, an OAuth proxy, or an IP allowlist). In-app routes — including the `POST /api/jobs` enrichment queue — are open today, so don't expose them directly.
+2. Keep the container port off the public internet; only the proxy should reach it.
+3. Keep `SLM_EMBED_JOB_WORKER=true` (enabled in `docker/compose.yml` with 5s worker poll and tuned batch sizes).
+4. Set `CRON_SECRET` (`openssl rand -hex 32`) if you poll `/api/cron/process-jobs` externally — it's the one route that enforces a Bearer token.
+
+Automation example (enqueue a job — `/api/jobs` is open, so restrict it at the proxy):
 
 ```bash
-openssl rand -hex 32
-```
-
-Automation example:
-
-```bash
-curl -X POST http://your-host/api/enrich/protondb \
-  -H "Authorization: Bearer $SLM_API_SECRET" \
+curl -X POST http://your-host/api/jobs \
   -H "Content-Type: application/json" \
-  -d '{"steamid":"76561198000000000","force":true}'
+  -d '{"steamid":"76561198000000000","kind":"protondb","force":true}'
 ```
+
+Valid `kind` values: `protondb`, `hltb`, `app_details`, `achievements`, `anticheat`, `wishlist`, `anticheat_catalog`, `denuvo_catalog`.
 
 Full checklist: [security.md § Security checklist](./security.md#security-checklist).
 

@@ -15,7 +15,7 @@ const bodySchema = z.object({
 })
 
 export const POST = async (request: Request) =>
-  runApiRoute(request, { tier: "expensive", protected: false }, async () => {
+  runApiRoute(request, { tier: "expensive" }, async () => {
     const body = await request.json()
     const parsed = bodySchema.safeParse(body)
     if (!parsed.success) {

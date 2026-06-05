@@ -5,7 +5,7 @@ SQLite for **Docker Compose only** (not used by local `pnpm dev:all`).
 | File | Purpose |
 | --- | --- |
 | `matrix.db.example` | Empty template (legacy manual bootstrap) |
-| `matrix.db.template` | Pre-hydrated seed cache (built by `pnpm docker:build-db-template`; baked into Docker image) |
+| `matrix.db.template` | Pre-hydrated seed cache — **generated during `docker build`**, not committed to git; baked into the Docker image |
 | `matrix.db` | Optional local copy for migration/backup only (gitignored) |
 | `matrix.db-wal`, `matrix.db-shm` | SQLite WAL sidecars (gitignored) |
 
@@ -15,7 +15,7 @@ Compose stores the **live** database in the Docker named volume `matrix_db` at `
 
 ## First run
 
-On container start, if `matrix.db` is missing the entrypoint copies `matrix.db.template` (bundled prefetch already in SQLite), runs migrations forward, then optionally hydrates any newer seed JSON.
+On container start, if `matrix.db` is missing the entrypoint copies `matrix.db.template` from the image (migrate + seed hydrate at build time), runs migrations forward, then optionally hydrates any newer seed JSON. If the template is absent, seed JSON hydration still populates the DB on first run.
 
 Bundled seed JSON lives at `/app/data/seed` in the container (Compose mounts `../data/seed:ro` from the repo).
 

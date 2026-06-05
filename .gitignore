@@ -47,5 +47,6 @@ docker/db/*.db
 docker/db/*.db-wal
 docker/db/*.db-shm
 docker/db/.build-matrix.db*
+docker/db/matrix.db.template
 !docker/db/matrix.db.example
 !docker/db/README.md

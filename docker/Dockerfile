@@ -21,7 +21,8 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN pnpm build \
-  && pnpm docker:bundle-entrypoint
+  && pnpm docker:bundle-entrypoint \
+  && pnpm exec tsx scripts/build-docker-db-template.ts
 
 FROM base AS runner
 ENV NODE_ENV=production
