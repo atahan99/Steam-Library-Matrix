@@ -22,15 +22,15 @@ describe("checkSteamDenuvo live (real Steam store pages)", () => {
   )
 
   it(
-    "returns no Denuvo for Dota 2 when store page is checked",
+    "returns unknown DRM status for Dota 2 when store page has no Denuvo notice",
     async () => {
       const status = await checkSteamDenuvo(570, {
         curatorAppids: new Set(),
         curatorComplete: true,
       })
 
-      expect(status.hasDenuvoAntiTamper).toBe(false)
-      expect(status.confidence).toBe("high")
+      expect(status.hasDenuvoAntiTamper).toBeNull()
+      expect(status.confidence).toBe("none")
     },
     30_000
   )

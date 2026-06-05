@@ -1,0 +1,26 @@
+{
+  "version": 3,
+  "generatedAt": "2026-06-05T02:37:30.652Z",
+  "sources": {
+    "denuvo": {
+      "generatedAt": "2026-06-05T02:37:30.652Z",
+      "count": 307
+    },
+    "steamGames": {
+      "generatedAt": "2026-06-05T02:37:30.652Z",
+      "count": 1500
+    },
+    "appDetailsLite": {
+      "generatedAt": "2026-06-05T02:37:30.652Z",
+      "count": 366
+    },
+    "protondb": {
+      "generatedAt": "2026-06-05T02:37:30.652Z",
+      "count": 1159
+    },
+    "hltb": {
+      "generatedAt": "2026-06-05T02:37:30.652Z",
+      "count": 1500
+    }
+  }
+}

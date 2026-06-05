@@ -53,7 +53,9 @@ import {
   isAntiCheatTableRow,
   isLowConfidenceAntiCheatMatch,
 } from "@/lib/anticheat/stats"
+import { DenuvoStatusBadge } from "@/components/dashboard/denuvo-status-badge"
 import { DENUVO_CURATOR_SOURCE_URL } from "@/lib/anticheat/denuvo"
+import { shouldShowDenuvoCuratorLink } from "@/lib/steam/denuvo/resolve-denuvo-display-state"
 import { AntiCheatSoftwareMultiSelect } from "@/components/tables/anticheat-software-multi-select"
 import {
   buildAntiCheatSoftwareFilterOptions,
@@ -335,6 +337,7 @@ export const AntiCheatTable = () => {
               <TableHead className={TABLE_GAME_COLUMN_HEAD_CLASS}>Game</TableHead>
               <TableHead>Playtime</TableHead>
               <TableHead>Anti-cheat software</TableHead>
+              <TableHead>Denuvo / DRM</TableHead>
               <TableHead>Linux anti-cheat status</TableHead>
               <TableHead>Kernel anti-cheat</TableHead>
               <TableHead>Native Linux</TableHead>
@@ -345,7 +348,7 @@ export const AntiCheatTable = () => {
           <TableBody>
             {paged.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} className="text-center text-muted-foreground">
+                <TableCell colSpan={9} className="text-center text-muted-foreground">
                   {antiCheatGames.length === 0
                     ? "No games checked yet. Sync catalogs, then run Anti-cheat refresh on Data Status."
                     : "No games match these filters."}
@@ -406,12 +409,6 @@ export const AntiCheatTable = () => {
                             label="Kernel anti-cheat source on Levvvel"
                           />
                         ) : null}
-                        {g.antiCheat?.denuvoAntiTamper === true ? (
-                          <SourceLink
-                            href={DENUVO_CURATOR_SOURCE_URL}
-                            label="Denuvo Anti-Tamper source on Steam curator"
-                          />
-                        ) : null}
                       </div>
                     </TableCell>
                     <TableCell>
@@ -429,6 +426,21 @@ export const AntiCheatTable = () => {
                           ))}
                         </ul>
                       )}
+                    </TableCell>
+                    <TableCell className="whitespace-normal align-top">
+                      <div className="flex flex-col gap-1">
+                        <DenuvoStatusBadge antiCheat={g.antiCheat} />
+                        {shouldShowDenuvoCuratorLink({
+                          denuvoAntiTamper: g.antiCheat?.denuvoAntiTamper,
+                          denuvoConfidence: g.antiCheat?.denuvoConfidence,
+                          denuvoSource: g.antiCheat?.denuvoSource,
+                        }) ? (
+                          <SourceLink
+                            href={DENUVO_CURATOR_SOURCE_URL}
+                            label="Denuvo Anti-Tamper source on Steam curator"
+                          />
+                        ) : null}
+                      </div>
                     </TableCell>
                     <TableCell>
                       <AntiCheatStatusBadge

@@ -15,7 +15,6 @@ import { finishRefreshLog, startRefreshLog } from "@/lib/db/refresh-log"
 import { awacyGameUrl } from "@/lib/anticheat/anticheatClient"
 import {
   detectDenuvoAntiCheatFromNames,
-  hasDenuvoDecision,
   resolveDenuvoAntiTamper,
   resolveDenuvoAntiTamperFromStatus,
 } from "@/lib/anticheat/denuvo"
@@ -29,6 +28,8 @@ import { buildAnticheatRefreshMessage } from "@/lib/anticheat/refresh-message"
 import { syncAnticheatCatalogs } from "@/lib/anticheat/sync-catalogs"
 import { LEVVVEL_KERNEL_URL } from "@/lib/anticheat/anticheatTypes"
 import { checkSteamDenuvo } from "@/lib/steam/denuvo"
+import { isDenuvoStoreRefreshNeeded } from "@/lib/steam/denuvo/is-denuvo-data-fresh"
+import type { DenuvoSourceKind } from "@/lib/steam/denuvo/types"
 
 const STORE_PAGE_FETCH_DELAY_MS = 250
 
@@ -48,6 +49,14 @@ const isAnticheatSchemaMismatch = (message?: string | null): boolean =>
   )
 
 type AnticheatUpsertValues = typeof anticheatEntries.$inferInsert
+
+type DenuvoPersistFields = {
+  denuvoAntiTamper: boolean | null
+  denuvoConfidence?: string | null
+  denuvoSource?: string | null
+  denuvoEvidence?: string | null
+  denuvoCheckedAt?: Date | null
+}
 
 const upsertAnticheatEntry = async (values: AnticheatUpsertValues) => {
   const db = getDb()
@@ -135,6 +144,10 @@ export const enrichSingleAnticheat = async (
         lastCheckedAt: anticheatEntries.lastCheckedAt,
         denuvoAntiTamper: anticheatEntries.denuvoAntiTamper,
         denuvoAntiCheat: anticheatEntries.denuvoAntiCheat,
+        denuvoConfidence: anticheatEntries.denuvoConfidence,
+        denuvoSource: anticheatEntries.denuvoSource,
+        denuvoEvidence: anticheatEntries.denuvoEvidence,
+        denuvoCheckedAt: anticheatEntries.denuvoCheckedAt,
       })
       .from(anticheatEntries)
       .where(eq(anticheatEntries.appid, appid))
@@ -142,10 +155,7 @@ export const enrichSingleAnticheat = async (
     const existing = existingRows[0]
 
     if (phase === "denuvo") {
-      if (
-        existing &&
-        hasDenuvoDecision(existing.denuvoAntiTamper, existing.denuvoAntiCheat)
-      ) {
+      if (existing && !isDenuvoStoreRefreshNeeded(existing, force)) {
         return { checked: 1, updated: 0, failed: 0 }
       }
     } else if (
@@ -155,13 +165,49 @@ export const enrichSingleAnticheat = async (
     }
   }
 
-  let denuvoAntiTamper: boolean | null
+  let denuvoFields: DenuvoPersistFields = {
+    denuvoAntiTamper: null,
+  }
+
+  const loadExistingDenuvo = async () => {
+    const rows = await db
+      .select({
+        denuvoAntiTamper: anticheatEntries.denuvoAntiTamper,
+        denuvoConfidence: anticheatEntries.denuvoConfidence,
+        denuvoSource: anticheatEntries.denuvoSource,
+        denuvoEvidence: anticheatEntries.denuvoEvidence,
+        denuvoCheckedAt: anticheatEntries.denuvoCheckedAt,
+      })
+      .from(anticheatEntries)
+      .where(eq(anticheatEntries.appid, appid))
+      .limit(1)
+    return rows[0]
+  }
+
   if (phase === "catalog") {
-    denuvoAntiTamper = resolveDenuvoAntiTamper(
+    const catalogTamper = resolveDenuvoAntiTamper(
       appid,
       context.denuvoCatalogAppids,
       context.denuvoCatalogComplete
     )
+    if (catalogTamper === true) {
+      denuvoFields = {
+        denuvoAntiTamper: true,
+        denuvoConfidence: "medium",
+        denuvoSource: "curator",
+        denuvoEvidence: "Listed on Denuvo Watch curator",
+        denuvoCheckedAt: new Date(),
+      }
+    } else {
+      const existingDenuvo = await loadExistingDenuvo()
+      denuvoFields = {
+        denuvoAntiTamper: existingDenuvo?.denuvoAntiTamper ?? null,
+        denuvoConfidence: existingDenuvo?.denuvoConfidence ?? null,
+        denuvoSource: existingDenuvo?.denuvoSource ?? null,
+        denuvoEvidence: existingDenuvo?.denuvoEvidence ?? null,
+        denuvoCheckedAt: existingDenuvo?.denuvoCheckedAt ?? null,
+      }
+    }
   } else {
     if (delayBeforeStoreFetch) {
       await sleep(STORE_PAGE_FETCH_DELAY_MS)
@@ -172,16 +218,29 @@ export const enrichSingleAnticheat = async (
         curatorAppids: context.denuvoCatalogAppids,
         curatorComplete: context.denuvoCatalogComplete,
       })
-      denuvoAntiTamper = resolveDenuvoAntiTamperFromStatus(denuvoStatus)
+      let tamper = resolveDenuvoAntiTamperFromStatus(denuvoStatus)
       const catalogTamper = resolveDenuvoAntiTamper(
         appid,
         context.denuvoCatalogAppids,
         context.denuvoCatalogComplete
       )
-      if (denuvoAntiTamper !== true && catalogTamper === true) {
-        denuvoAntiTamper = true
-      } else if (denuvoAntiTamper === null && catalogTamper === false) {
-        denuvoAntiTamper = false
+      if (tamper !== true && catalogTamper === true) {
+        tamper = true
+      }
+
+      const primarySource: DenuvoSourceKind =
+        denuvoStatus.primarySource ??
+        (catalogTamper === true ? "curator" : "store_page")
+
+      denuvoFields = {
+        denuvoAntiTamper: tamper,
+        denuvoConfidence: denuvoStatus.confidence,
+        denuvoSource: primarySource,
+        denuvoEvidence:
+          denuvoStatus.evidence ??
+          denuvoStatus.drmNotices.find((n) => /denuvo/i.test(n)) ??
+          null,
+        denuvoCheckedAt: new Date(denuvoStatus.checkedAt),
       }
     } catch (error) {
       console.error(`Denuvo check failed for ${gameName} (${appid})`, error)
@@ -223,9 +282,13 @@ export const enrichSingleAnticheat = async (
     Boolean(levvvelRow)
   )
 
+  const { denuvoAntiTamper, denuvoConfidence, denuvoSource, denuvoEvidence, denuvoCheckedAt } =
+    denuvoFields
+
   if (
     !isMeaningfulAntiCheatLookup(info) &&
-    !hasDenuvoDecision(denuvoAntiTamper, denuvoAntiCheat)
+    denuvoAntiTamper == null &&
+    denuvoAntiCheat == null
   ) {
     try {
       await upsertAnticheatEntry({
@@ -233,6 +296,10 @@ export const enrichSingleAnticheat = async (
         status: "Unknown",
         denuvoAntiTamper,
         denuvoAntiCheat,
+        denuvoConfidence: denuvoConfidence ?? null,
+        denuvoSource: denuvoSource ?? null,
+        denuvoEvidence: denuvoEvidence ?? null,
+        denuvoCheckedAt: denuvoCheckedAt ?? null,
         notes:
           "No AWACY/Levvvel match and Denuvo Anti-Tamper could not be determined from store or curator catalog.",
         sourceUrl: "https://areweanticheatyet.com/",
@@ -283,6 +350,10 @@ export const enrichSingleAnticheat = async (
       kernelLevel,
       denuvoAntiTamper,
       denuvoAntiCheat,
+      denuvoConfidence: denuvoConfidence ?? null,
+      denuvoSource: denuvoSource ?? null,
+      denuvoEvidence: denuvoEvidence ?? null,
+      denuvoCheckedAt: denuvoCheckedAt ?? null,
       notes,
       sourceUrl,
       awacySlug: slug ?? null,

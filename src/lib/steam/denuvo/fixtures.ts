@@ -33,9 +33,18 @@ const securomHtml = `
 
 const noDrmHtml = `<html><body><div>No notices here</div></body></html>`
 
+const denuvoRemovedHtml = `
+<html>
+  <body>
+    <div class="DRM_notice">Denuvo Anti-Tamper removed from this title.</div>
+  </body>
+</html>
+`
+
 export const FIXTURES = {
   hogwartsLegacyDrmHtml,
   activationLimitHtml,
   securomHtml,
   noDrmHtml,
+  denuvoRemovedHtml,
 }

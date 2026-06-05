@@ -6,7 +6,9 @@ node_modules
 docker/.env
 !.env.example
 !docker/.env.example
-data
+data/*
+!data/seed/
+!data/seed/**
 *.md
 .cursor
 terminals

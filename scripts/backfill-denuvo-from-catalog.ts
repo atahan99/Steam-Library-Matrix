@@ -1,11 +1,12 @@
 /**
  * Fast profile link: set denuvo_anti_tamper from global curator catalog (no store scrape).
- * Run after catalog sync. Usage: npx tsx --env-file=.env scripts/backfill-denuvo-from-catalog.ts
+ * Positives only — absence from catalog does not imply no Denuvo.
  */
-import { and, inArray, isNotNull, isNull } from "drizzle-orm"
+import { inArray } from "drizzle-orm"
 import { getDb } from "@/lib/db/client"
 import { loadAllDenuvoCatalogAppids } from "@/lib/db/denuvo-catalog"
-import { anticheatEntries } from "@/lib/db/schema"
+import { anticheatEntries, steamGames } from "@/lib/db/schema"
+import { shouldApplySeedDenuvoRow } from "@/lib/seed/upsert-rules"
 
 const run = async () => {
   const db = getDb()
@@ -17,45 +18,82 @@ const run = async () => {
 
   const catalogList = [...catalogAppids]
   let yes = 0
+  let skipped = 0
+  const now = new Date()
+  const checkedAt = now.toISOString()
 
   const chunkSize = 500
   for (let i = 0; i < catalogList.length; i += chunkSize) {
     const chunk = catalogList.slice(i, i + chunkSize)
-    const updated = await db
-      .update(anticheatEntries)
-      .set({ denuvoAntiTamper: true, updatedAt: new Date() })
-      .where(inArray(anticheatEntries.appid, chunk))
-      .returning({ appid: anticheatEntries.appid })
-    yes += updated.length
-  }
 
-  const allChecked = await db
-    .select({ appid: anticheatEntries.appid })
-    .from(anticheatEntries)
-    .where(
-      and(
-        isNotNull(anticheatEntries.lastCheckedAt),
-        isNull(anticheatEntries.denuvoAntiTamper)
-      )
-    )
+    for (const appid of chunk) {
+      const gameExists = await db
+        .select({ appid: steamGames.appid })
+        .from(steamGames)
+        .where(inArray(steamGames.appid, [appid]))
+        .limit(1)
 
-  const toFalse = allChecked
-    .map((row) => row.appid)
-    .filter((appid) => !catalogAppids.has(appid))
+      if (!gameExists[0]) {
+        await db.insert(steamGames).values({
+          appid,
+          name: `App ${appid}`,
+          storeUrl: `https://store.steampowered.com/app/${appid}`,
+          updatedAt: now,
+        })
+      }
 
-  let no = 0
-  for (let i = 0; i < toFalse.length; i += chunkSize) {
-    const chunk = toFalse.slice(i, i + chunkSize)
-    const updated = await db
-      .update(anticheatEntries)
-      .set({ denuvoAntiTamper: false, updatedAt: new Date() })
-      .where(inArray(anticheatEntries.appid, chunk))
-      .returning({ appid: anticheatEntries.appid })
-    no += updated.length
+      const existing = await db
+        .select({
+          denuvoAntiTamper: anticheatEntries.denuvoAntiTamper,
+          denuvoConfidence: anticheatEntries.denuvoConfidence,
+          denuvoSource: anticheatEntries.denuvoSource,
+          denuvoCheckedAt: anticheatEntries.denuvoCheckedAt,
+        })
+        .from(anticheatEntries)
+        .where(inArray(anticheatEntries.appid, [appid]))
+        .limit(1)
+
+      const seedRow = {
+        hasDenuvoAntiTamper: true as const,
+        confidence: "medium" as const,
+        source: "curator",
+        checkedAt,
+      }
+
+      if (!shouldApplySeedDenuvoRow(existing[0], seedRow)) {
+        skipped += 1
+        continue
+      }
+
+      await db
+        .insert(anticheatEntries)
+        .values({
+          appid,
+          denuvoAntiTamper: true,
+          denuvoConfidence: "medium",
+          denuvoSource: "curator",
+          denuvoEvidence: "Listed on Denuvo Watch curator",
+          denuvoCheckedAt: now,
+          updatedAt: now,
+        })
+        .onConflictDoUpdate({
+          target: anticheatEntries.appid,
+          set: {
+            denuvoAntiTamper: true,
+            denuvoConfidence: "medium",
+            denuvoSource: "curator",
+            denuvoEvidence: "Listed on Denuvo Watch curator",
+            denuvoCheckedAt: now,
+            updatedAt: now,
+          },
+        })
+
+      yes += 1
+    }
   }
 
   console.log(
-    `Denuvo Anti-Tamper backfill: yes=${yes} no=${no} (catalog size ${catalogAppids.size})`
+    `Denuvo Anti-Tamper backfill: yes=${yes} skipped=${skipped} (catalog size ${catalogAppids.size})`
   )
 }
 

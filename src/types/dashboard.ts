@@ -87,8 +87,21 @@ export type DashboardGame = {
     status?: AwacyStatus | string
     anticheatNames?: string[]
     kernelLevel?: boolean
-    denuvoAntiTamper?: boolean
-    denuvoAntiCheat?: boolean
+    denuvoAntiTamper?: boolean | null
+    denuvoAntiCheat?: boolean | null
+    denuvoConfidence?: string
+    denuvoSource?: string
+    denuvoEvidence?: string
+    denuvoCheckedAt?: string
+    denuvoDisplay?: {
+      kind: "detected" | "possible" | "unknown" | "confirmed_absent"
+      label: string
+      confidence: string | null
+      source: string | null
+      checkedAt: string | null
+      tooltip: string
+      variant: "default" | "secondary" | "outline" | "destructive"
+    }
     notes?: string
     slug?: string
     nativeLinux?: boolean

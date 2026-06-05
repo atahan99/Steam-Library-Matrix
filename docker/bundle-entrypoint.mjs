@@ -20,6 +20,10 @@ const entries = [
     in: "scripts/bootstrap-anticheat-catalogs.ts",
     out: `${outdir}/bootstrap-anticheat-catalogs.cjs`,
   },
+  {
+    in: "scripts/hydrate-seed-data.ts",
+    out: `${outdir}/hydrate-seed-data.cjs`,
+  },
 ]
 
 for (const entry of entries) {

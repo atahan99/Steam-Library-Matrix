@@ -124,6 +124,10 @@ export const anticheatEntries = sqliteTable("anticheat_entries", {
   levvvelSourceUrl: text("levvvel_source_url"),
   denuvoAntiTamper: integer("denuvo_anti_tamper", { mode: "boolean" }),
   denuvoAntiCheat: integer("denuvo_anti_cheat", { mode: "boolean" }),
+  denuvoConfidence: text("denuvo_confidence"),
+  denuvoSource: text("denuvo_source"),
+  denuvoEvidence: text("denuvo_evidence"),
+  denuvoCheckedAt: timestampMs("denuvo_checked_at"),
   sourceUrl: text("source_url"),
   lastCheckedAt: timestampMs("last_checked_at").default(sql`(cast(unixepoch('subsec') * 1000 as integer))`),
   createdAt: timestampMs("created_at").default(sql`(cast(unixepoch('subsec') * 1000 as integer))`),
@@ -234,6 +238,16 @@ export const denuvoAntiTamperCatalog = sqliteTable("denuvo_anti_tamper_catalog",
     .default(sql`(cast(unixepoch('subsec') * 1000 as integer))`),
 })
 
+export const seedHydrationMeta = sqliteTable("seed_hydration_meta", {
+  id: text("id").primaryKey().default("default"),
+  manifestVersion: integer("manifest_version").notNull(),
+  manifestGeneratedAt: text("manifest_generated_at"),
+  hydratedAt: timestampMs("hydrated_at").notNull(),
+  insertedCount: integer("inserted_count").notNull().default(0),
+  updatedCount: integer("updated_count").notNull().default(0),
+  skippedCount: integer("skipped_count").notNull().default(0),
+})
+
 export const profileGameAchievements = sqliteTable(
   "profile_game_achievements",
   {
@@ -269,6 +283,7 @@ export const schema = {
   levvvelKernelCatalog,
   anticheatCatalogMeta,
   denuvoAntiTamperCatalog,
+  seedHydrationMeta,
   profileGameAchievements,
 }
 

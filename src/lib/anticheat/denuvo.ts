@@ -23,10 +23,9 @@ export const resolveDenuvoAntiTamperFromStatus = (
 export const resolveDenuvoAntiTamper = (
   appid: number,
   catalogAppids: Set<number>,
-  catalogComplete: boolean
+  _catalogComplete: boolean
 ): boolean | null => {
   if (catalogAppids.has(appid)) return true
-  if (catalogComplete) return false
   return null
 }
 

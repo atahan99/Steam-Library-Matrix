@@ -36,20 +36,30 @@ export const AnticheatCatalogStatusCard = () => {
 
   const denuvoProfileCounts = useMemo(() => {
     const enrichGames = uniqueEnrichGames(games, wishlistGames)
-    let yes = 0
-    let no = 0
-    let inconclusive = 0
+    let detected = 0
+    let possible = 0
+    let unknown = 0
+    let confirmedAbsent = 0
     let notChecked = 0
     for (const game of enrichGames) {
-      if (!game.antiCheat?.lastCheckedAt) {
+      if (!game.antiCheat?.denuvoCheckedAt && !game.antiCheat?.denuvoDisplay) {
         notChecked += 1
         continue
       }
-      if (game.antiCheat.denuvoAntiTamper === true) yes += 1
-      else if (game.antiCheat.denuvoAntiTamper === false) no += 1
-      else inconclusive += 1
+      const kind = game.antiCheat.denuvoDisplay?.kind
+      if (kind === "detected") detected += 1
+      else if (kind === "possible") possible += 1
+      else if (kind === "confirmed_absent") confirmedAbsent += 1
+      else unknown += 1
     }
-    return { yes, no, inconclusive, notChecked, total: enrichGames.length }
+    return {
+      detected,
+      possible,
+      unknown,
+      confirmedAbsent,
+      notChecked,
+      total: enrichGames.length,
+    }
   }, [games, wishlistGames])
 
   const handleRefresh = async () => {
@@ -165,10 +175,11 @@ export const AnticheatCatalogStatusCard = () => {
           link) on Data Status.
         </p>
         <p>
-          Profile Denuvo Anti-Tamper: yes {denuvoProfileCounts.yes} · no{" "}
-          {denuvoProfileCounts.no} · inconclusive {denuvoProfileCounts.inconclusive}{" "}
-          · not checked {denuvoProfileCounts.notChecked} (of{" "}
-          {denuvoProfileCounts.total} games)
+          Profile Denuvo Anti-Tamper: detected {denuvoProfileCounts.detected} ·
+          possible {denuvoProfileCounts.possible} · unknown{" "}
+          {denuvoProfileCounts.unknown} · confirmed absent{" "}
+          {denuvoProfileCounts.confirmedAbsent} · not checked{" "}
+          {denuvoProfileCounts.notChecked} (of {denuvoProfileCounts.total} games)
         </p>
         <p>
           Last synced:{" "}

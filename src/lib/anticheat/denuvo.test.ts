@@ -26,8 +26,8 @@ describe("resolveDenuvoAntiTamper", () => {
     expect(resolveDenuvoAntiTamper(123, new Set([123]), true)).toBe(true)
   })
 
-  it("returns false when catalog is complete and appid missing", () => {
-    expect(resolveDenuvoAntiTamper(123, new Set(), true)).toBe(false)
+  it("returns null when catalog is complete and appid missing", () => {
+    expect(resolveDenuvoAntiTamper(123, new Set(), true)).toBe(null)
   })
 
   it("returns null when catalog is incomplete", () => {

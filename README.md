@@ -179,6 +179,9 @@ Home LAN vs public internet: [docs/security.md](docs/security.md#deployment-quic
 | `pnpm dev` | Next.js only |
 | `pnpm db:migrate` | Apply SQL migrations (local `./data/`) |
 | `pnpm db:verify` | Verify schema |
+| `pnpm seed:hydrate` | Load bundled seed metadata into SQLite |
+| `pnpm seed:generate` | Regenerate `data/seed/` from local DB |
+| `pnpm seed:verify` | Validate seed JSON files |
 | `pnpm test` | Unit tests |
 | `pnpm bootstrap` | Import + enrich via CLI |
 

@@ -38,6 +38,26 @@ Manual refresh: Data Status. Disable auto: `SLM_SKIP_CATALOG_BOOTSTRAP=true`.
 
 Denuvo catalog: [`fetch-denuvo-curator-catalog.ts`](../src/lib/steam/fetch-denuvo-curator-catalog.ts) via `ajaxgetcuratorrecommendations`.
 
+## Bundled seed metadata
+
+**First-launch performance:** compact derived metadata in [`data/seed/`](../data/seed/) is hydrated into SQLite before live scraping runs.
+
+| File | Contents |
+| --- | --- |
+| `top-appids.json` | Steam store top sellers (up to 5000 appids) — target list for seed export |
+| `metadata-manifest.json` | version, counts, generatedAt |
+| `steam-games.seed.json` | appid, name, icon/store basics |
+| `denuvo.seed.json` | Denuvo status, confidence, source, evidence |
+| `app-details-lite.seed.json` | optional lite app details (no descriptions) |
+| `protondb.seed.json` | ProtonDB tier, confidence, reports, checkedAt |
+| `hltb.seed.json` | HLTB durations, match metadata, negative-cache rows |
+
+Flow: migrate → **seed hydrate** → catalog bootstrap → background enrichment for missing/stale/low-confidence rows.
+
+Refresh top sellers: `pnpm seed:fetch-top-appids`. Regenerate (includes live ProtonDB/HLTB prefetch): `pnpm seed:generate`. Export-only: `pnpm seed:generate --skip-prefetch`. Disable: `SLM_SKIP_SEED_HYDRATION=true`.
+
+**Denuvo is confidence-based:** absence from the curator list or store DRM section does **not** mean “no Denuvo”. The UI shows detected / possible / unknown / confirmed absent (explicit removal only). High-confidence seed data is treated as fresh for ~30 days before store re-check.
+
 ## Global vs per-appid
 
 | Layer | Tables | Scope |

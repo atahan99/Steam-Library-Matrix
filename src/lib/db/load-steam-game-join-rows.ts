@@ -56,6 +56,10 @@ const mapAnticheat = (row: typeof anticheatEntries.$inferSelect | null) => {
     levvvel_anticheat_names: row.levvvelAnticheatNames,
     denuvo_anti_tamper: row.denuvoAntiTamper,
     denuvo_anti_cheat: row.denuvoAntiCheat,
+    denuvo_confidence: row.denuvoConfidence,
+    denuvo_source: row.denuvoSource,
+    denuvo_evidence: row.denuvoEvidence,
+    denuvo_checked_at: row.denuvoCheckedAt?.toISOString(),
     source_url: row.sourceUrl,
     last_checked_at: row.lastCheckedAt?.toISOString(),
   }

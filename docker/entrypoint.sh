@@ -6,7 +6,7 @@ chown -R nextjs:nodejs /app/data
 chmod 775 /app/data
 
 if [ -z "$DATABASE_URL" ]; then
-  export DATABASE_URL="file:/app/data/matrix.db"
+  export DATABASE_URL="file:/app/data/db/matrix.db"
 fi
 
 if [ -z "$STEAM_API_KEY" ]; then
@@ -15,6 +15,13 @@ fi
 
 echo "[entrypoint] applying database migrations..."
 node dist/docker/db-migrate.cjs
+
+if [ "$SLM_SKIP_SEED_HYDRATION" != "true" ]; then
+  echo "[entrypoint] hydrating bundled seed metadata..."
+  if ! node dist/docker/hydrate-seed-data.cjs; then
+    echo "[entrypoint] seed hydration failed — app will retry on server start"
+  fi
+fi
 
 if [ "$SLM_SKIP_CATALOG_BOOTSTRAP" != "true" ]; then
   echo "[entrypoint] ensuring global anti-cheat catalogs..."

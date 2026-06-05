@@ -13,6 +13,8 @@ import {
 } from "@/lib/anticheat/denuvo"
 import type { DashboardGame } from "@/types/dashboard"
 
+const POSSIBLE_DENUVO_LABEL = "Possible Denuvo"
+
 export type HasAntiCheatFilter = "all" | "yes" | "no"
 export type KernelFilter = "all" | "yes" | "no" | "unknown"
 
@@ -34,10 +36,17 @@ export const getDisplayAntiCheatSoftwareNames = (
   const seen = new Set(names.map((name) => name.toLowerCase().trim()))
 
   if (
-    game.antiCheat?.denuvoAntiTamper === true &&
+    game.antiCheat?.denuvoDisplay?.kind === "detected" &&
     !seen.has(DENUVO_ANTI_TAMPER_SOFTWARE_LABEL.toLowerCase())
   ) {
     names.push(DENUVO_ANTI_TAMPER_SOFTWARE_LABEL)
+  }
+
+  if (
+    game.antiCheat?.denuvoDisplay?.kind === "possible" &&
+    !seen.has(POSSIBLE_DENUVO_LABEL.toLowerCase())
+  ) {
+    names.push(POSSIBLE_DENUVO_LABEL)
   }
 
   if (
@@ -83,7 +92,11 @@ const matchesSingleSoftware = (
   software: string
 ): boolean => {
   if (software === DENUVO_ANTI_TAMPER_SOFTWARE_LABEL) {
-    return game.antiCheat?.denuvoAntiTamper === true
+    return game.antiCheat?.denuvoDisplay?.kind === "detected"
+  }
+
+  if (software === POSSIBLE_DENUVO_LABEL) {
+    return game.antiCheat?.denuvoDisplay?.kind === "possible"
   }
 
   if (software === DENUVO_ANTI_CHEAT_NAME) {

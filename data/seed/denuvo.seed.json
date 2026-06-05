@@ -1,0 +1,2242 @@
+{
+  "version": 3,
+  "generatedAt": "2026-06-05T02:37:30.652Z",
+  "items": {
+    "240": {
+      "appid": 240,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "440": {
+      "appid": 440,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "550": {
+      "appid": 550,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "570": {
+      "appid": 570,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T00:00:00.000Z"
+    },
+    "620": {
+      "appid": 620,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "730": {
+      "appid": 730,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2990": {
+      "appid": 2990,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "4000": {
+      "appid": 4000,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "7000": {
+      "appid": 7000,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "8140": {
+      "appid": 8140,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "12150": {
+      "appid": 12150,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "12210": {
+      "appid": 12210,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "16810": {
+      "appid": 16810,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "22330": {
+      "appid": 22330,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "22380": {
+      "appid": 22380,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "24240": {
+      "appid": 24240,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "34030": {
+      "appid": 34030,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "40990": {
+      "appid": 40990,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "48000": {
+      "appid": 48000,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "48190": {
+      "appid": 48190,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "48700": {
+      "appid": 48700,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "105600": {
+      "appid": 105600,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "108600": {
+      "appid": 108600,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "108710": {
+      "appid": 108710,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "203160": {
+      "appid": 203160,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "204100": {
+      "appid": 204100,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "204360": {
+      "appid": 204360,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "208650": {
+      "appid": 208650,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "210970": {
+      "appid": 210970,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "213670": {
+      "appid": 213670,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "214510": {
+      "appid": 214510,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "214950": {
+      "appid": 214950,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "220200": {
+      "appid": 220200,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "221100": {
+      "appid": 221100,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "225540": {
+      "appid": 225540,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "236390": {
+      "appid": 236390,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "269210": {
+      "appid": 269210,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "285190": {
+      "appid": 285190,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "304390": {
+      "appid": 304390,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "304430": {
+      "appid": 304430,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "304930": {
+      "appid": 304930,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "319630": {
+      "appid": 319630,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "335300": {
+      "appid": 335300,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "337000": {
+      "appid": 337000,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "341800": {
+      "appid": 341800,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "346110": {
+      "appid": 346110,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "350640": {
+      "appid": 350640,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "356190": {
+      "appid": 356190,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "359320": {
+      "appid": 359320,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "361280": {
+      "appid": 361280,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "361420": {
+      "appid": 361420,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "364360": {
+      "appid": 364360,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "365360": {
+      "appid": 365360,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "367500": {
+      "appid": 367500,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "367520": {
+      "appid": 367520,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "368340": {
+      "appid": 368340,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "371660": {
+      "appid": 371660,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "371970": {
+      "appid": 371970,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "389730": {
+      "appid": 389730,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "391220": {
+      "appid": 391220,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "391540": {
+      "appid": 391540,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "393380": {
+      "appid": 393380,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "394360": {
+      "appid": 394360,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "412020": {
+      "appid": 412020,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "413150": {
+      "appid": 413150,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "413420": {
+      "appid": 413420,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "418370": {
+      "appid": 418370,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "427520": {
+      "appid": 427520,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "431960": {
+      "appid": 431960,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "440900": {
+      "appid": 440900,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "457140": {
+      "appid": 457140,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "477160": {
+      "appid": 477160,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "488790": {
+      "appid": 488790,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "491540": {
+      "appid": 491540,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "493520": {
+      "appid": 493520,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "493840": {
+      "appid": 493840,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "502500": {
+      "appid": 502500,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "504230": {
+      "appid": 504230,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "508440": {
+      "appid": 508440,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "517630": {
+      "appid": 517630,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "518790": {
+      "appid": 518790,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "526870": {
+      "appid": 526870,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "532210": {
+      "appid": 532210,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "534380": {
+      "appid": 534380,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "544750": {
+      "appid": 544750,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "546560": {
+      "appid": 546560,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "552500": {
+      "appid": 552500,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "553850": {
+      "appid": 553850,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "582010": {
+      "appid": 582010,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "582160": {
+      "appid": 582160,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "585420": {
+      "appid": 585420,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "588650": {
+      "appid": 588650,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "594570": {
+      "appid": 594570,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "597180": {
+      "appid": 597180,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "613100": {
+      "appid": 613100,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "617670": {
+      "appid": 617670,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "620980": {
+      "appid": 620980,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "626690": {
+      "appid": 626690,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "633230": {
+      "appid": 633230,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "648800": {
+      "appid": 648800,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "668580": {
+      "appid": 668580,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "674940": {
+      "appid": 674940,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "678950": {
+      "appid": 678950,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "678960": {
+      "appid": 678960,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "703080": {
+      "appid": 703080,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "739630": {
+      "appid": 739630,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "750130": {
+      "appid": 750130,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "750920": {
+      "appid": 750920,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "782330": {
+      "appid": 782330,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "785260": {
+      "appid": 785260,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "837470": {
+      "appid": 837470,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "880940": {
+      "appid": 880940,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "883710": {
+      "appid": 883710,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "934700": {
+      "appid": 934700,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "952060": {
+      "appid": 952060,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "976310": {
+      "appid": 976310,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "990080": {
+      "appid": 990080,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "high",
+      "source": "seed",
+      "evidence": "Incorporates 3rd-party DRM: Denuvo Anti-Tamper",
+      "checkedAt": "2026-06-05T00:00:00.000Z"
+    },
+    "1030840": {
+      "appid": 1030840,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1088850": {
+      "appid": 1088850,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1128810": {
+      "appid": 1128810,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1142710": {
+      "appid": 1142710,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1144200": {
+      "appid": 1144200,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1172470": {
+      "appid": 1172470,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1182900": {
+      "appid": 1182900,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1184370": {
+      "appid": 1184370,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1196590": {
+      "appid": 1196590,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1222700": {
+      "appid": 1222700,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1222730": {
+      "appid": 1222730,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1235140": {
+      "appid": 1235140,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1237970": {
+      "appid": 1237970,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1238840": {
+      "appid": 1238840,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1244460": {
+      "appid": 1244460,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1250410": {
+      "appid": 1250410,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1262580": {
+      "appid": 1262580,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1265920": {
+      "appid": 1265920,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1272320": {
+      "appid": 1272320,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1273400": {
+      "appid": 1273400,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1274570": {
+      "appid": 1274570,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1285190": {
+      "appid": 1285190,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1304930": {
+      "appid": 1304930,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1313140": {
+      "appid": 1313140,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1326470": {
+      "appid": 1326470,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1331550": {
+      "appid": 1331550,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1336490": {
+      "appid": 1336490,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1363080": {
+      "appid": 1363080,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1364780": {
+      "appid": 1364780,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1372110": {
+      "appid": 1372110,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1384160": {
+      "appid": 1384160,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1435790": {
+      "appid": 1435790,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1436990": {
+      "appid": 1436990,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1446780": {
+      "appid": 1446780,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1458140": {
+      "appid": 1458140,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1465360": {
+      "appid": 1465360,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1465460": {
+      "appid": 1465460,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1466860": {
+      "appid": 1466860,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1479730": {
+      "appid": 1479730,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1517290": {
+      "appid": 1517290,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1525700": {
+      "appid": 1525700,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1527950": {
+      "appid": 1527950,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1549970": {
+      "appid": 1549970,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1551360": {
+      "appid": 1551360,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1557740": {
+      "appid": 1557740,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1569580": {
+      "appid": 1569580,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1577120": {
+      "appid": 1577120,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1583320": {
+      "appid": 1583320,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1588550": {
+      "appid": 1588550,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1593500": {
+      "appid": 1593500,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1594320": {
+      "appid": 1594320,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1599600": {
+      "appid": 1599600,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1601570": {
+      "appid": 1601570,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1601580": {
+      "appid": 1601580,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1604030": {
+      "appid": 1604030,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1605220": {
+      "appid": 1605220,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1611910": {
+      "appid": 1611910,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1621690": {
+      "appid": 1621690,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1627720": {
+      "appid": 1627720,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1651560": {
+      "appid": 1651560,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1659040": {
+      "appid": 1659040,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1659420": {
+      "appid": 1659420,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1665460": {
+      "appid": 1665460,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1671210": {
+      "appid": 1671210,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1676840": {
+      "appid": 1676840,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1677280": {
+      "appid": 1677280,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1766060": {
+      "appid": 1766060,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1778820": {
+      "appid": 1778820,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1785650": {
+      "appid": 1785650,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1794680": {
+      "appid": 1794680,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1805480": {
+      "appid": 1805480,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1808500": {
+      "appid": 1808500,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1812450": {
+      "appid": 1812450,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1817070": {
+      "appid": 1817070,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1817190": {
+      "appid": 1817190,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1824220": {
+      "appid": 1824220,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1850510": {
+      "appid": 1850510,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1850570": {
+      "appid": 1850570,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1857090": {
+      "appid": 1857090,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1868140": {
+      "appid": 1868140,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1874000": {
+      "appid": 1874000,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1903340": {
+      "appid": 1903340,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1934680": {
+      "appid": 1934680,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1937780": {
+      "appid": 1937780,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1941540": {
+      "appid": 1941540,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1942280": {
+      "appid": 1942280,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1943950": {
+      "appid": 1943950,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1953520": {
+      "appid": 1953520,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1962700": {
+      "appid": 1962700,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1966720": {
+      "appid": 1966720,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1971870": {
+      "appid": 1971870,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1984270": {
+      "appid": 1984270,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2050650": {
+      "appid": 2050650,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2054970": {
+      "appid": 2054970,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2058180": {
+      "appid": 2058180,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2058190": {
+      "appid": 2058190,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2060160": {
+      "appid": 2060160,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2072450": {
+      "appid": 2072450,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2073850": {
+      "appid": 2073850,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2113850": {
+      "appid": 2113850,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2114740": {
+      "appid": 2114740,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2140020": {
+      "appid": 2140020,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2161700": {
+      "appid": 2161700,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2169200": {
+      "appid": 2169200,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2186680": {
+      "appid": 2186680,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2198150": {
+      "appid": 2198150,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2198510": {
+      "appid": 2198510,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2200780": {
+      "appid": 2200780,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2215200": {
+      "appid": 2215200,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2215430": {
+      "appid": 2215430,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2231380": {
+      "appid": 2231380,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2246340": {
+      "appid": 2246340,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2289750": {
+      "appid": 2289750,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2290180": {
+      "appid": 2290180,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2321470": {
+      "appid": 2321470,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2322010": {
+      "appid": 2322010,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2358720": {
+      "appid": 2358720,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2375550": {
+      "appid": 2375550,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2378620": {
+      "appid": 2378620,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2379780": {
+      "appid": 2379780,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2397300": {
+      "appid": 2397300,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2399420": {
+      "appid": 2399420,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2420110": {
+      "appid": 2420110,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2426530": {
+      "appid": 2426530,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2440510": {
+      "appid": 2440510,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2444750": {
+      "appid": 2444750,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2456740": {
+      "appid": 2456740,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2483190": {
+      "appid": 2483190,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2489330": {
+      "appid": 2489330,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2495100": {
+      "appid": 2495100,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2510710": {
+      "appid": 2510710,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2527390": {
+      "appid": 2527390,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2531310": {
+      "appid": 2531310,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2537590": {
+      "appid": 2537590,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2567870": {
+      "appid": 2567870,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2581950": {
+      "appid": 2581950,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2589500": {
+      "appid": 2589500,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2591280": {
+      "appid": 2591280,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2592160": {
+      "appid": 2592160,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2622380": {
+      "appid": 2622380,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2624870": {
+      "appid": 2624870,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2638890": {
+      "appid": 2638890,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2651280": {
+      "appid": 2651280,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2668510": {
+      "appid": 2668510,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2669320": {
+      "appid": 2669320,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2706020": {
+      "appid": 2706020,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2780810": {
+      "appid": 2780810,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2784470": {
+      "appid": 2784470,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2849080": {
+      "appid": 2849080,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2868840": {
+      "appid": 2868840,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2878600": {
+      "appid": 2878600,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2933130": {
+      "appid": 2933130,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2958130": {
+      "appid": 2958130,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "3012580": {
+      "appid": 3012580,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "3017860": {
+      "appid": 3017860,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "3025440": {
+      "appid": 3025440,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "3035570": {
+      "appid": 3035570,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "3041230": {
+      "appid": 3041230,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "3046600": {
+      "appid": 3046600,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "3058630": {
+      "appid": 3058630,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "3059520": {
+      "appid": 3059520,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "3061810": {
+      "appid": 3061810,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "3065800": {
+      "appid": 3065800,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "3151380": {
+      "appid": 3151380,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "3159330": {
+      "appid": 3159330,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "3161220": {
+      "appid": 3161220,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "3265700": {
+      "appid": 3265700,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "3280350": {
+      "appid": 3280350,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "3321460": {
+      "appid": 3321460,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "3357650": {
+      "appid": 3357650,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "3405340": {
+      "appid": 3405340,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "3405690": {
+      "appid": 3405690,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "3450310": {
+      "appid": 3450310,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "3469800": {
+      "appid": 3469800,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "3472040": {
+      "appid": 3472040,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "3483740": {
+      "appid": 3483740,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "3486960": {
+      "appid": 3486960,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "3527290": {
+      "appid": 3527290,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "3551340": {
+      "appid": 3551340,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "3556750": {
+      "appid": 3556750,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "3558670": {
+      "appid": 3558670,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "3669870": {
+      "appid": 3669870,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "3717070": {
+      "appid": 3717070,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "3746540": {
+      "appid": 3746540,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "3751950": {
+      "appid": 3751950,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "3764200": {
+      "appid": 3764200,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "3768760": {
+      "appid": 3768760,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "3917090": {
+      "appid": 3917090,
+      "hasDenuvoAntiTamper": false,
+      "confidence": "none",
+      "source": "seed",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "3937550": {
+      "appid": 3937550,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "4084710": {
+      "appid": 4084710,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "seed",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T02:19:04.829Z"
+    }
+  }
+}

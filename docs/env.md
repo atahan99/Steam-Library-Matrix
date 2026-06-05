@@ -67,6 +67,9 @@ Defaults are defined in [`src/lib/jobs/batch-config.ts`](../src/lib/jobs/batch-c
 | `SLM_ACHIEVEMENTS_BATCH` | `60` | Achievement stats per step |
 | `SLM_ACHIEVEMENTS_CONCURRENCY` | `8` | Parallel Steam achievement calls per step |
 | `SLM_ANTICHEAT_BATCH` | `50` | Anti-cheat catalog-link entries per step |
+| `SLM_DENUVO_STORE_BATCH` | `8` | Denuvo store-page entries per anticheat denuvo phase step |
+| `SLM_DENUVO_STORE_CONCURRENCY` | `2` | Reserved for future parallel Denuvo store fetches |
+| `SLM_DENUVO_STORE_STAGGER_MS` | `400` | Delay between Denuvo store-page fetches |
 
 Recommended for local `dev:all` (mirrors Docker Compose):
 
@@ -87,6 +90,8 @@ SLM_HLTB_CONCURRENCY=6
 | Variable | Description |
 | --- | --- |
 | `SLM_SKIP_CATALOG_BOOTSTRAP` | `true` disables auto AWACY / Levvvel / Denuvo catalog sync on start. Manual: Data Status or `pnpm bootstrap:anticheat-catalogs`. |
+| `SLM_SKIP_SEED_HYDRATION` | `true` disables bundled seed metadata hydration on startup / Docker entrypoint. Manual: `pnpm seed:hydrate`. |
+| `SLM_FORCE_SEED_HYDRATION` | `true` re-applies seed files even when manifest version matches. |
 | `SLM_SKIP_AUTO_APP_DETAILS` | `true` skips auto import-tier jobs after import/refresh. |
 
 ## Optional behavior

@@ -8,9 +8,10 @@ services:
       - .env
       - ../.env
     ports:
-      - "3000:3000"
+      - "3001:3000"
     environment:
       APP_ROOT: /app
+      DATABASE_URL: file:/app/data/db/matrix.db
       # Fast enrichment defaults (match pnpm dev:all; override in docker/.env)
       SLM_EMBED_JOB_WORKER: "true"
       SLM_EMBED_WORKER_MS: "5000"
@@ -28,9 +29,9 @@ services:
       SLM_HLTB_STAGGER_MS: "300"
       SLM_HLTB_SYNC_DELAY_MS: "0"
       SLM_ENRICH_VERBOSE: "true"
-    # Host docker/db/ survives rebuilds — see README
+    # Host docker/db/ survives rebuilds — DB only; bundled seed stays at /app/data/seed
     volumes:
-      - ./db:/app/data
+      - ./db:/app/data/db
     healthcheck:
       test:
         [

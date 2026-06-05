@@ -3,6 +3,7 @@ import type { DashboardGame, ProtonDbTier } from "@/types/dashboard"
 import { resolveSteamDeckCompatibility } from "@/lib/utils/detect-steam-deck"
 import { parseReleaseDate } from "@/lib/utils/parse-release-date"
 import { resolveGameIconUrl } from "@/lib/utils/game-icon-url"
+import { resolveDenuvoDisplayState } from "@/lib/steam/denuvo/resolve-denuvo-display-state"
 
 const normalizeTier = (tier: string | null | undefined): ProtonDbTier => {
   const t = (tier ?? "unknown").toLowerCase()
@@ -155,6 +156,16 @@ export const mapSteamGameToDashboard = (
           kernelLevel: ac.kernel_level as boolean | undefined,
           denuvoAntiTamper: ac.denuvo_anti_tamper as boolean | undefined,
           denuvoAntiCheat: ac.denuvo_anti_cheat as boolean | undefined,
+          denuvoConfidence: ac.denuvo_confidence as string | undefined,
+          denuvoSource: ac.denuvo_source as string | undefined,
+          denuvoEvidence: ac.denuvo_evidence as string | undefined,
+          denuvoCheckedAt: ac.denuvo_checked_at as string | undefined,
+          denuvoDisplay: resolveDenuvoDisplayState({
+            denuvoAntiTamper: ac.denuvo_anti_tamper as boolean | null | undefined,
+            denuvoConfidence: ac.denuvo_confidence as string | null | undefined,
+            denuvoSource: ac.denuvo_source as string | null | undefined,
+            denuvoCheckedAt: ac.denuvo_checked_at as string | null | undefined,
+          }),
           notes: ac.notes as string | undefined,
           slug: ac.awacy_slug as string | undefined,
           nativeLinux: ac.native_linux as boolean | undefined,

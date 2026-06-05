@@ -46,6 +46,21 @@ pnpm db:verify
 
 Browse data (optional): `pnpm db:studio`.
 
+## Seed metadata (migration 002)
+
+Migration `002_seed_denuvo_provenance.sql` adds Denuvo provenance columns on `anticheat_entries` (`denuvo_confidence`, `denuvo_source`, `denuvo_evidence`, `denuvo_checked_at`) and `seed_hydration_meta` to track bundled seed hydration.
+
+Bundled JSON lives in [`data/seed/`](../data/seed/) (manifest v3: Denuvo, app-details-lite, ProtonDB, HLTB, top-appids). On startup (or Docker entrypoint), the app hydrates seed rows before live catalog sync so the dashboard can show metadata immediately.
+
+```bash
+pnpm seed:fetch-top-appids  # refresh Steam top sellers list
+pnpm seed:verify            # validate seed JSON
+pnpm seed:hydrate           # manual hydration
+pnpm seed:generate          # live prefetch + export from local SQLite
+```
+
+Disable auto hydration: `SLM_SKIP_SEED_HYDRATION=true`. Details: [scraping.md § Bundled seed metadata](./scraping.md#bundled-seed-metadata).
+
 ## Backup and restore
 
 **Local dev** (app stopped):

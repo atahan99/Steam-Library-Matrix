@@ -2,7 +2,10 @@ import { readFile } from "node:fs/promises"
 import path from "node:path"
 import { getRawSqlite } from "@/lib/db/client"
 
-export const MIGRATION_FILES_ORDERED = ["001_sqlite_baseline.sql"] as const
+export const MIGRATION_FILES_ORDERED = [
+  "001_sqlite_baseline.sql",
+  "002_seed_denuvo_provenance.sql",
+] as const
 
 const migrationsDir = path.join(process.cwd(), "db", "migrations")
 

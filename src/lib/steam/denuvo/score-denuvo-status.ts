@@ -1,9 +1,9 @@
+import type { ParsedStoreDrm } from "@/lib/steam/denuvo/parse-store-drm-notices"
 import type {
   DenuvoConfidence,
   DenuvoSourceSignal,
   DenuvoStatus,
 } from "@/lib/steam/denuvo/types"
-import type { ParsedStoreDrm } from "@/lib/steam/denuvo/parse-store-drm-notices"
 
 export type ScoreDenuvoInput = {
   appid: number
@@ -22,7 +22,6 @@ export const scoreDenuvoStatus = (input: ScoreDenuvoInput): DenuvoStatus => {
     appid,
     storePage,
     curatorListed,
-    curatorComplete,
     checkedAt,
   } = input
 
@@ -31,6 +30,7 @@ export const scoreDenuvoStatus = (input: ScoreDenuvoInput): DenuvoStatus => {
   const thirdPartyDrm = storePage.parsed?.thirdPartyDrm ?? []
   const activationLimit = storePage.parsed?.activationLimit ?? null
   const storeHasDenuvo = storePage.parsed?.hasDenuvoAntiTamper ?? false
+  const explicitRemoval = storePage.parsed?.hasExplicitDenuvoRemoval ?? false
   const storeChecked = storePage.fetched && !storePage.error && storePage.parsed
 
   if (storePage.fetched) {
@@ -49,22 +49,31 @@ export const scoreDenuvoStatus = (input: ScoreDenuvoInput): DenuvoStatus => {
 
   let hasDenuvoAntiTamper: boolean | null = null
   let confidence: DenuvoConfidence = "none"
+  let primarySource: DenuvoStatus["primarySource"]
+  let evidence: string | undefined
 
-  if (storeChecked && storeHasDenuvo) {
+  if (storeChecked && explicitRemoval) {
+    hasDenuvoAntiTamper = false
+    confidence = "high"
+    primarySource = "removal_confirmed"
+    evidence = drmNotices.find((n) => /denuvo/i.test(n)) ?? drmNotices[0]
+  } else if (storeChecked && storeHasDenuvo) {
     hasDenuvoAntiTamper = true
     confidence = "high"
+    primarySource = "store_page"
+    evidence =
+      drmNotices.find((n) => /denuvo/i.test(n)) ??
+      thirdPartyDrm.find((n) => /denuvo/i.test(n))
   } else if (storeChecked && !storeHasDenuvo && curatorListed) {
     hasDenuvoAntiTamper = true
     confidence = "medium"
-  } else if (storeChecked && !storeHasDenuvo && !curatorListed) {
-    hasDenuvoAntiTamper = false
-    confidence = "high"
+    primarySource = "curator"
+    evidence = "Listed on Denuvo Watch curator"
   } else if (!storeChecked && curatorListed) {
     hasDenuvoAntiTamper = true
     confidence = "medium"
-  } else if (!storeChecked && !curatorListed && curatorComplete) {
-    hasDenuvoAntiTamper = false
-    confidence = "medium"
+    primarySource = "curator"
+    evidence = "Listed on Denuvo Watch curator"
   } else {
     hasDenuvoAntiTamper = null
     confidence = "none"
@@ -79,5 +88,7 @@ export const scoreDenuvoStatus = (input: ScoreDenuvoInput): DenuvoStatus => {
     activationLimit,
     sources,
     checkedAt,
+    primarySource,
+    evidence,
   }
 }

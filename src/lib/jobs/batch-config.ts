@@ -78,3 +78,19 @@ export const HLTB_FULL_SYNC_DELAY_MS = parsePositiveInt(
   process.env.SLM_HLTB_SYNC_DELAY_MS,
   0
 )
+
+/** Denuvo store-page batch size per anticheat denuvo phase step. */
+export const DENUVO_STORE_BATCH = parsePositiveInt(
+  process.env.SLM_DENUVO_STORE_BATCH,
+  8
+)
+
+/** Max concurrent Denuvo store-page fetches per step. */
+export const DENUVO_STORE_CONCURRENCY = parsePositiveInt(
+  process.env.SLM_DENUVO_STORE_CONCURRENCY,
+  2
+)
+
+/** Stagger between Denuvo store-page fetches (ms). */
+export const getDenuvoStoreStaggerMs = (): number =>
+  parsePositiveInt(process.env.SLM_DENUVO_STORE_STAGGER_MS, 400)

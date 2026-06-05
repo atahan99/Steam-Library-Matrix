@@ -4,6 +4,7 @@ export type ParsedStoreDrm = {
   notices: string[]
   thirdPartyDrm: string[]
   hasDenuvoAntiTamper: boolean
+  hasExplicitDenuvoRemoval: boolean
   activationLimit: string | null
 }
 
@@ -14,6 +15,13 @@ const ACTIVATION_LIMIT_RES = [
   /\d+\s*(?:a|per)\s*day[^.]*machine\s+activation/i,
   /\d+\s*different\s+pc[^.]*(?:a|per)\s*day/i,
   /\d+\s*(?:machine|pc)\s+activations?\s*(?:a|per)\s*day/i,
+]
+
+const EXPLICIT_REMOVAL_RES = [
+  /denuvo\s+anti[- ]?tamper\s+removed/i,
+  /no\s+longer\s+uses?\s+denuvo/i,
+  /denuvo\s+has\s+been\s+removed/i,
+  /removed\s+denuvo\s+anti[- ]?tamper/i,
 ]
 
 const splitThirdPartyDrm = (raw: string): string[] => {
@@ -36,6 +44,11 @@ const findActivationLimit = (notices: string[]): string | null => {
   return null
 }
 
+const hasExplicitRemovalInNotices = (notices: string[]): boolean =>
+  notices.some((notice) =>
+    EXPLICIT_REMOVAL_RES.some((re) => re.test(notice))
+  )
+
 export const parseStoreDrmNoticesFromHtml = (html: string): ParsedStoreDrm => {
   const $ = cheerio.load(html)
   const notices: string[] = []
@@ -57,10 +70,13 @@ export const parseStoreDrmNoticesFromHtml = (html: string): ParsedStoreDrm => {
     notices.some(isDenuvoNotice) ||
     thirdPartyDrm.some(isDenuvoNotice)
 
+  const hasExplicitDenuvoRemoval = hasExplicitRemovalInNotices(notices)
+
   return {
     notices,
     thirdPartyDrm,
     hasDenuvoAntiTamper,
+    hasExplicitDenuvoRemoval,
     activationLimit: findActivationLimit(notices),
   }
 }

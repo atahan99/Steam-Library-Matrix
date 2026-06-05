@@ -16,6 +16,7 @@ import {
 } from "@/lib/db/schema"
 import { hasStoredSteamPlatforms } from "@/lib/steam/parse-steam-platforms"
 import { isCacheFresh } from "@/lib/utils/cache"
+import { isDenuvoDataFresh } from "@/lib/steam/denuvo/is-denuvo-data-fresh"
 import {
   ACHIEVEMENTS_TTL_HOURS,
   ANTICHEAT_TTL_HOURS,
@@ -271,25 +272,43 @@ const filterAnticheatAppids = async (
   if (appids.length === 0) return []
 
   const db = getDb()
-  const freshAppids = new Set<number>()
+  const fullyFreshAppids = new Set<number>()
 
   for (const chunk of chunkArray(appids, QUERY_CHUNK_SIZE)) {
     const existing = await db
       .select({
         appid: anticheatEntries.appid,
         lastCheckedAt: anticheatEntries.lastCheckedAt,
+        denuvoAntiTamper: anticheatEntries.denuvoAntiTamper,
+        denuvoConfidence: anticheatEntries.denuvoConfidence,
+        denuvoCheckedAt: anticheatEntries.denuvoCheckedAt,
       })
       .from(anticheatEntries)
       .where(inArray(anticheatEntries.appid, chunk))
 
-    for (const row of existing) {
-      if (isCacheFresh(row.lastCheckedAt?.toISOString(), ANTICHEAT_TTL_HOURS)) {
-        freshAppids.add(row.appid)
+    const existingByAppid = new Map(existing.map((row) => [row.appid, row]))
+
+    for (const appid of chunk) {
+      const row = existingByAppid.get(appid)
+      if (!row) continue
+
+      const awacyFresh = isCacheFresh(
+        row.lastCheckedAt?.toISOString(),
+        ANTICHEAT_TTL_HOURS
+      )
+      const denuvoFresh = isDenuvoDataFresh({
+        denuvoAntiTamper: row.denuvoAntiTamper,
+        denuvoConfidence: row.denuvoConfidence,
+        denuvoCheckedAt: row.denuvoCheckedAt,
+      })
+
+      if (awacyFresh && denuvoFresh) {
+        fullyFreshAppids.add(appid)
       }
     }
   }
 
-  return appids.filter((appid) => !freshAppids.has(appid))
+  return appids.filter((appid) => !fullyFreshAppids.has(appid))
 }
 
 const filterHltbRows = async (

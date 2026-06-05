@@ -35,6 +35,7 @@ COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder /app/db ./db
+COPY --from=builder /app/data/seed ./data/seed
 COPY --from=builder --chown=nextjs:nodejs /app/dist/docker ./dist/docker
 COPY --from=prod-deploy --chown=nextjs:nodejs /deploy/node_modules/better-sqlite3 ./node_modules/better-sqlite3
 

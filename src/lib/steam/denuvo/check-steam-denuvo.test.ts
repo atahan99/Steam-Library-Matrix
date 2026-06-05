@@ -32,15 +32,15 @@ describe("checkSteamDenuvo", () => {
     )
   })
 
-  it("returns negative high confidence when store page has no Denuvo", async () => {
+  it("returns unknown when store page has no Denuvo and curator absent", async () => {
     const status = await checkSteamDenuvo(570, {
       curatorAppids: new Set(),
       curatorComplete: true,
       fetchStorePage: async () => FIXTURES.noDrmHtml,
     })
 
-    expect(status.hasDenuvoAntiTamper).toBe(false)
-    expect(status.confidence).toBe("high")
+    expect(status.hasDenuvoAntiTamper).toBeNull()
+    expect(status.confidence).toBe("none")
   })
 
   it("returns null when no signals are available", async () => {

@@ -1,7 +1,11 @@
 import { syncAnticheatCatalogs } from "@/lib/anticheat/sync-catalogs"
 import { syncDenuvoCatalogOnly } from "@/lib/anticheat/sync-denuvo-catalog"
+import { getDb } from "@/lib/db/client"
+import { anticheatEntries } from "@/lib/db/schema"
 import { getProfileGamesForEnrichment } from "@/lib/db/profile-appids"
+import { inArray } from "drizzle-orm"
 import { resolveAppidsForSource } from "@/lib/enrichment/resolve-enrichment-appids"
+import { sortAnticheatByPriority } from "@/lib/enrichment/sort-anticheat-priority"
 import {
   ensureAnticheatCatalogsReady,
   loadAnticheatEnrichContext,
@@ -17,6 +21,7 @@ import {
   ANTICHEAT_BATCH,
   ACHIEVEMENTS_BATCH,
   ACHIEVEMENTS_CONCURRENCY,
+  DENUVO_STORE_BATCH,
   HLTB_BATCH,
   HLTB_CONCURRENCY,
   PROTONDB_BATCH,
@@ -262,10 +267,33 @@ export const runEnrichmentJobStep = async (input: {
         )
       }
 
-      const anticheatRows = appids.map((appid) => ({
+      let anticheatRows = appids.map((appid) => ({
         appid,
         name: gameNames?.[String(appid)] ?? `App ${appid}`,
       }))
+
+      if (phase === "denuvo" && cursor === 0) {
+        const db = getDb()
+        const denuvoMeta = await db
+          .select({
+            appid: anticheatEntries.appid,
+            denuvoAntiTamper: anticheatEntries.denuvoAntiTamper,
+            denuvoConfidence: anticheatEntries.denuvoConfidence,
+            denuvoCheckedAt: anticheatEntries.denuvoCheckedAt,
+          })
+          .from(anticheatEntries)
+          .where(inArray(anticheatEntries.appid, appids))
+
+        const metaByAppid = new Map(denuvoMeta.map((row) => [row.appid, row]))
+        anticheatRows = sortAnticheatByPriority(
+          anticheatRows.map((row) => ({
+            ...row,
+            ...metaByAppid.get(row.appid),
+          })),
+          { scopeAppids: input.payload.scopeAppids }
+        )
+      }
+
       const total = anticheatRows.length
       if (total === 0) {
         return {
@@ -276,10 +304,12 @@ export const runEnrichmentJobStep = async (input: {
       }
 
       const context = await loadAnticheatEnrichContext()
+      const anticheatBatchSize =
+        phase === "denuvo" ? DENUVO_STORE_BATCH : ANTICHEAT_BATCH
       const batch = await runAnticheatBatch(
         anticheatRows,
         cursor,
-        ANTICHEAT_BATCH,
+        anticheatBatchSize,
         input.deadlineMs,
         context,
         force,

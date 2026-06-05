@@ -21,6 +21,7 @@ const EXPECTED_TABLES = [
   "denuvo_anti_tamper_catalog",
   "profile_game_achievements",
   "enrichment_jobs",
+  "seed_hydration_meta",
   "schema_migrations",
 ]
 

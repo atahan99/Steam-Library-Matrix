@@ -20,8 +20,8 @@ describe("scoreDenuvoStatus", () => {
     expect(status.confidence).toBe("high")
   })
 
-  it("returns high confidence when store page and curator both positive", () => {
-    const parsed = parseStoreDrmNoticesFromHtml(FIXTURES.hogwartsLegacyDrmHtml)
+  it("returns medium confidence when curator listed but store page has no Denuvo", () => {
+    const parsed = parseStoreDrmNoticesFromHtml(FIXTURES.noDrmHtml)
     const status = scoreDenuvoStatus({
       appid: 990080,
       storePage: { fetched: true, parsed },
@@ -31,7 +31,7 @@ describe("scoreDenuvoStatus", () => {
     })
 
     expect(status.hasDenuvoAntiTamper).toBe(true)
-    expect(status.confidence).toBe("high")
+    expect(status.confidence).toBe("medium")
   })
 
   it("returns medium confidence when curator listed but store page unavailable", () => {
@@ -47,7 +47,7 @@ describe("scoreDenuvoStatus", () => {
     expect(status.confidence).toBe("medium")
   })
 
-  it("returns high confidence negative when store page has no Denuvo and curator absent", () => {
+  it("returns unknown when store page has no Denuvo and curator absent", () => {
     const parsed = parseStoreDrmNoticesFromHtml(FIXTURES.noDrmHtml)
     const status = scoreDenuvoStatus({
       appid: 570,
@@ -57,11 +57,11 @@ describe("scoreDenuvoStatus", () => {
       checkedAt,
     })
 
-    expect(status.hasDenuvoAntiTamper).toBe(false)
-    expect(status.confidence).toBe("high")
+    expect(status.hasDenuvoAntiTamper).toBeNull()
+    expect(status.confidence).toBe("none")
   })
 
-  it("returns medium confidence negative when catalog complete and store not fetched", () => {
+  it("returns unknown when store failed and curator absent even if catalog complete", () => {
     const status = scoreDenuvoStatus({
       appid: 570,
       storePage: { fetched: true, error: "Store page fetch failed" },
@@ -70,22 +70,23 @@ describe("scoreDenuvoStatus", () => {
       checkedAt,
     })
 
-    expect(status.hasDenuvoAntiTamper).toBe(false)
-    expect(status.confidence).toBe("medium")
+    expect(status.hasDenuvoAntiTamper).toBeNull()
+    expect(status.confidence).toBe("none")
   })
 
-  it("prefers positive DRM signal when store and curator conflict", () => {
-    const parsed = parseStoreDrmNoticesFromHtml(FIXTURES.noDrmHtml)
+  it("returns false high confidence when explicit removal notice present", () => {
+    const parsed = parseStoreDrmNoticesFromHtml(FIXTURES.denuvoRemovedHtml)
     const status = scoreDenuvoStatus({
-      appid: 990080,
+      appid: 123,
       storePage: { fetched: true, parsed },
-      curatorListed: true,
+      curatorListed: false,
       curatorComplete: true,
       checkedAt,
     })
 
-    expect(status.hasDenuvoAntiTamper).toBe(true)
-    expect(status.confidence).toBe("medium")
+    expect(status.hasDenuvoAntiTamper).toBe(false)
+    expect(status.confidence).toBe("high")
+    expect(status.primarySource).toBe("removal_confirmed")
   })
 
   it("returns unknown when store fetch failed and curator incomplete", () => {

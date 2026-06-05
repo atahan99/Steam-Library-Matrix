@@ -36,9 +36,11 @@ next-env.d.ts
 # vercel
 .vercel
 
-# sqlite data directory (keep data/README.md)
+# sqlite data directory (keep data/README.md and bundled seed)
 /data/*
 !/data/README.md
+!/data/seed/
+!/data/seed/**
 
 # Docker bind-mount database (see docker/db/README.md)
 docker/db/*.db
