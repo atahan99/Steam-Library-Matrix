@@ -1,10 +1,10 @@
-import { upsertSteamAppDetailsRow } from "@/lib/db/steam-app-details"
 import { fetchSteamDeckCompatibility } from "@/lib/steam/fetch-steam-deck-compatibility"
+import { getAppidsNeedingDeckRefresh } from "@/lib/steam/refresh-steam-deck-compatibility"
 import {
-  getAppidsNeedingDeckRefresh,
-  upsertSteamDeckCompatibility,
-} from "@/lib/steam/refresh-steam-deck-compatibility"
-import { fetchSteamAppDetails } from "@/lib/steam/steam-store"
+  fetchSteamAppDetails,
+  type SteamStoreAppDetails,
+} from "@/lib/steam/steam-store"
+import type { SteamDeckCompatibility } from "@/lib/utils/detect-steam-deck"
 import { isPlaceholderGameName } from "@/lib/utils/placeholder-game-name"
 import type { SteamWishlistItem } from "@/types/steam"
 
@@ -19,11 +19,18 @@ export type WishlistGameUpsertMeta = {
   logoUrl?: string
 }
 
+export type WishlistDeckOnlyPersist = {
+  appid: number
+  compatibility: SteamDeckCompatibility
+}
+
 export const resolveWishlistItemsFromStore = async (
   items: SteamWishlistItem[]
 ): Promise<{
   items: SteamWishlistItem[]
   upsertMeta: WishlistGameUpsertMeta[]
+  appDetailsToPersist: SteamStoreAppDetails[]
+  deckOnlyToPersist: WishlistDeckOnlyPersist[]
 }> => {
   const placeholderAppids = new Set(
     items
@@ -43,6 +50,8 @@ export const resolveWishlistItemsFromStore = async (
     return {
       items,
       upsertMeta: items.map((item) => ({ appid: item.appid, name: item.name })),
+      appDetailsToPersist: [],
+      deckOnlyToPersist: [],
     }
   }
 
@@ -52,6 +61,8 @@ export const resolveWishlistItemsFromStore = async (
 
   const resolvedNames = new Map<number, string>()
   const resolvedLogos = new Map<number, string>()
+  const appDetailsToPersist: SteamStoreAppDetails[] = []
+  const deckOnlyToPersist: WishlistDeckOnlyPersist[] = []
   let index = 0
 
   const worker = async () => {
@@ -77,15 +88,15 @@ export const resolveWishlistItemsFromStore = async (
           }
           if (details) {
             details.steamDeckCompatibility = steamDeckCompatibility
-            await upsertSteamAppDetailsRow(details)
+            appDetailsToPersist.push(details)
           }
         } else if (needsDeck) {
           const steamDeckCompatibility =
             await fetchSteamDeckCompatibility(current.appid)
-          await upsertSteamDeckCompatibility(
-            current.appid,
-            steamDeckCompatibility ?? "unknown"
-          )
+          deckOnlyToPersist.push({
+            appid: current.appid,
+            compatibility: steamDeckCompatibility ?? "unknown",
+          })
         }
       } catch (error) {
         console.warn(
@@ -120,5 +131,10 @@ export const resolveWishlistItemsFromStore = async (
     `[wishlist] resolved store metadata: ${resolvedNames.size}/${placeholderAppids.size} names, ${deckRefreshAppids.size} deck refreshes`
   )
 
-  return { items: itemsWithNames, upsertMeta }
+  return {
+    items: itemsWithNames,
+    upsertMeta,
+    appDetailsToPersist,
+    deckOnlyToPersist,
+  }
 }

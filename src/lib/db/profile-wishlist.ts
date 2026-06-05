@@ -1,4 +1,4 @@
-import { eq, inArray } from "drizzle-orm"
+import { eq, inArray, sql } from "drizzle-orm"
 import { getDb } from "@/lib/db/client"
 import { DB_MIGRATE_HINT } from "@/lib/db/catalog-table-error"
 import { loadSteamGameJoinRowsByAppids } from "@/lib/db/load-steam-game-join-rows"
@@ -8,7 +8,13 @@ import {
   steamGames,
   steamProfiles,
 } from "@/lib/db/schema"
-import type { WishlistGameUpsertMeta } from "@/lib/steam/resolve-wishlist-metadata"
+import { upsertSteamAppDetailsRow } from "@/lib/db/steam-app-details"
+import type {
+  WishlistDeckOnlyPersist,
+  WishlistGameUpsertMeta,
+} from "@/lib/steam/resolve-wishlist-metadata"
+import { upsertSteamDeckCompatibility } from "@/lib/steam/refresh-steam-deck-compatibility"
+import type { SteamStoreAppDetails } from "@/lib/steam/steam-store"
 import { getSteamStoreUrl } from "@/lib/utils/steam-url"
 import { getErrorMessage } from "@/lib/utils/get-error-message"
 import { isPlaceholderGameName } from "@/lib/utils/placeholder-game-name"
@@ -82,13 +88,45 @@ export const upsertWishlistGames = async (
     await db.insert(steamGames).values(chunk).onConflictDoUpdate({
       target: steamGames.appid,
       set: {
-        name: steamGames.name,
+        name: sql`CASE WHEN ${steamGames.name} = 'App ' || ${steamGames.appid} THEN excluded.name ELSE ${steamGames.name} END`,
         iconUrl: steamGames.iconUrl,
         logoUrl: steamGames.logoUrl,
         storeUrl: steamGames.storeUrl,
         updatedAt: now,
       },
     })
+  }
+}
+
+export type WishlistPersistExtras = {
+  appDetailsToPersist?: SteamStoreAppDetails[]
+  deckOnlyToPersist?: WishlistDeckOnlyPersist[]
+}
+
+const persistWishlistChildRows = async ({
+  appDetailsToPersist = [],
+  deckOnlyToPersist = [],
+}: WishlistPersistExtras) => {
+  for (const details of appDetailsToPersist) {
+    try {
+      await upsertSteamAppDetailsRow(details)
+    } catch (error) {
+      console.warn(
+        `[wishlist] Failed to persist store details for appid ${details.appid}:`,
+        error
+      )
+    }
+  }
+
+  for (const { appid, compatibility } of deckOnlyToPersist) {
+    try {
+      await upsertSteamDeckCompatibility(appid, compatibility)
+    } catch (error) {
+      console.warn(
+        `[wishlist] Failed to persist Deck compatibility for appid ${appid}:`,
+        error
+      )
+    }
   }
 }
 
@@ -126,12 +164,14 @@ const safeUpdateWishlistProfileFields = async (
 export const syncProfileWishlist = async (
   steamid: string,
   items: SteamWishlistItem[],
-  upsertMeta?: WishlistGameUpsertMeta[]
+  upsertMeta?: WishlistGameUpsertMeta[],
+  persistExtras: WishlistPersistExtras = {}
 ) => {
   const db = getDb()
   const now = new Date()
 
   await upsertWishlistGames(items, upsertMeta)
+  await persistWishlistChildRows(persistExtras)
 
   try {
     await db.delete(profileWishlist).where(eq(profileWishlist.steamid, steamid))
