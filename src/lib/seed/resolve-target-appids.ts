@@ -10,19 +10,22 @@ import {
   steamAppDetails,
   steamGames,
 } from "@/lib/db/schema"
-import { DEFAULT_SEED_DIR } from "@/lib/seed/load-seed-files"
+import { resolveSeedDir } from "@/lib/seed/load-seed-files"
 import {
   appDetailsLiteSeedSchema,
   denuvoSeedSchema,
+  profileAppidsSchema,
   steamGamesSeedSchema,
   topAppidsSchema,
   type TopAppidsFile,
 } from "@/lib/seed/types"
 
+export const PROFILE_APPIDS_FILENAME = "profile-appids.json"
+
 export type ResolvedTargetAppids = {
   appids: number[]
   names: Record<string, string>
-  source: "top-appids" | "appids-file" | "union"
+  source: "top-appids" | "profile-appids" | "top-appids+profiles" | "appids-file" | "union"
 }
 
 const loadAppidsFromLineFile = async (filePath: string): Promise<number[]> => {
@@ -44,9 +47,22 @@ const readJsonSafe = async (filePath: string): Promise<unknown | null> => {
   }
 }
 
+const mergeAppidLists = (
+  lists: number[][],
+  names: Record<string, string>,
+  limit: number
+): { appids: number[]; names: Record<string, string> } => {
+  const merged = new Set<number>()
+  for (const list of lists) {
+    for (const appid of list) merged.add(appid)
+  }
+  const appids = [...merged].sort((a, b) => a - b).slice(0, limit)
+  return { appids, names }
+}
+
 /** Build top-appids from bundled seed JSON when Steam store fetch is unavailable. */
 export const buildTopAppidsFromSeedFiles = async (
-  seedDir: string = DEFAULT_SEED_DIR,
+  seedDir: string = resolveSeedDir(),
   limit: number
 ): Promise<TopAppidsFile | null> => {
   const appidSet = new Set<number>()
@@ -90,7 +106,7 @@ export const buildTopAppidsFromSeedFiles = async (
 }
 
 export const loadTopAppidsFromSeedDir = async (
-  seedDir: string = DEFAULT_SEED_DIR
+  seedDir: string = resolveSeedDir()
 ): Promise<{ appids: number[]; names: Record<string, string> } | null> => {
   const filePath = path.join(seedDir, "top-appids.json")
   try {
@@ -106,12 +122,28 @@ export const loadTopAppidsFromSeedDir = async (
   }
 }
 
+export const loadProfileAppidsFromSeedDir = async (
+  seedDir: string = resolveSeedDir()
+): Promise<{ appids: number[]; names: Record<string, string> } | null> => {
+  const filePath = path.join(seedDir, PROFILE_APPIDS_FILENAME)
+  const raw = await readJsonSafe(filePath)
+  if (!raw) return null
+
+  const parsed = profileAppidsSchema.safeParse(raw)
+  if (!parsed.success || parsed.data.appids.length === 0) return null
+
+  return {
+    appids: parsed.data.appids,
+    names: parsed.data.names ?? {},
+  }
+}
+
 export const resolveTargetAppids = async (options: {
   limit: number
   appidsFile?: string
   seedDir?: string
 }): Promise<ResolvedTargetAppids> => {
-  const { limit, appidsFile, seedDir = DEFAULT_SEED_DIR } = options
+  const { limit, appidsFile, seedDir = resolveSeedDir() } = options
 
   if (appidsFile) {
     const fromFile = await loadAppidsFromLineFile(appidsFile)
@@ -123,12 +155,24 @@ export const resolveTargetAppids = async (options: {
   }
 
   const topAppids = await loadTopAppidsFromSeedDir(seedDir)
-  if (topAppids) {
-    return {
-      appids: topAppids.appids.slice(0, limit),
-      names: topAppids.names,
-      source: "top-appids",
+  const profileAppids = await loadProfileAppidsFromSeedDir(seedDir)
+
+  if (topAppids || profileAppids) {
+    const names = {
+      ...(topAppids?.names ?? {}),
+      ...(profileAppids?.names ?? {}),
     }
+    const { appids } = mergeAppidLists(
+      [topAppids?.appids ?? [], profileAppids?.appids ?? []],
+      names,
+      limit
+    )
+
+    let source: ResolvedTargetAppids["source"] = "top-appids"
+    if (topAppids && profileAppids) source = "top-appids+profiles"
+    else if (profileAppids) source = "profile-appids"
+
+    return { appids, names, source }
   }
 
   const db = getDb()

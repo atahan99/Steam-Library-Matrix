@@ -1,6 +1,6 @@
 {
-  "version": 3,
-  "generatedAt": "2026-06-05T02:37:30.652Z",
+  "version": 4,
+  "generatedAt": "2026-06-05T05:17:01.095Z",
   "items": {
     "240": {
       "appid": 240,
@@ -51,12 +51,166 @@
       "source": "seed",
       "checkedAt": "2026-06-05T02:19:04.829Z"
     },
+    "3130": {
+      "appid": 3130,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:24:30.982Z"
+    },
+    "3320": {
+      "appid": 3320,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:24:31.679Z"
+    },
+    "3900": {
+      "appid": 3900,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:24:32.186Z"
+    },
+    "3910": {
+      "appid": 3910,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:24:32.715Z"
+    },
+    "3980": {
+      "appid": 3980,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:24:33.246Z"
+    },
+    "3990": {
+      "appid": 3990,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:24:33.878Z"
+    },
     "4000": {
       "appid": 4000,
       "hasDenuvoAntiTamper": false,
       "confidence": "none",
       "source": "seed",
       "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "4560": {
+      "appid": 4560,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:24:34.810Z"
+    },
+    "4570": {
+      "appid": 4570,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:24:35.463Z"
+    },
+    "4580": {
+      "appid": 4580,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:24:36.227Z"
+    },
+    "4700": {
+      "appid": 4700,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:24:36.710Z"
+    },
+    "4760": {
+      "appid": 4760,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:24:41.229Z"
+    },
+    "4770": {
+      "appid": 4770,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:24:41.853Z"
+    },
+    "6220": {
+      "appid": 6220,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:24:42.320Z"
+    },
+    "6800": {
+      "appid": 6800,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:24:43.307Z"
+    },
+    "6810": {
+      "appid": 6810,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:24:43.861Z"
+    },
+    "6830": {
+      "appid": 6830,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:24:44.386Z"
+    },
+    "6840": {
+      "appid": 6840,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:24:44.907Z"
+    },
+    "6850": {
+      "appid": 6850,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:24:45.422Z"
+    },
+    "6860": {
+      "appid": 6860,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:24:46.232Z"
+    },
+    "6900": {
+      "appid": 6900,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:24:46.689Z"
+    },
+    "6910": {
+      "appid": 6910,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:24:47.393Z"
+    },
+    "6920": {
+      "appid": 6920,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:24:47.922Z"
     },
     "7000": {
       "appid": 7000,
@@ -65,12 +219,124 @@
       "source": "seed",
       "checkedAt": "2026-06-05T02:19:04.829Z"
     },
+    "7670": {
+      "appid": 7670,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:24:48.438Z"
+    },
+    "7830": {
+      "appid": 7830,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:24:48.961Z"
+    },
+    "8000": {
+      "appid": 8000,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:24:49.502Z"
+    },
     "8140": {
       "appid": 8140,
       "hasDenuvoAntiTamper": false,
       "confidence": "none",
       "source": "seed",
       "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "8800": {
+      "appid": 8800,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:24:51.232Z"
+    },
+    "8850": {
+      "appid": 8850,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:24:51.735Z"
+    },
+    "8870": {
+      "appid": 8870,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:24:52.233Z"
+    },
+    "8930": {
+      "appid": 8930,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:24:52.750Z"
+    },
+    "8980": {
+      "appid": 8980,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:24:53.302Z"
+    },
+    "9310": {
+      "appid": 9310,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:24:53.933Z"
+    },
+    "9340": {
+      "appid": 9340,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:24:54.581Z"
+    },
+    "9350": {
+      "appid": 9350,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:24:56.226Z"
+    },
+    "9420": {
+      "appid": 9420,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:24:56.761Z"
+    },
+    "9450": {
+      "appid": 9450,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:24:57.285Z"
+    },
+    "9480": {
+      "appid": 9480,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:24:58.011Z"
+    },
+    "10500": {
+      "appid": 10500,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:24:58.531Z"
+    },
+    "12110": {
+      "appid": 12110,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:24:59.054Z"
     },
     "12150": {
       "appid": 12150,
@@ -86,12 +352,124 @@
       "source": "seed",
       "checkedAt": "2026-06-05T02:19:04.829Z"
     },
+    "12240": {
+      "appid": 12240,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:01.237Z"
+    },
+    "12360": {
+      "appid": 12360,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:01.869Z"
+    },
+    "13500": {
+      "appid": 13500,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:02.356Z"
+    },
+    "13530": {
+      "appid": 13530,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:02.824Z"
+    },
+    "13600": {
+      "appid": 13600,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:03.298Z"
+    },
+    "15100": {
+      "appid": 15100,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:03.784Z"
+    },
+    "15620": {
+      "appid": 15620,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:04.306Z"
+    },
+    "16700": {
+      "appid": 16700,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:04.835Z"
+    },
     "16810": {
       "appid": 16810,
       "hasDenuvoAntiTamper": false,
       "confidence": "none",
       "source": "seed",
       "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "17430": {
+      "appid": 17430,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:06.234Z"
+    },
+    "17480": {
+      "appid": 17480,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:06.776Z"
+    },
+    "19980": {
+      "appid": 19980,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:07.322Z"
+    },
+    "20540": {
+      "appid": 20540,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:07.842Z"
+    },
+    "20570": {
+      "appid": 20570,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:08.370Z"
+    },
+    "20900": {
+      "appid": 20900,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:09.030Z"
+    },
+    "20920": {
+      "appid": 20920,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:09.545Z"
+    },
+    "21970": {
+      "appid": 21970,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:11.234Z"
     },
     "22330": {
       "appid": 22330,
@@ -107,12 +485,124 @@
       "source": "seed",
       "checkedAt": "2026-06-05T02:19:04.829Z"
     },
+    "24010": {
+      "appid": 24010,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:11.700Z"
+    },
     "24240": {
       "appid": 24240,
       "hasDenuvoAntiTamper": false,
       "confidence": "none",
       "source": "seed",
       "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "24740": {
+      "appid": 24740,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:12.195Z"
+    },
+    "24780": {
+      "appid": 24780,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:12.693Z"
+    },
+    "24790": {
+      "appid": 24790,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:13.209Z"
+    },
+    "24800": {
+      "appid": 24800,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:16.233Z"
+    },
+    "24810": {
+      "appid": 24810,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:16.873Z"
+    },
+    "24870": {
+      "appid": 24870,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:17.411Z"
+    },
+    "24960": {
+      "appid": 24960,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:17.926Z"
+    },
+    "25890": {
+      "appid": 25890,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:18.439Z"
+    },
+    "32330": {
+      "appid": 32330,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:18.974Z"
+    },
+    "32440": {
+      "appid": 32440,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:19.517Z"
+    },
+    "32800": {
+      "appid": 32800,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:20.036Z"
+    },
+    "33210": {
+      "appid": 33210,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:21.236Z"
+    },
+    "33230": {
+      "appid": 33230,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:21.921Z"
+    },
+    "33320": {
+      "appid": 33320,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:22.602Z"
+    },
+    "33340": {
+      "appid": 33340,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:23.253Z"
     },
     "34030": {
       "appid": 34030,
@@ -121,12 +611,187 @@
       "source": "seed",
       "checkedAt": "2026-06-05T02:19:04.829Z"
     },
+    "34270": {
+      "appid": 34270,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:23.886Z"
+    },
+    "34330": {
+      "appid": 34330,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:24.627Z"
+    },
+    "34440": {
+      "appid": 34440,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:25.138Z"
+    },
+    "34450": {
+      "appid": 34450,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:26.237Z"
+    },
+    "34460": {
+      "appid": 34460,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:26.787Z"
+    },
+    "35130": {
+      "appid": 35130,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:27.342Z"
+    },
+    "35140": {
+      "appid": 35140,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:27.994Z"
+    },
+    "39520": {
+      "appid": 39520,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:28.474Z"
+    },
+    "39650": {
+      "appid": 39650,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:29.111Z"
+    },
+    "39660": {
+      "appid": 39660,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:29.587Z"
+    },
+    "39680": {
+      "appid": 39680,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:30.065Z"
+    },
+    "40100": {
+      "appid": 40100,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:31.238Z"
+    },
+    "40950": {
+      "appid": 40950,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:31.704Z"
+    },
+    "40960": {
+      "appid": 40960,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:32.169Z"
+    },
+    "40970": {
+      "appid": 40970,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:32.648Z"
+    },
+    "40980": {
+      "appid": 40980,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:33.296Z"
+    },
     "40990": {
       "appid": 40990,
       "hasDenuvoAntiTamper": false,
       "confidence": "none",
       "source": "seed",
       "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "42960": {
+      "appid": 42960,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:33.772Z"
+    },
+    "44350": {
+      "appid": 44350,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:34.232Z"
+    },
+    "46350": {
+      "appid": 46350,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:36.236Z"
+    },
+    "46500": {
+      "appid": 46500,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:36.877Z"
+    },
+    "46510": {
+      "appid": 46510,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:37.336Z"
+    },
+    "47400": {
+      "appid": 47400,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:37.852Z"
+    },
+    "47700": {
+      "appid": 47700,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:38.369Z"
+    },
+    "47870": {
+      "appid": 47870,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:38.898Z"
+    },
+    "47920": {
+      "appid": 47920,
+      "hasDenuvoAntiTamper": null,
+      "confidence": "none",
+      "source": "store_page",
+      "checkedAt": "2026-06-05T03:25:39.432Z"
     },
     "48000": {
       "appid": 48000,

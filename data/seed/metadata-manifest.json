@@ -1,26 +1,26 @@
 {
-  "version": 3,
-  "generatedAt": "2026-06-05T02:37:30.652Z",
+  "version": 4,
+  "generatedAt": "2026-06-05T05:17:01.095Z",
   "sources": {
     "denuvo": {
-      "generatedAt": "2026-06-05T02:37:30.652Z",
-      "count": 307
+      "generatedAt": "2026-06-05T05:17:01.095Z",
+      "count": 402
     },
     "steamGames": {
-      "generatedAt": "2026-06-05T02:37:30.652Z",
-      "count": 1500
+      "generatedAt": "2026-06-05T05:17:01.095Z",
+      "count": 2217
     },
     "appDetailsLite": {
-      "generatedAt": "2026-06-05T02:37:30.652Z",
-      "count": 366
+      "generatedAt": "2026-06-05T05:17:01.095Z",
+      "count": 448
     },
     "protondb": {
-      "generatedAt": "2026-06-05T02:37:30.652Z",
-      "count": 1159
+      "generatedAt": "2026-06-05T05:17:01.095Z",
+      "count": 1855
     },
     "hltb": {
-      "generatedAt": "2026-06-05T02:37:30.652Z",
-      "count": 1500
+      "generatedAt": "2026-06-05T05:17:01.095Z",
+      "count": 2217
     }
   }
 }

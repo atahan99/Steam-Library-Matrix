@@ -1,12 +1,21 @@
 #!/bin/sh
 set -e
 
-mkdir -p /app/data
-chown -R nextjs:nodejs /app/data
-chmod 775 /app/data
+mkdir -p /app/data/db
+chown -R nextjs:nodejs /app/data/db
+chmod 775 /app/data/db
 
 if [ -z "$DATABASE_URL" ]; then
   export DATABASE_URL="file:/app/data/db/matrix.db"
+fi
+
+DB_PATH="/app/data/db/matrix.db"
+DB_TEMPLATE="/app/data/db/matrix.db.template"
+
+if [ ! -f "$DB_PATH" ] && [ -f "$DB_TEMPLATE" ]; then
+  echo "[entrypoint] initializing database from pre-hydrated template..."
+  cp "$DB_TEMPLATE" "$DB_PATH"
+  chown nextjs:nodejs "$DB_PATH"
 fi
 
 if [ -z "$STEAM_API_KEY" ]; then
@@ -30,9 +39,12 @@ if [ "$SLM_SKIP_CATALOG_BOOTSTRAP" != "true" ]; then
   fi
 fi
 
+chown -R nextjs:nodejs /app/data/db
+
 PERSIST_ENV_VARS="
   DATABASE_URL
   STEAM_API_KEY
+  SLM_SEED_DIR
   SLM_API_SECRET
   SLM_ALLOW_OPEN_API
   SLM_RATE_LIMIT_PER_MIN

@@ -16,16 +16,16 @@ import { runAnticheatBatch } from "@/lib/jobs/steps/anticheat-step"
 import { runAppDetailsBatch } from "@/lib/jobs/steps/app-details-step"
 import { runHltbBatch } from "@/lib/jobs/steps/hltb-step"
 import {
-  APP_DETAILS_BATCH,
-  APP_DETAILS_CONCURRENCY,
-  ANTICHEAT_BATCH,
-  ACHIEVEMENTS_BATCH,
-  ACHIEVEMENTS_CONCURRENCY,
-  DENUVO_STORE_BATCH,
-  HLTB_BATCH,
-  HLTB_CONCURRENCY,
-  PROTONDB_BATCH,
-  PROTONDB_CONCURRENCY,
+  getAppDetailsBatch,
+  getAppDetailsConcurrency,
+  getAnticheatBatch,
+  getAchievementsBatch,
+  getAchievementsConcurrency,
+  getDenuvoStoreBatch,
+  getHltbBatch,
+  getHltbConcurrency,
+  getProtonDbBatch,
+  getProtonDbConcurrency,
 } from "@/lib/jobs/batch-config"
 import { runProtonDbBatch } from "@/lib/jobs/steps/protondb-step"
 import { resolveAppDetailsAppids, resolveHltbAppids } from "@/lib/jobs/steps/resolve-appids"
@@ -153,10 +153,10 @@ export const runEnrichmentJobStep = async (input: {
       const batch = await runProtonDbBatch(
         appids,
         cursor,
-        PROTONDB_BATCH,
+        getProtonDbBatch(),
         input.deadlineMs,
         force,
-        PROTONDB_CONCURRENCY
+        getProtonDbConcurrency()
       )
       const nextCursor = cursor + batch.processed
       const nextStats = mergeProgress({
@@ -204,10 +204,10 @@ export const runEnrichmentJobStep = async (input: {
         input.steamid,
         appids,
         cursor,
-        ACHIEVEMENTS_BATCH,
+        getAchievementsBatch(),
         input.deadlineMs,
         force,
-        ACHIEVEMENTS_CONCURRENCY
+        getAchievementsConcurrency()
       )
       const nextCursor = cursor + batch.processed
       const nextStats = mergeProgress({
@@ -305,7 +305,7 @@ export const runEnrichmentJobStep = async (input: {
 
       const context = await loadAnticheatEnrichContext()
       const anticheatBatchSize =
-        phase === "denuvo" ? DENUVO_STORE_BATCH : ANTICHEAT_BATCH
+        phase === "denuvo" ? getDenuvoStoreBatch() : getAnticheatBatch()
       const batch = await runAnticheatBatch(
         anticheatRows,
         cursor,
@@ -403,10 +403,10 @@ export const runEnrichmentJobStep = async (input: {
         input.steamid,
         appids,
         cursor,
-        APP_DETAILS_BATCH,
+        getAppDetailsBatch(),
         input.deadlineMs,
         force,
-        APP_DETAILS_CONCURRENCY
+        getAppDetailsConcurrency()
       )
       const nextCursor = cursor + batch.processed
       const nextStats = mergeProgress({
@@ -466,9 +466,9 @@ export const runEnrichmentJobStep = async (input: {
       const batch = await runHltbBatch(
         rows,
         cursor,
-        HLTB_BATCH,
+        getHltbBatch(),
         input.deadlineMs,
-        HLTB_CONCURRENCY
+        getHltbConcurrency()
       )
       const nextCursor = cursor + batch.processed
       const nextStats = mergeProgress({

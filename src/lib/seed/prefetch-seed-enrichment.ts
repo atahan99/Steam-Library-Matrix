@@ -5,11 +5,13 @@ import {
   protondbEntries,
   steamGames,
 } from "@/lib/db/schema"
+import { enrichSingleAppDetails } from "@/lib/enrichment/app-details-core"
 import { enrichSingleHowLongToBeatGame } from "@/lib/enrichment/howlongtobeat"
 import { enrichSingleProtonDb } from "@/lib/enrichment/protondb"
 import {
-  HLTB_CONCURRENCY,
-  PROTONDB_CONCURRENCY,
+  getHltbConcurrency,
+  getProtonDbConcurrency,
+  getSeedAppDetailsConcurrency,
 } from "@/lib/jobs/batch-config"
 import { PROTONDB_TTL_HOURS, HLTB_TTL_HOURS } from "@/lib/enrichment/enrichment-ttl"
 import { isCacheFresh } from "@/lib/utils/cache"
@@ -20,6 +22,9 @@ const PROGRESS_EVERY = 50
 const APP_DETAILS_DELAY_MS = 250
 
 export type PrefetchStats = {
+  appDetailsUpdated: number
+  appDetailsSkipped: number
+  appDetailsFailed: number
   protonUpdated: number
   protonSkipped: number
   protonFailed: number
@@ -148,6 +153,7 @@ export const prefetchSeedEnrichment = async (options: {
   appids: number[]
   nameHints?: Record<string, string>
   force?: boolean
+  skipAppDetails?: boolean
   skipProtondb?: boolean
   skipHltb?: boolean
   verbose?: boolean
@@ -156,12 +162,16 @@ export const prefetchSeedEnrichment = async (options: {
     appids,
     nameHints = {},
     force = false,
+    skipAppDetails = false,
     skipProtondb = false,
     skipHltb = false,
     verbose = false,
   } = options
 
   const stats: PrefetchStats = {
+    appDetailsUpdated: 0,
+    appDetailsSkipped: 0,
+    appDetailsFailed: 0,
     protonUpdated: 0,
     protonSkipped: 0,
     protonFailed: 0,
@@ -178,9 +188,30 @@ export const prefetchSeedEnrichment = async (options: {
     console.log(`[seed:prefetch] ensured ${stats.namesFetched} game names`)
   }
 
+  if (!skipAppDetails) {
+    let appDetailsProcessed = 0
+    await runWithConcurrency(appids, getSeedAppDetailsConcurrency(), async (appid) => {
+      const result = await enrichSingleAppDetails(appid, force)
+      stats.appDetailsUpdated += result.updated
+      stats.appDetailsSkipped += result.skipped
+      stats.appDetailsFailed += result.failed
+
+      appDetailsProcessed += 1
+      if (
+        verbose &&
+        (appDetailsProcessed % PROGRESS_EVERY === 0 ||
+          appDetailsProcessed === appids.length)
+      ) {
+        console.log(
+          `[seed:prefetch] app-details ${appDetailsProcessed}/${appids.length} — updated=${stats.appDetailsUpdated} skipped=${stats.appDetailsSkipped} failed=${stats.appDetailsFailed}`
+        )
+      }
+    })
+  }
+
   if (!skipProtondb) {
     let protonProcessed = 0
-    await runWithConcurrency(appids, PROTONDB_CONCURRENCY, async (appid) => {
+    await runWithConcurrency(appids, getProtonDbConcurrency(), async (appid) => {
       if (!force && (await isProtonFresh(appid))) {
         stats.protonSkipped += 1
       } else {
@@ -203,7 +234,7 @@ export const prefetchSeedEnrichment = async (options: {
     const names = await loadGameNames(appids)
     let hltbProcessed = 0
 
-    await runWithConcurrency(appids, HLTB_CONCURRENCY, async (appid) => {
+    await runWithConcurrency(appids, getHltbConcurrency(), async (appid) => {
       if (!force && (await isHltbFresh(appid))) {
         stats.hltbSkipped += 1
       } else {

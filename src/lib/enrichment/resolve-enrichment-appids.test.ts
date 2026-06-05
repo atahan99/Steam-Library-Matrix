@@ -137,4 +137,60 @@ describe("resolveAppidsForSource", () => {
 
     expect(rows).toEqual([{ appid: 300, name: "Missing" }])
   })
+
+  it("missingOnly excludes HLTB confirmed-absent negative cache rows", async () => {
+    const select = vi
+      .fn()
+      .mockReturnValueOnce(
+        makeSelectChain([
+          {
+            appid: 100,
+            mainStoryMinutes: null,
+            matchedName: "[failed: no results]",
+          },
+          { appid: 200, mainStoryMinutes: null, matchedName: "[failed: timeout]" },
+        ])
+      )
+      .mockReturnValueOnce(makeSelectChain([]))
+
+    mockedGetDb.mockReturnValue({ select } as never)
+    mockedGetProfileGamesForEnrichment.mockResolvedValue([
+      { appid: 100, name: "Absent" },
+      { appid: 200, name: "Retryable" },
+    ])
+
+    const rows = await resolveAppidsForSource("hltb", {
+      steamid: "76561198000000001",
+      force: false,
+      missingOnly: true,
+    })
+
+    expect(rows).toEqual([{ appid: 200, name: "Retryable" }])
+  })
+
+  it("re-queues protondb when tier is unknown despite fresh timestamp", async () => {
+    const select = vi.fn().mockReturnValue(
+      makeSelectChain([
+        {
+          appid: 1,
+          tier: "unknown",
+          lastCheckedAt: new Date(),
+        },
+        {
+          appid: 2,
+          tier: "gold",
+          lastCheckedAt: new Date(),
+        },
+      ])
+    )
+    mockedGetDb.mockReturnValue({ select } as never)
+    mockedGetProfileAppids.mockResolvedValue([1, 2])
+
+    const appids = await resolveAppidsForSource("protondb", {
+      steamid: "76561198000000001",
+      force: false,
+    })
+
+    expect(appids).toEqual([1])
+  })
 })

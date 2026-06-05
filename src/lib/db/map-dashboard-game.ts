@@ -1,9 +1,15 @@
 import { computeCompletionPercent } from "@/lib/dashboard/achievement-completion"
-import type { DashboardGame, ProtonDbTier } from "@/types/dashboard"
+import type {
+  AchievementJoinInput,
+  SteamGameJoinRow,
+} from "@/lib/db/steam-game-join-types"
+import { resolveDenuvoDisplayState } from "@/lib/steam/denuvo/resolve-denuvo-display-state"
+import { resolveGameIconUrl } from "@/lib/utils/game-icon-url"
 import { resolveSteamDeckCompatibility } from "@/lib/utils/detect-steam-deck"
 import { parseReleaseDate } from "@/lib/utils/parse-release-date"
-import { resolveGameIconUrl } from "@/lib/utils/game-icon-url"
-import { resolveDenuvoDisplayState } from "@/lib/steam/denuvo/resolve-denuvo-display-state"
+import type { DashboardGame, ProtonDbTier } from "@/types/dashboard"
+
+export type { SteamGameJoinRow } from "@/lib/db/steam-game-join-types"
 
 const normalizeTier = (tier: string | null | undefined): ProtonDbTier => {
   const t = (tier ?? "unknown").toLowerCase()
@@ -20,64 +26,24 @@ const normalizeTier = (tier: string | null | undefined): ProtonDbTier => {
   return "unknown"
 }
 
+const categoryHasDescription = (
+  value: unknown
+): value is { description: unknown } =>
+  typeof value === "object" && value !== null && "description" in value
+
 const detectVr = (categories: unknown[] | null | undefined) => {
   if (!categories?.length) return { vrSupported: false, vrOnly: false }
-  const labels = categories.map((c) => {
-    if (typeof c === "object" && c && "description" in c) {
-      return String((c as { description: string }).description).toLowerCase()
+  const labels = categories.map((category) => {
+    if (categoryHasDescription(category)) {
+      return String(category.description).toLowerCase()
     }
-    return String(c).toLowerCase()
+    return String(category).toLowerCase()
   })
-  const vrOnly = labels.some((l) => l.includes("vr only"))
+  const vrOnly = labels.some((label) => label.includes("vr only"))
   const vrSupported =
-    vrOnly || labels.some((l) => l.includes("vr support") || l === "vr")
+    vrOnly ||
+    labels.some((label) => label.includes("vr support") || label === "vr")
   return { vrSupported, vrOnly }
-}
-
-export type SteamGameJoinRow = {
-  appid: number
-  name: string
-  icon_url?: string
-  logo_url?: string
-  store_url?: string
-  steam_app_details?:
-    | {
-        platforms?: { windows?: boolean; mac?: boolean; linux?: boolean }
-        categories?: unknown[]
-        steam_deck_compatibility?: string | null
-        genres?: unknown[]
-        type?: string
-        header_image?: string
-        release_date?: unknown
-        last_checked_at?: string
-      }
-    | {
-        platforms?: { windows?: boolean; mac?: boolean; linux?: boolean }
-        categories?: unknown[]
-        steam_deck_compatibility?: string | null
-        genres?: unknown[]
-        type?: string
-        header_image?: string
-        release_date?: unknown
-        last_checked_at?: string
-      }[]
-    | null
-  howlongtobeat_entries?: Record<string, unknown> | Record<string, unknown>[] | null
-  anticheat_entries?: Record<string, unknown> | Record<string, unknown>[] | null
-  protondb_entries?: Record<string, unknown> | Record<string, unknown>[] | null
-}
-
-const pickOne = <T,>(value: T | T[] | null | undefined): T | null => {
-  if (!value) return null
-  return Array.isArray(value) ? value[0] ?? null : value
-}
-
-type AchievementJoinRow = {
-  unlocked_count?: number
-  total_count?: number
-  completion_percent?: number
-  has_achievements?: boolean
-  last_checked_at?: string
 }
 
 export const mapSteamGameToDashboard = (
@@ -88,38 +54,38 @@ export const mapSteamGameToDashboard = (
     lastSyncedAt?: string
   },
   options?: {
-    achievements?: AchievementJoinRow | null
+    achievements?: AchievementJoinInput | null
   }
 ): DashboardGame => {
-  const details = pickOne(gameTyped.steam_app_details)
-  const hltb = pickOne(gameTyped.howlongtobeat_entries)
-  const ac = pickOne(gameTyped.anticheat_entries)
-  const proton = pickOne(gameTyped.protondb_entries)
+  const details = gameTyped.steamAppDetails
+  const hltb = gameTyped.howlongtobeatEntry
+  const ac = gameTyped.anticheatEntry
+  const proton = gameTyped.protondbEntry
   const achievements = options?.achievements
   const vr = detectVr(details?.categories)
   const steamDeckCompatibility = resolveSteamDeckCompatibility(
-    details?.steam_deck_compatibility,
+    details?.steamDeckCompatibility,
     details?.categories
   )
-  const releaseDate = parseReleaseDate(details?.release_date)
+  const releaseDate = parseReleaseDate(details?.releaseDate)
 
   return {
     appid: gameTyped.appid,
     name: gameTyped.name,
     iconUrl: resolveGameIconUrl({
-      iconUrl: gameTyped.icon_url,
-      logoUrl: gameTyped.logo_url,
-      headerImage: details?.header_image,
+      iconUrl: gameTyped.iconUrl,
+      logoUrl: gameTyped.logoUrl,
+      headerImage: details?.headerImage,
     }),
-    logoUrl: gameTyped.logo_url ?? undefined,
-    storeUrl: gameTyped.store_url ?? undefined,
+    logoUrl: gameTyped.logoUrl ?? undefined,
+    storeUrl: gameTyped.storeUrl ?? undefined,
     playtimeForeverMinutes: playtime.playtimeForeverMinutes,
     playtime2WeeksMinutes: playtime.playtime2WeeksMinutes,
     lastSyncedAt: playtime.lastSyncedAt,
-    achievements: achievements?.last_checked_at
+    achievements: achievements?.lastCheckedAt
       ? (() => {
-          const unlockedCount = achievements.unlocked_count ?? 0
-          const totalCount = achievements.total_count ?? 0
+          const unlockedCount = achievements.unlockedCount ?? 0
+          const totalCount = achievements.totalCount ?? 0
           return {
             unlockedCount,
             totalCount,
@@ -127,59 +93,57 @@ export const mapSteamGameToDashboard = (
               unlockedCount,
               totalCount
             ),
-            hasAchievements: achievements.has_achievements ?? false,
-            lastCheckedAt: achievements.last_checked_at,
+            hasAchievements: achievements.hasAchievements ?? false,
+            lastCheckedAt: achievements.lastCheckedAt,
           }
         })()
       : undefined,
     hltb: hltb
       ? {
-          hltbId: hltb.hltb_id as string | undefined,
-          matchedName: hltb.matched_name as string | undefined,
-          mainStoryMinutes: hltb.main_story_minutes as number | undefined,
-          mainExtraMinutes: hltb.main_extra_minutes as number | undefined,
-          completionistMinutes: hltb.completionist_minutes as number | undefined,
-          allStylesMinutes: hltb.all_styles_minutes as number | undefined,
-          matchConfidence: hltb.match_confidence as number | undefined,
-          imageUrl: hltb.image_url as string | undefined,
-          platforms: hltb.platforms as string[] | undefined,
-          reviewScore: hltb.review_score as number | undefined,
-          sourceUrl: hltb.source_url as string | undefined,
-          lastCheckedAt: hltb.last_checked_at as string | undefined,
+          hltbId: hltb.hltbId ?? undefined,
+          matchedName: hltb.matchedName ?? undefined,
+          mainStoryMinutes: hltb.mainStoryMinutes ?? undefined,
+          mainExtraMinutes: hltb.mainExtraMinutes ?? undefined,
+          completionistMinutes: hltb.completionistMinutes ?? undefined,
+          allStylesMinutes: hltb.allStylesMinutes ?? undefined,
+          matchConfidence: hltb.matchConfidence ?? undefined,
+          imageUrl: hltb.imageUrl ?? undefined,
+          platforms: hltb.platforms ?? undefined,
+          reviewScore: hltb.reviewScore ?? undefined,
+          sourceUrl: hltb.sourceUrl ?? undefined,
+          lastCheckedAt: hltb.lastCheckedAt,
         }
       : undefined,
     antiCheat: ac
       ? {
-          matchedName: ac.matched_name as string | undefined,
-          status: ac.status as string | undefined,
-          anticheatNames: ac.anticheat_names as string[] | undefined,
-          kernelLevel: ac.kernel_level as boolean | undefined,
-          denuvoAntiTamper: ac.denuvo_anti_tamper as boolean | undefined,
-          denuvoAntiCheat: ac.denuvo_anti_cheat as boolean | undefined,
-          denuvoConfidence: ac.denuvo_confidence as string | undefined,
-          denuvoSource: ac.denuvo_source as string | undefined,
-          denuvoEvidence: ac.denuvo_evidence as string | undefined,
-          denuvoCheckedAt: ac.denuvo_checked_at as string | undefined,
+          matchedName: ac.matchedName ?? undefined,
+          status: ac.status ?? undefined,
+          anticheatNames: ac.anticheatNames ?? undefined,
+          kernelLevel: ac.kernelLevel ?? undefined,
+          denuvoAntiTamper: ac.denuvoAntiTamper ?? undefined,
+          denuvoAntiCheat: ac.denuvoAntiCheat ?? undefined,
+          denuvoConfidence: ac.denuvoConfidence ?? undefined,
+          denuvoSource: ac.denuvoSource ?? undefined,
+          denuvoEvidence: ac.denuvoEvidence ?? undefined,
+          denuvoCheckedAt: ac.denuvoCheckedAt,
           denuvoDisplay: resolveDenuvoDisplayState({
-            denuvoAntiTamper: ac.denuvo_anti_tamper as boolean | null | undefined,
-            denuvoConfidence: ac.denuvo_confidence as string | null | undefined,
-            denuvoSource: ac.denuvo_source as string | null | undefined,
-            denuvoCheckedAt: ac.denuvo_checked_at as string | null | undefined,
+            denuvoAntiTamper: ac.denuvoAntiTamper,
+            denuvoConfidence: ac.denuvoConfidence,
+            denuvoSource: ac.denuvoSource,
+            denuvoCheckedAt: ac.denuvoCheckedAt,
           }),
-          notes: ac.notes as string | undefined,
-          slug: ac.awacy_slug as string | undefined,
-          nativeLinux: ac.native_linux as boolean | undefined,
-          sourceUrl: ac.source_url as string | undefined,
-          levvvelSourceUrl: ac.levvvel_source_url as string | undefined,
-          levvvelAntiCheatNames: ac.levvvel_anticheat_names as
-            | string[]
-            | undefined,
-          levvvelDeveloper: ac.levvvel_developer as string | undefined,
-          levvvelPublisher: ac.levvvel_publisher as string | undefined,
-          levvvelMatchedName: ac.levvvel_matched_name as string | undefined,
-          awacyDateChanged: ac.awacy_date_changed as string | undefined,
-          matchConfidence: ac.match_confidence as string | undefined,
-          lastCheckedAt: ac.last_checked_at as string | undefined,
+          notes: ac.notes ?? undefined,
+          slug: ac.awacySlug ?? undefined,
+          nativeLinux: ac.nativeLinux ?? undefined,
+          sourceUrl: ac.sourceUrl ?? undefined,
+          levvvelSourceUrl: ac.levvvelSourceUrl ?? undefined,
+          levvvelAntiCheatNames: ac.levvvelAnticheatNames ?? undefined,
+          levvvelDeveloper: ac.levvvelDeveloper ?? undefined,
+          levvvelPublisher: ac.levvvelPublisher ?? undefined,
+          levvvelMatchedName: ac.levvvelMatchedName ?? undefined,
+          awacyDateChanged: ac.awacyDateChanged,
+          matchConfidence: ac.matchConfidence ?? undefined,
+          lastCheckedAt: ac.lastCheckedAt,
         }
       : undefined,
     protondb: proton
@@ -187,28 +151,26 @@ export const mapSteamGameToDashboard = (
           tier:
             proton.tier == null || proton.tier === ""
               ? undefined
-              : normalizeTier(proton.tier as string),
-          confidence: proton.confidence as string | undefined,
-          totalReports: proton.total_reports as number | undefined,
-          latestReportedAt: proton.latest_reported_at as string | undefined,
-          sourceUrl: proton.source_url as string | undefined,
-          lastCheckedAt: proton.last_checked_at as string | undefined,
+              : normalizeTier(proton.tier),
+          confidence: proton.confidence ?? undefined,
+          totalReports: proton.totalReports ?? undefined,
+          latestReportedAt: proton.latestReportedAt,
+          sourceUrl: proton.sourceUrl ?? undefined,
+          lastCheckedAt: proton.lastCheckedAt,
         }
       : undefined,
     steamDetails: details
       ? {
-            type: details?.type as string | undefined,
-            platforms: details?.platforms,
-            categories: details?.categories,
-            genres: details?.genres,
-            vrSupported: details ? vr.vrSupported : undefined,
-            vrOnly: details ? vr.vrOnly : undefined,
-            steamDeckCompatibility: details
-              ? steamDeckCompatibility
-              : undefined,
-            releaseDate: details ? releaseDate : undefined,
-            lastCheckedAt: details?.last_checked_at,
-          }
-        : undefined,
+          type: details.type ?? undefined,
+          platforms: details.platforms,
+          categories: details.categories,
+          genres: details.genres,
+          vrSupported: vr.vrSupported,
+          vrOnly: vr.vrOnly,
+          steamDeckCompatibility,
+          releaseDate,
+          lastCheckedAt: details.lastCheckedAt,
+        }
+      : undefined,
   }
 }

@@ -33,10 +33,11 @@ Jobs live in `enrichment_jobs`; processing via `GET /api/cron/process-jobs` (Bea
 
 ## Rate limiting
 
-In-memory per-IP sliding windows (single-instance Docker):
+In-memory per-IP sliding windows (single-instance Docker). The limiter is **process-local** — it does not coordinate between the Next.js web server and the embedded job worker when both run in the same container.
 
 - Default: `SLM_RATE_LIMIT_PER_MIN` (60/min)
 - Expensive routes: min(10, default limit)
+- Empty windows are dropped from memory after the sliding window expires
 
 IP from `X-Forwarded-For` (first hop) or `X-Real-IP` — configure your reverse proxy accordingly.
 

@@ -134,7 +134,8 @@ const mapEnrichmentSource = (
   key: string,
   label: string,
   row: EnrichmentCoverage[keyof EnrichmentCoverage],
-  withDataOverride?: number
+  withDataOverride?: number,
+  scope: SyncStatusSourceRow["scope"] = "library"
 ): SyncStatusSourceRow => {
   const processed = processedCountForSource(row)
   const withData = withDataOverride ?? row.withData
@@ -147,6 +148,9 @@ const mapEnrichmentSource = (
     processed,
     missing: row.missing,
     percent: row.total > 0 ? Math.round((processed / row.total) * 100) : 100,
+    cachedReady: processed,
+    backgroundRemaining: row.missing,
+    scope,
   }
 }
 
@@ -192,29 +196,27 @@ export const buildDashboardSyncStatus = async (
   const enrichAppids = await getUnionProfileAppids([steamid])
   const enrichTotal = enrichAppids.length
 
-  const coverage = await getEnrichmentCoverage(enrichAppids)
+  const libraryAppidRows = await db
+    .select({ appid: profileGames.appid })
+    .from(profileGames)
+    .where(eq(profileGames.steamid, steamid))
+  const libraryAppids = libraryAppidRows.map((row) => row.appid)
+  const libraryAppidSet = new Set(libraryAppids)
+
+  const coverage = await getEnrichmentCoverage(libraryAppids)
   const enrichGames = await loadEnrichGames(enrichAppids)
   const achievementByAppid = await loadProfileAchievementsByAppid(steamid)
 
-  const libraryAppids = new Set(
-    (
-      await db
-        .select({ appid: profileGames.appid })
-        .from(profileGames)
-        .where(eq(profileGames.steamid, steamid))
-    ).map((row) => row.appid)
-  )
-
-  const libraryGames = enrichGames.filter((game) => libraryAppids.has(game.appid))
+  const libraryGames = enrichGames.filter((game) => libraryAppidSet.has(game.appid))
 
   const achievementRows = [...achievementByAppid.values()]
   const achievementsResolved = countAchievementsResolvedRows(achievementRows)
   const achievementsWithData = countAchievementsEnrichedRows(achievementRows)
 
-  const deckWithData = enrichGames.filter(hasAuthoritativeSteamDeckStatus).length
-  const protonWithData = enrichGames.filter(hasProtonCoverage).length
-  const anticheatWithData = enrichGames.filter(hasMeaningfulAntiCheatData).length
-  const hltbWithData = enrichGames.filter(
+  const deckWithData = libraryGames.filter(hasAuthoritativeSteamDeckStatus).length
+  const protonWithData = libraryGames.filter(hasProtonCoverage).length
+  const anticheatWithData = libraryGames.filter(hasMeaningfulAntiCheatData).length
+  const hltbWithData = libraryGames.filter(
     (game) => Boolean(game.hltb?.mainStoryMinutes)
   ).length
 
@@ -229,10 +231,21 @@ export const buildDashboardSyncStatus = async (
   const libraryProcessed = profile.lastSyncedAt ? libraryTotal : 0
   const wishlistProcessed = profile.wishlistLastSyncedAt ? wishlistTotal : 0
   const steamDeckProcessed = resolveSteamDeckProcessed(
-    enrichTotal,
+    libraryTotal,
     deckWithData,
     activeJobs
   )
+
+  const cacheReadyCount =
+    processedCountForSource(coverage.app_details) +
+    processedCountForSource(coverage.protondb) +
+    processedCountForSource(coverage.hltb)
+
+  const backgroundRemainingCount =
+    coverage.app_details.missing +
+    coverage.protondb.missing +
+    coverage.hltb.missing +
+    Math.max(0, libraryTotal - achievementsResolved)
 
   const sources: SyncStatusSourceRow[] = [
     buildCountSource(
@@ -260,7 +273,7 @@ export const buildDashboardSyncStatus = async (
     buildCountSource(
       "steam_deck",
       "Steam Deck",
-      enrichTotal,
+      libraryTotal,
       steamDeckProcessed,
       deckWithData
     ),
@@ -280,6 +293,9 @@ export const buildDashboardSyncStatus = async (
   return computeSyncProgressFromSources({
     sources,
     enrichTotal,
+    libraryTotal,
+    cacheReadyCount,
+    backgroundRemainingCount,
     activeJobs,
   })
 }

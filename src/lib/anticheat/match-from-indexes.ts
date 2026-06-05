@@ -35,7 +35,9 @@ export const findAwacyMatch = (
 
   let best: AwacyNormalizedEntry | undefined
   let bestScore = 0
+  const maxLenDiff = Math.max(1, Math.floor(gameName.length * (1 - FUZZY_THRESHOLD)))
   for (const candidate of indexes.entries) {
+    if (Math.abs(candidate.name.length - gameName.length) > maxLenDiff) continue
     const score = calcNameSimilarity(candidate.name, gameName)
     if (score > bestScore) {
       bestScore = score
@@ -70,7 +72,9 @@ export const findLevvvelMatch = (
 
   let best: LevvvelNormalizedRow | undefined
   let bestScore = 0
+  const maxLenDiff = Math.max(1, Math.floor(gameName.length * (1 - FUZZY_THRESHOLD)))
   for (const candidate of indexes.rows) {
+    if (Math.abs(candidate.name.length - gameName.length) > maxLenDiff) continue
     const score = calcNameSimilarity(candidate.name, gameName)
     if (score > bestScore) {
       bestScore = score

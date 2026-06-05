@@ -91,7 +91,7 @@ const syncLevvvelBranch = async (): Promise<{
   levvvelError?: string
 }> => {
   const levvvelDataset = await fetchLevvvelKernelGames()
-  let levvvelComplete = levvvelDataset.complete
+  const levvvelComplete = levvvelDataset.complete
   let levvvelError: string | undefined
 
   if (!levvvelDataset.complete) {

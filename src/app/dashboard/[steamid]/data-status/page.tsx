@@ -124,7 +124,7 @@ export default function DataStatusPage() {
             achievementsResolved >= libraryTotal &&
             achievementsEnriched < libraryTotal
               ? `${libraryTotal - achievementsEnriched} titles have no Steam achievements — lookup complete`
-              : "Full library · requires public game details · re-sync after logic updates"
+              : "Never bundled in seed — requires Steam API per profile · public game details"
           }
         />
       </DataStatusSection>
@@ -152,8 +152,8 @@ export default function DataStatusPage() {
           ttlHours={168}
           coverageNote={
             unreleasedCount > 0
-              ? `Not yet released (skipped): ${unreleasedCount}`
-              : undefined
+              ? `Not yet released (skipped): ${unreleasedCount} · Global cache from bundled top sellers`
+              : "Global cache from bundled top sellers — pending = not yet resolved for your library"
           }
         />
       </DataStatusSection>
@@ -198,7 +198,7 @@ export default function DataStatusPage() {
           coverageNote={
             hltbResolved >= enrichTotal && hltbEnriched < enrichTotal
               ? `${enrichTotal - hltbEnriched} titles have no HowLongToBeat listing — lookup complete`
-              : undefined
+              : "Global cache from bundled top sellers — pending = not yet resolved for your library"
           }
         />
       </DataStatusSection>

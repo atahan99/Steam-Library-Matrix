@@ -1,6 +1,7 @@
 import { eq } from "drizzle-orm"
 import { getDb } from "@/lib/db/client"
 import { seedHydrationMeta } from "@/lib/db/schema"
+import { getRuntimeEnv } from "@/lib/env/runtime-env"
 import type { MetadataManifest } from "@/lib/seed/types"
 
 export type ShouldHydrateSeedResult =
@@ -8,10 +9,10 @@ export type ShouldHydrateSeedResult =
   | { hydrate: false; reason: string }
 
 export const isSeedHydrationSkippedByEnv = (): boolean =>
-  process.env.SLM_SKIP_SEED_HYDRATION === "true"
+  getRuntimeEnv("SLM_SKIP_SEED_HYDRATION") === "true"
 
 export const isSeedHydrationForcedByEnv = (): boolean =>
-  process.env.SLM_FORCE_SEED_HYDRATION === "true"
+  getRuntimeEnv("SLM_FORCE_SEED_HYDRATION") === "true"
 
 export const shouldHydrateSeed = async (
   manifest: MetadataManifest | null

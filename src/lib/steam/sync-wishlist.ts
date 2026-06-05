@@ -52,8 +52,11 @@ export const syncSteamWishlist = async (
       if (shouldPersistWishlistSyncError(dbError)) {
         try {
           await setWishlistSyncError(steamid, message)
-        } catch {
-          // Profile wishlist columns may also be missing
+        } catch (error) {
+          console.warn(
+            `[wishlist] Failed to persist sync error for ${steamid}:`,
+            error
+          )
         }
       }
 
@@ -70,8 +73,11 @@ export const syncSteamWishlist = async (
     if (shouldPersistWishlistSyncError(error)) {
       try {
         await setWishlistSyncError(steamid, message)
-      } catch {
-        // Non-fatal when wishlist status columns are not migrated yet
+      } catch (error) {
+        console.warn(
+          `[wishlist] Failed to persist sync error for ${steamid}:`,
+          error
+        )
       }
     }
 

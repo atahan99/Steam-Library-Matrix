@@ -25,6 +25,7 @@ import {
   HLTB_TTL_HOURS,
   PROTONDB_TTL_HOURS,
 } from "@/lib/enrichment/enrichment-ttl"
+import { isHltbConfirmedAbsentMatchedName } from "@/lib/enrichment/hltb-lookup-outcome"
 
 export {
   ACHIEVEMENTS_TTL_HOURS,
@@ -212,13 +213,19 @@ const filterProtonDbAppids = async (
     const existing = await db
       .select({
         appid: protondbEntries.appid,
+        tier: protondbEntries.tier,
         lastCheckedAt: protondbEntries.lastCheckedAt,
       })
       .from(protondbEntries)
       .where(inArray(protondbEntries.appid, chunk))
 
     for (const row of existing) {
-      if (isCacheFresh(row.lastCheckedAt?.toISOString(), PROTONDB_TTL_HOURS)) {
+      const tier = row.tier
+      const hasMeaningfulTier = Boolean(tier && tier !== "unknown")
+      if (
+        hasMeaningfulTier &&
+        isCacheFresh(row.lastCheckedAt?.toISOString(), PROTONDB_TTL_HOURS)
+      ) {
         freshAppids.add(row.appid)
       }
     }
@@ -279,6 +286,8 @@ const filterAnticheatAppids = async (
       .select({
         appid: anticheatEntries.appid,
         lastCheckedAt: anticheatEntries.lastCheckedAt,
+        status: anticheatEntries.status,
+        anticheatNames: anticheatEntries.anticheatNames,
         denuvoAntiTamper: anticheatEntries.denuvoAntiTamper,
         denuvoConfidence: anticheatEntries.denuvoConfidence,
         denuvoCheckedAt: anticheatEntries.denuvoCheckedAt,
@@ -292,10 +301,14 @@ const filterAnticheatAppids = async (
       const row = existingByAppid.get(appid)
       if (!row) continue
 
-      const awacyFresh = isCacheFresh(
-        row.lastCheckedAt?.toISOString(),
-        ANTICHEAT_TTL_HOURS
-      )
+      const hasAwacyData =
+        Boolean(row.status && row.status !== "Unknown") ||
+        Boolean(
+          Array.isArray(row.anticheatNames) && row.anticheatNames.length > 0
+        )
+      const awacyFresh =
+        hasAwacyData &&
+        isCacheFresh(row.lastCheckedAt?.toISOString(), ANTICHEAT_TTL_HOURS)
       const denuvoFresh = isDenuvoDataFresh({
         denuvoAntiTamper: row.denuvoAntiTamper,
         denuvoConfidence: row.denuvoConfidence,
@@ -327,12 +340,19 @@ const filterHltbRows = async (
         .select({
           appid: howlongtobeatEntries.appid,
           mainStoryMinutes: howlongtobeatEntries.mainStoryMinutes,
+          matchedName: howlongtobeatEntries.matchedName,
         })
         .from(howlongtobeatEntries)
         .where(inArray(howlongtobeatEntries.appid, chunk))
 
       for (const entry of existing) {
-        if (entry.mainStoryMinutes) enriched.add(entry.appid)
+        if (entry.mainStoryMinutes) {
+          enriched.add(entry.appid)
+          continue
+        }
+        if (isHltbConfirmedAbsentMatchedName(entry.matchedName)) {
+          enriched.add(entry.appid)
+        }
       }
     }
 

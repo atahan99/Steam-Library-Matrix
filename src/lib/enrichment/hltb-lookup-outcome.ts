@@ -28,6 +28,13 @@ export const isHltbConfirmedAbsentReason = (reason: string): boolean =>
     (prefix) => reason === prefix || reason.startsWith(`${prefix}`)
   )
 
+export const isHltbConfirmedAbsentMatchedName = (
+  matchedName?: string | null
+): boolean => {
+  const reason = parseHltbNegativeReason(matchedName)
+  return reason ? isHltbConfirmedAbsentReason(reason) : false
+}
+
 export const classifyHltbLookupOutcome = (
   hltb?: DashboardGame["hltb"]
 ): HltbLookupOutcome => {

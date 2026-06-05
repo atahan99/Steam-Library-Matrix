@@ -3,9 +3,8 @@
 **TL;DR** — full flow: [README § Option 2: Docker Compose](../README.md#option-2-docker-compose).
 
 1. `cp docker/.env.example docker/.env` — set `STEAM_API_KEY`, `CRON_SECRET`
-2. `cp -n docker/db/matrix.db.example docker/db/matrix.db`
-3. `docker compose -f docker/compose.yml up --build -d`
-4. Open http://localhost:3000 — `GET /api/health`
+2. `docker compose -f docker/compose.yml up --build -d`
+3. Open http://localhost:3001 — `GET /api/health`
 
 Docker files: [`docker/`](../docker/) (`Dockerfile`, `compose.yml`, `entrypoint.sh`, `db/`). Single-container image with embedded SQLite and enrichment worker. **Separate** from local dev ([README § Option 1](../README.md#option-1-local-nextjs)).
 
@@ -18,13 +17,7 @@ Docker files: [`docker/`](../docker/) (`Dockerfile`, `compose.yml`, `entrypoint.
 
 1. Copy [`docker/.env.example`](../docker/.env.example) → `docker/.env`.
 2. Set `STEAM_API_KEY` and `CRON_SECRET` (`openssl rand -hex 32`).
-3. Seed the database:
-
-   ```bash
-   cp -n docker/db/matrix.db.example docker/db/matrix.db
-   ```
-
-4. Home lab (no Bearer on enrich routes):
+3. Home lab (no Bearer on enrich routes):
 
    ```env
    SLM_ALLOW_OPEN_API=true
@@ -36,11 +29,11 @@ Docker files: [`docker/`](../docker/) (`Dockerfile`, `compose.yml`, `entrypoint.
    docker compose -f docker/compose.yml up --build -d
    ```
 
-6. Import a public Steam profile at http://localhost:3000.
+6. Import a public Steam profile at http://localhost:3001.
 
-[`docker/compose.yml`](../docker/compose.yml) bind-mounts `docker/db/` → `/app/data`. Configure secrets in `docker/.env` only for a self-contained deploy. Compose also loads repo-root `.env` if present (root wins on duplicate keys) — avoid a blank `STEAM_API_KEY=` in `docker/.env` if the key lives in root. Worker env: [env.md § Background jobs](./env.md#background-jobs).
+[`docker/compose.yml`](../docker/compose.yml) stores the live DB in the named volume `matrix_db` at `/app/data/db`. Configure secrets in `docker/.env` only for a self-contained deploy. Compose also loads repo-root `.env` if present (root wins on duplicate keys) — avoid a blank `STEAM_API_KEY=` in `docker/.env` if the key lives in root. Worker env: [env.md § Background jobs](./env.md#background-jobs).
 
-Check readiness: `curl -s http://localhost:3000/api/health` — `steamApiKey` should be `"ok"` before importing.
+Check readiness: `curl -s http://localhost:3001/api/health` — `steamApiKey` should be `"ok"` before importing.
 
 ## Production hardening
 
@@ -66,24 +59,23 @@ Full checklist: [security.md § Security checklist](./security.md#security-check
 
 ## Reverse proxy
 
-Terminate TLS in front of port 3000:
+Terminate TLS in front of host port **3001** (maps to container port 3000):
 
-- **Caddy:** `reverse_proxy app:3000`
+- **Caddy:** `reverse_proxy localhost:3001`
 - **Nginx:** `proxy_pass` with `X-Forwarded-For` / `X-Real-IP`
 - **Traefik:** Docker labels on `app`
 
 ## Persistent data on the host
 
-- Bind mount [`docker/db/`](../docker/db/) → `/app/data/` in the container
-- Live DB: `docker/db/matrix.db` (plus `matrix.db-wal` / `matrix.db-shm` while running)
+- Live DB: Docker named volume `matrix_db` → `/app/data/db` in the container
 - **Not** the same path as local `./data/matrix.db`
-- Redeploys (`up --build`) keep data on disk
+- Redeploys (`up --build`) keep data in the volume
 
-**Backup** (stop stack first):
+**Backup**:
 
 ```bash
-docker compose -f docker/compose.yml down
-cp docker/db/matrix.db "docker/db/matrix-backup-$(date +%F).db"
+docker compose -f docker/compose.yml exec app cp /app/data/db/matrix.db /tmp/matrix-backup.db
+docker cp "$(docker compose -f docker/compose.yml ps -q app)":/tmp/matrix-backup.db ./matrix-backup.db
 ```
 
 **Migrate from older layouts:** [README § Migrating an older database](../README.md#migrating-an-older-database).
@@ -92,10 +84,10 @@ Details: [database.md](./database.md), [docker/db/README.md](../docker/db/README
 
 ## Upgrades
 
-1. Back up `docker/db/matrix.db` (see above)
+1. Back up the database (see [docker/db/README.md](../docker/db/README.md))
 2. `docker compose -f docker/compose.yml up --build -d`
 3. Migrations via [`docker/entrypoint.sh`](../docker/entrypoint.sh)
-4. `curl -s http://localhost:3000/api/health`
+4. `curl -s http://localhost:3001/api/health`
 
 Stop stack: `docker compose -f docker/compose.yml down`
 

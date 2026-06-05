@@ -7,6 +7,7 @@ import {
   nextFetchInit,
   prepareServerEnv,
 } from "@/lib/env/runtime-env"
+import { fetchWithTimeout } from "@/lib/utils/fetch-with-timeout"
 import type {
   SteamOwnedGame,
   SteamProfile,
@@ -37,7 +38,7 @@ const steamFetch = async <T>(path: string, params: Record<string, string>) => {
   for (const [k, v] of Object.entries(params)) {
     url.searchParams.set(k, v)
   }
-  const res = await fetch(url.toString(), nextFetchInit(0))
+  const res = await fetchWithTimeout(url.toString(), nextFetchInit(0))
   if (!res.ok) {
     throw new Error(`Steam API error: ${res.status}`)
   }
@@ -329,14 +330,6 @@ export const getPlayerAchievementStats = async (
         : totalFromPlayer
 
     if (totalCount === 0) {
-      if (!playerData.playerstats?.success) {
-        return {
-          hasAchievements: false,
-          unlockedCount: 0,
-          totalCount: 0,
-          completionPercent: 0,
-        }
-      }
       return {
         hasAchievements: false,
         unlockedCount: 0,

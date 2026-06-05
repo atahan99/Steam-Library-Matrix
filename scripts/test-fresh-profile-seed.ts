@@ -3,6 +3,16 @@
  * Fresh-profile seed smoke test against a running server.
  * Usage: tsx --env-file=.env scripts/test-fresh-profile-seed.ts --base http://localhost:3000 --profile https://steamcommunity.com/id/919100
  */
+import {
+  countAchievementsEnrichedGames,
+  countAchievementsResolvedGames,
+} from "@/lib/enrichment/achievements-lookup-outcome"
+import {
+  countHltbEnrichedGames,
+  countHltbResolvedGames,
+  isHltbConfirmedAbsentMatchedName,
+} from "@/lib/enrichment/hltb-lookup-outcome"
+import type { DashboardGame } from "@/types/dashboard"
 const parseArgs = () => {
   const args = process.argv.slice(2)
   let base = "http://localhost:3000"
@@ -36,14 +46,15 @@ type CoverageSummary = {
   totalGames: number
 }
 
-const isHltbConfirmedAbsent = (matchedName: unknown): boolean => {
-  if (typeof matchedName !== "string") return false
-  const lower = matchedName.toLowerCase()
-  return (
-    lower.includes("[failed: no results]") ||
-    lower.includes("[failed: no durations on detail page]")
+const isHltbConfirmedAbsent = (matchedName: unknown): boolean =>
+  isHltbConfirmedAbsentMatchedName(
+    typeof matchedName === "string" ? matchedName : null
   )
-}
+
+const mapDashboardGames = (
+  games: Array<Record<string, unknown>>
+): DashboardGame[] =>
+  games.map((game) => game as unknown as DashboardGame)
 
 const summarizeGames = (games: Array<Record<string, unknown>>): CoverageSummary => {
   const summary: CoverageSummary = {
@@ -158,6 +169,20 @@ const main = async () => {
   console.log(`  with main story minutes: ${summary.hltbWithMainStory}`)
   console.log(`  confirmed absent (negative cache): ${summary.hltbConfirmedAbsent}`)
   console.log(`  with lastCheckedAt: ${summary.hltbChecked}`)
+
+  const dashboardGames = mapDashboardGames(games)
+  const hltbResolved = countHltbResolvedGames(dashboardGames)
+  const hltbEnriched = countHltbEnrichedGames(dashboardGames)
+  const achievementsResolved = countAchievementsResolvedGames(dashboardGames)
+  const achievementsEnriched = countAchievementsEnrichedGames(dashboardGames)
+
+  console.log("Lookup resolution (Data Status metrics):")
+  console.log(
+    `  HLTB resolved: ${hltbResolved}/${games.length} · enriched: ${hltbEnriched} · pending: ${Math.max(0, games.length - hltbResolved)}`
+  )
+  console.log(
+    `  Achievements resolved: ${achievementsResolved}/${games.length} · enriched: ${achievementsEnriched} · pending: ${Math.max(0, games.length - achievementsResolved)}`
+  )
 
   const sample = games
     .filter((g) => {

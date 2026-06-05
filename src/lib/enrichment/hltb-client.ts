@@ -1,4 +1,5 @@
 import * as cheerio from "cheerio"
+import { fetchWithTimeout } from "@/lib/utils/fetch-with-timeout"
 
 const BASE_URL = "https://howlongtobeat.com/"
 const DEFAULT_SEARCH_API = "api/s"
@@ -91,12 +92,17 @@ const defaultHeaders = (extra?: HeadersInit): HeadersInit => ({
   ...extra,
 })
 
+const HLTB_FETCH_TIMEOUT_MS = 20_000
+
 const hltbFetch = async (url: string, init?: RequestInit) => {
-  const res = await fetch(url, {
-    ...init,
-    headers: defaultHeaders(init?.headers),
-    signal: AbortSignal.timeout(20000),
-  })
+  const res = await fetchWithTimeout(
+    url,
+    {
+      ...init,
+      headers: defaultHeaders(init?.headers),
+    },
+    HLTB_FETCH_TIMEOUT_MS
+  )
   if (!res.ok) {
     throw new Error(`HLTB HTTP ${res.status}`)
   }

@@ -1,4 +1,5 @@
 import * as cheerio from "cheerio"
+import { fetchWithTimeout } from "@/lib/utils/fetch-with-timeout"
 import {
   parseSteamStoreAppidsFromHtml,
   parseSteamStoreTotalCountFromHtml,
@@ -64,7 +65,7 @@ const fetchTopSellersPage = async (
   count: number
 ): Promise<{ results_html?: string; total_count?: number } | null> => {
   try {
-    const res = await fetch(buildTopSellersUrl(start, count), {
+    const res = await fetchWithTimeout(buildTopSellersUrl(start, count), {
       headers: {
         "User-Agent": STEAM_STORE_USER_AGENT,
         Accept: "application/json, text/javascript, */*; q=0.01",

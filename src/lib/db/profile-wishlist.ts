@@ -188,8 +188,8 @@ export const fetchProfileWishlistRows = async (steamid: string) => {
     const gamesByAppid = await loadSteamGameJoinRowsByAppids(wishlistAppids)
 
     const rows = wishlistLinks.map((link) => ({
-      last_synced_at: link.lastSyncedAt?.toISOString(),
-      steam_games: gamesByAppid.get(link.appid) ?? null,
+      lastSyncedAt: link.lastSyncedAt?.toISOString(),
+      game: gamesByAppid.get(link.appid) ?? null,
     }))
 
     return {

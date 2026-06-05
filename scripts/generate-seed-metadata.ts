@@ -2,7 +2,10 @@
 /**
  * Generate bundled seed metadata from local SQLite (same sources as background enrichment).
  * Usage: pnpm seed:generate [--limit 5000] [--appids-file path] [--verbose]
- *        [--skip-prefetch] [--skip-protondb] [--skip-hltb] [--force-prefetch]
+ *        [--skip-prefetch] [--skip-protondb] [--skip-hltb] [--skip-app-details] [--force-prefetch]
+ *
+ * App-details prefetch respects Steam's ~200 req/5 min store API limit (see SLM_STEAM_STORE_GAP_MS).
+ * A full ~2200-appid run takes on the order of 1–2 hours.
  */
 import { mkdir, writeFile } from "node:fs/promises"
 import path from "node:path"
@@ -41,6 +44,7 @@ const parseArgs = () => {
   let skipPrefetch = false
   let skipProtondb = false
   let skipHltb = false
+  let skipAppDetails = false
   let forcePrefetch = false
 
   for (let i = 0; i < args.length; i += 1) {
@@ -58,12 +62,23 @@ const parseArgs = () => {
       skipProtondb = true
     } else if (args[i] === "--skip-hltb") {
       skipHltb = true
+    } else if (args[i] === "--skip-app-details") {
+      skipAppDetails = true
     } else if (args[i] === "--force-prefetch") {
       forcePrefetch = true
     }
   }
 
-  return { limit, appidsFile, verbose, skipPrefetch, skipProtondb, skipHltb, forcePrefetch }
+  return {
+    limit,
+    appidsFile,
+    verbose,
+    skipPrefetch,
+    skipProtondb,
+    skipHltb,
+    skipAppDetails,
+    forcePrefetch,
+  }
 }
 
 const log = (verbose: boolean, message: string) => {
@@ -88,6 +103,7 @@ const main = async () => {
     skipPrefetch,
     skipProtondb,
     skipHltb,
+    skipAppDetails,
     forcePrefetch,
   } = parseArgs()
   const generatedAt = new Date().toISOString()
@@ -109,17 +125,20 @@ const main = async () => {
   }
 
   if (!skipPrefetch) {
-    console.log("[seed:generate] prefetching ProtonDB / HLTB (live scrape into local SQLite)…")
+    console.log(
+      "[seed:generate] prefetching app-details / ProtonDB / HLTB (live scrape into local SQLite)…"
+    )
     const prefetchStats = await prefetchSeedEnrichment({
       appids: targetAppids,
       nameHints: resolved.names,
       force: forcePrefetch,
+      skipAppDetails,
       skipProtondb,
       skipHltb,
       verbose,
     })
     console.log(
-      `[seed:generate] prefetch done — proton updated=${prefetchStats.protonUpdated} hltb updated=${prefetchStats.hltbUpdated} names=${prefetchStats.namesFetched}`
+      `[seed:generate] prefetch done — appDetails updated=${prefetchStats.appDetailsUpdated} proton updated=${prefetchStats.protonUpdated} hltb updated=${prefetchStats.hltbUpdated} names=${prefetchStats.namesFetched}`
     )
   } else {
     log(verbose, "skipping live prefetch (--skip-prefetch)")
@@ -202,6 +221,8 @@ const main = async () => {
         developers: steamAppDetails.developers,
         publishers: steamAppDetails.publishers,
         genres: steamAppDetails.genres,
+        categories: steamAppDetails.categories,
+        type: steamAppDetails.type,
         platforms: steamAppDetails.platforms,
         releaseDate: steamAppDetails.releaseDate,
         steamDeckCompatibility: steamAppDetails.steamDeckCompatibility,
@@ -290,6 +311,7 @@ const main = async () => {
         appDetailsLiteSeed.items[String(appid)] = {
           appid,
           headerImage: details.headerImage ?? undefined,
+          type: details.type ?? undefined,
           developers: Array.isArray(details.developers)
             ? (details.developers as string[])
             : undefined,
@@ -298,6 +320,9 @@ const main = async () => {
             : undefined,
           genres: Array.isArray(details.genres)
             ? (details.genres as unknown[])
+            : undefined,
+          categories: Array.isArray(details.categories)
+            ? (details.categories as unknown[])
             : undefined,
           platforms: platforms ?? undefined,
           releaseDate: details.releaseDate ?? undefined,

@@ -1,5 +1,6 @@
 import { getAnticheatCatalogStatsSafe } from "@/lib/db/anticheat-catalog-safe"
 import { getDenuvoCatalogStatsSafe } from "@/lib/db/denuvo-catalog-safe"
+import { getRuntimeEnv } from "@/lib/env/runtime-env"
 import {
   syncAnticheatCatalogs,
   type SyncAnticheatCatalogsResult,
@@ -28,7 +29,7 @@ export const needsAnticheatCatalogBootstrap = (stats: {
 }
 
 export const shouldBootstrapAnticheatCatalogs = async (): Promise<boolean> => {
-  if (process.env.SLM_SKIP_CATALOG_BOOTSTRAP === "true") return false
+  if (getRuntimeEnv("SLM_SKIP_CATALOG_BOOTSTRAP") === "true") return false
 
   const stats = await getAnticheatCatalogStatsSafe()
   if (stats.setupError) return false

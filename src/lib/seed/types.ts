@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-export const SEED_MANIFEST_VERSION = 3
+export const SEED_MANIFEST_VERSION = 4
 
 export const SEED_DENUVO_CONFIDENCE = z.enum(["high", "medium", "low", "none"])
 export type SeedDenuvoConfidence = z.infer<typeof SEED_DENUVO_CONFIDENCE>
@@ -74,6 +74,22 @@ export const topAppidsSchema = z.object({
 
 export type TopAppidsFile = z.infer<typeof topAppidsSchema>
 
+export const profileAppidsProfileSchema = z.object({
+  steamid: z.string(),
+  personaName: z.string().optional(),
+  appids: z.array(z.number().int().positive()),
+})
+
+export const profileAppidsSchema = z.object({
+  version: z.number().int().positive(),
+  generatedAt: z.string(),
+  appids: z.array(z.number().int().positive()),
+  names: z.record(z.string(), z.string()).optional(),
+  profiles: z.array(profileAppidsProfileSchema).optional(),
+})
+
+export type ProfileAppidsFile = z.infer<typeof profileAppidsSchema>
+
 export const steamGameSeedItemSchema = z.object({
   appid: z.number().int().positive(),
   name: z.string().min(1),
@@ -110,9 +126,12 @@ export type DenuvoSeed = z.infer<typeof denuvoSeedSchema>
 export const appDetailsLiteSeedItemSchema = z.object({
   appid: z.number().int().positive(),
   headerImage: z.string().optional(),
+  type: z.string().optional(),
+  shortDescription: z.string().optional(),
   developers: z.array(z.string()).optional(),
   publishers: z.array(z.string()).optional(),
   genres: z.array(z.unknown()).optional(),
+  categories: z.array(z.unknown()).optional(),
   platforms: z
     .object({
       windows: z.boolean().optional(),

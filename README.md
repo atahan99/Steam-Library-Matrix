@@ -23,7 +23,7 @@
 | **For** | Development, hot reload | Self-host on a server or LAN |
 | **Requires** | Node 22, pnpm | Docker and Docker Compose only |
 | **Config** | `.env` (repo root) | `docker/.env` |
-| **Database** | `./data/matrix.db` | `docker/db/matrix.db` |
+| **Database** | `./data/matrix.db` | Docker named volume `matrix_db` |
 | **Start** | `pnpm dev:all` | `docker compose -f docker/compose.yml up --build -d` |
 
 Never commit `.env`, `docker/.env`, `data/*.db`, or `docker/db/*.db`.
@@ -87,11 +87,7 @@ Edit `docker/.env`:
 | `CRON_SECRET` | `openssl rand -hex 32` |
 | `SLM_ALLOW_OPEN_API` | `true` for home LAN only |
 
-Create the database file (persists across rebuilds):
-
-```bash
-cp -n docker/db/matrix.db.example docker/db/matrix.db
-```
+The entrypoint creates `matrix.db` from the bundled template on first start — no manual copy step.
 
 Start:
 
@@ -99,35 +95,34 @@ Start:
 docker compose -f docker/compose.yml up --build -d
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3001](http://localhost:3001) (Docker uses **3001** so local dev can keep **3000**).
 
 Check health:
 
 ```bash
-curl -s http://localhost:3000/api/health
+curl -s http://localhost:3001/api/health
 ```
 
 Expect `"ok":true` and `"steamApiKey":"ok"` before importing.
 
-Stop or rebuild (data in `docker/db/` is kept):
+Stop or rebuild (data in the `matrix_db` volume is kept):
 
 ```bash
 docker compose -f docker/compose.yml down
 docker compose -f docker/compose.yml up --build -d
 ```
 
-### Docker database (`docker/db/`)
+### Docker database
 
-- Bind-mounted to `/app/data` in the container (`matrix.db` + WAL files on disk).
+- Stored in the Compose named volume `matrix_db` at `/app/data/db` inside the container.
 - Separate from local `./data/matrix.db`.
 - Details: [docker/db/README.md](docker/db/README.md).
 
-**Backup** (stop the container first):
+**Backup**:
 
 ```bash
-docker compose -f docker/compose.yml down
-cp docker/db/matrix.db "docker/db/matrix-backup-$(date +%F).db"
-docker compose -f docker/compose.yml up -d
+docker compose -f docker/compose.yml exec app cp /app/data/db/matrix.db /tmp/matrix-backup.db
+docker cp "$(docker compose -f docker/compose.yml ps -q app)":/tmp/matrix-backup.db ./matrix-backup.db
 ```
 
 **Migrating an older database**

@@ -2,6 +2,7 @@ import { eq } from "drizzle-orm"
 import { getProfileAppids } from "@/lib/db/profile-appids"
 import { getDb } from "@/lib/db/client"
 import { nextFetchInit, prepareServerEnv } from "@/lib/env/runtime-env"
+import { fetchWithTimeout } from "@/lib/utils/fetch-with-timeout"
 import { protondbEntries, steamAppDetails } from "@/lib/db/schema"
 import { PROTONDB_TTL_HOURS } from "@/lib/enrichment/resolve-enrichment-appids"
 import { isCacheFresh } from "@/lib/utils/cache"
@@ -29,7 +30,10 @@ const normalizeTier = (tier: string | undefined): ProtonDbTier => {
 
 export const fetchProtonDbSummary = async (appid: number) => {
   await prepareServerEnv()
-  const res = await fetch(`${PROTONDB_API}/${appid}.json`, nextFetchInit(0))
+  const res = await fetchWithTimeout(
+    `${PROTONDB_API}/${appid}.json`,
+    nextFetchInit(0)
+  )
   if (!res.ok) return null
   const data = (await res.json()) as {
     tier?: string

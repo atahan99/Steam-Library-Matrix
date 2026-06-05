@@ -1,3 +1,4 @@
+import { getRuntimeEnv } from "@/lib/env/runtime-env"
 import { readFile } from "node:fs/promises"
 import path from "node:path"
 import {
@@ -10,7 +11,15 @@ import {
   type LoadedSeedFiles,
 } from "@/lib/seed/types"
 
+/** @deprecated Use resolveSeedDir() */
 export const DEFAULT_SEED_DIR = path.join(process.cwd(), "data", "seed")
+
+export const resolveSeedDir = (seedDir?: string): string => {
+  if (seedDir?.trim()) return seedDir
+  const fromEnv = getRuntimeEnv("SLM_SEED_DIR")?.trim()
+  if (fromEnv) return fromEnv
+  return DEFAULT_SEED_DIR
+}
 
 const readJsonFile = async (
   filePath: string
@@ -43,7 +52,7 @@ const parseWithSchema = <T>(
 }
 
 export const loadSeedFiles = async (
-  seedDir: string = DEFAULT_SEED_DIR
+  seedDir: string = resolveSeedDir()
 ): Promise<LoadedSeedFiles> => {
   const warnings: string[] = []
   let manifest = null

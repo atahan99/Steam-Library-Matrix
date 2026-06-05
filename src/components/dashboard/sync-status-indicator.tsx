@@ -125,6 +125,15 @@ export const DashboardStatusButton = ({
               />
             </div>
 
+            {!status.isComplete && status.cacheReadyCount > 0 ? (
+              <p className="text-[11px] text-muted-foreground">
+                ~{status.cacheReadyCount} library titles ready from bundled cache
+                {status.backgroundRemainingCount > 0
+                  ? ` · ${status.backgroundRemainingCount} still fetching`
+                  : ""}
+              </p>
+            ) : null}
+
             {!status.isComplete && status.isActive ? (
               <p className="text-xs">
                 <span className="font-medium">Est. time remaining:</span>{" "}
@@ -150,6 +159,7 @@ export const DashboardStatusButton = ({
                   </span>
                   <span className="col-span-2 text-right text-[11px] tabular-nums text-muted-foreground">
                     {source.processed}/{source.total} processed
+                    {source.scope === "library" ? " (library)" : ""}
                   </span>
                 </div>
               ))}

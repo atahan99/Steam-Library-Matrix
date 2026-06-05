@@ -3,6 +3,7 @@ services:
     build:
       context: ..
       dockerfile: docker/Dockerfile
+    restart: unless-stopped
     # docker/.env first; repo-root .env second (fills STEAM_API_KEY if docker/.env left it blank)
     env_file:
       - .env
@@ -12,6 +13,7 @@ services:
     environment:
       APP_ROOT: /app
       DATABASE_URL: file:/app/data/db/matrix.db
+      SLM_SEED_DIR: /app/data/seed
       # Fast enrichment defaults (match pnpm dev:all; override in docker/.env)
       SLM_EMBED_JOB_WORKER: "true"
       SLM_EMBED_WORKER_MS: "5000"
@@ -29,9 +31,10 @@ services:
       SLM_HLTB_STAGGER_MS: "300"
       SLM_HLTB_SYNC_DELAY_MS: "0"
       SLM_ENRICH_VERBOSE: "true"
-    # Host docker/db/ survives rebuilds — DB only; bundled seed stays at /app/data/seed
+    # Live DB in a named volume (avoids WAL corruption on bind mounts). Seed JSON stays read-only from the repo.
     volumes:
-      - ./db:/app/data/db
+      - matrix_db:/app/data/db
+      - ../data/seed:/app/data/seed:ro
     healthcheck:
       test:
         [
@@ -44,3 +47,6 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+
+volumes:
+  matrix_db:

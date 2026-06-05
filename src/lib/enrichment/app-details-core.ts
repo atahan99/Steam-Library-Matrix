@@ -67,13 +67,11 @@ export const enrichSingleAppDetails = async (
   }
 
   try {
-    const [details, steamDeckCompatibility] = await Promise.all([
-      fetchSteamAppDetails(appid),
-      fetchSteamDeckCompatibility(appid),
-    ])
+    const details = await fetchSteamAppDetails(appid)
     if (!details) {
       return { checked: 1, updated: 0, failed: 1, skipped: 0 }
     }
+    const steamDeckCompatibility = await fetchSteamDeckCompatibility(appid)
     details.steamDeckCompatibility = steamDeckCompatibility
     const now = new Date()
     await upsertSteamAppDetailsRow(details)

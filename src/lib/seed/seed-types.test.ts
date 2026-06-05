@@ -1,14 +1,35 @@
 import { describe, expect, it } from "vitest"
 import {
+  appDetailsLiteSeedSchema,
   hltbSeedSchema,
   protondbSeedSchema,
   topAppidsSchema,
 } from "@/lib/seed/types"
 
+describe("appDetailsLiteSeedSchema", () => {
+  it("accepts categories and type for VR detection", () => {
+    const parsed = appDetailsLiteSeedSchema.parse({
+      version: 4,
+      generatedAt: new Date().toISOString(),
+      items: {
+        "620": {
+          appid: 620,
+          type: "game",
+          categories: [{ id: 12, description: "SteamVR Supported" }],
+          checkedAt: "2026-01-01T00:00:00.000Z",
+        },
+      },
+    })
+
+    expect(parsed.items["620"].type).toBe("game")
+    expect(parsed.items["620"].categories).toHaveLength(1)
+  })
+})
+
 describe("protondbSeedSchema", () => {
   it("accepts tier and sentinel null fields", () => {
     const parsed = protondbSeedSchema.parse({
-      version: 3,
+      version: 4,
       generatedAt: new Date().toISOString(),
       items: {
         "570": {
@@ -40,7 +61,7 @@ describe("protondbSeedSchema", () => {
 describe("hltbSeedSchema", () => {
   it("accepts enriched and negative-cache rows", () => {
     const parsed = hltbSeedSchema.parse({
-      version: 3,
+      version: 4,
       generatedAt: new Date().toISOString(),
       items: {
         "570": {
@@ -67,7 +88,7 @@ describe("hltbSeedSchema", () => {
 describe("topAppidsSchema", () => {
   it("accepts appids with optional names map", () => {
     const parsed = topAppidsSchema.parse({
-      version: 3,
+      version: 4,
       generatedAt: new Date().toISOString(),
       appids: [570, 730],
       names: { "570": "Dota 2" },

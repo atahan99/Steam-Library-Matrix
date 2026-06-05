@@ -1,4 +1,5 @@
 import { nextFetchInit, prepareServerEnv } from "@/lib/env/runtime-env"
+import { fetchWithTimeout } from "@/lib/utils/fetch-with-timeout"
 import {
   extractWishlistRawItems,
   getWishlistItemCount,
@@ -60,7 +61,7 @@ const fetchLegacySteamWishlist = async (
 ): Promise<SteamWishlistItem[]> => {
   await prepareServerEnv()
   const url = `https://store.steampowered.com/wishlist/profiles/${steamid}/wishlistdata/`
-  const res = await fetch(url, {
+  const res = await fetchWithTimeout(url, {
     headers: {
       Accept: "application/json",
       "User-Agent": "Steam-Library-Matrix/1.0",

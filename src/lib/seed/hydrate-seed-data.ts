@@ -9,7 +9,7 @@ import {
   steamAppDetails,
   steamGames,
 } from "@/lib/db/schema"
-import { DEFAULT_SEED_DIR, loadSeedFiles } from "@/lib/seed/load-seed-files"
+import { loadSeedFiles, resolveSeedDir } from "@/lib/seed/load-seed-files"
 import {
   isSeedHydrationForcedByEnv,
   shouldHydrateSeed,
@@ -45,8 +45,22 @@ const emptyResult = (warnings: string[]): SeedHydrateResult => ({
   warnings,
 })
 
+const loadRowsByAppids = async <TRow extends { appid: number }>(
+  appids: number[],
+  query: (chunk: number[]) => Promise<TRow[]>
+): Promise<Map<number, TRow>> => {
+  const map = new Map<number, TRow>()
+  for (const chunk of chunkArray(appids, CHUNK_SIZE)) {
+    const rows = await query(chunk)
+    for (const row of rows) {
+      map.set(row.appid, row)
+    }
+  }
+  return map
+}
+
 export const hydrateSeedData = async (
-  seedDir: string = DEFAULT_SEED_DIR
+  seedDir: string = resolveSeedDir()
 ): Promise<SeedHydrateResult> => {
   const loaded = await loadSeedFiles(seedDir)
   const warnings = [...loaded.warnings]
@@ -58,27 +72,44 @@ export const hydrateSeedData = async (
   const now = new Date()
 
   if (loaded.steamGames?.items) {
-    for (const item of Object.values(loaded.steamGames.items)) {
-      const existing = await db
-        .select({
-          appid: steamGames.appid,
-          name: steamGames.name,
-        })
-        .from(steamGames)
-        .where(eq(steamGames.appid, item.appid))
-        .limit(1)
+    const items = Object.values(loaded.steamGames.items)
+    const existingByAppid = await loadRowsByAppids(
+      items.map((item) => item.appid),
+      (chunk) =>
+        db
+          .select({
+            appid: steamGames.appid,
+            name: steamGames.name,
+          })
+          .from(steamGames)
+          .where(inArray(steamGames.appid, chunk))
+    )
 
-      const row = existing[0]
+    const inserts: Array<{
+      appid: number
+      name: string
+      iconUrl: string | null
+      logoUrl: string | null
+      storeUrl: string
+    }> = []
+    const updates: Array<{
+      appid: number
+      name: string
+      iconUrl: string | undefined
+      logoUrl: string | undefined
+      storeUrl: string | undefined
+    }> = []
+
+    for (const item of items) {
+      const row = existingByAppid.get(item.appid)
       if (!row) {
-        await db.insert(steamGames).values({
+        inserts.push({
           appid: item.appid,
           name: item.name,
           iconUrl: item.iconUrl ?? null,
           logoUrl: item.logoUrl ?? null,
           storeUrl: item.storeUrl ?? `https://store.steampowered.com/app/${item.appid}`,
-          updatedAt: now,
         })
-        inserted += 1
         continue
       }
 
@@ -86,87 +117,97 @@ export const hydrateSeedData = async (
         item.name &&
         (isPlaceholderGameName(row.name) || row.name.trim().length === 0)
 
-      if (
-        shouldUpdateName ||
-        (item.iconUrl && !row.name.startsWith("App "))
-      ) {
-        await db
-          .update(steamGames)
-          .set({
-            name: shouldUpdateName ? item.name : row.name,
-            iconUrl: item.iconUrl ?? undefined,
-            logoUrl: item.logoUrl ?? undefined,
-            storeUrl: item.storeUrl ?? undefined,
-            updatedAt: now,
-          })
-          .where(eq(steamGames.appid, item.appid))
-        updated += 1
+      if (shouldUpdateName || (item.iconUrl && !row.name.startsWith("App "))) {
+        updates.push({
+          appid: item.appid,
+          name: shouldUpdateName ? item.name : row.name,
+          iconUrl: item.iconUrl ?? undefined,
+          logoUrl: item.logoUrl ?? undefined,
+          storeUrl: item.storeUrl ?? undefined,
+        })
       } else {
         skipped += 1
       }
     }
+
+    db.transaction((tx) => {
+      for (const row of inserts) {
+        tx.insert(steamGames).values({ ...row, updatedAt: now })
+      }
+      for (const row of updates) {
+        tx
+          .update(steamGames)
+          .set({ ...row, updatedAt: now })
+          .where(eq(steamGames.appid, row.appid))
+      }
+    })
+
+    inserted += inserts.length
+    updated += updates.length
   }
 
   if (loaded.denuvo?.items) {
-    const positiveAppids = Object.values(loaded.denuvo.items)
+    const denuvoItems = Object.values(loaded.denuvo.items)
+    const positiveAppids = denuvoItems
       .filter((item) => item.hasDenuvoAntiTamper === true)
       .map((item) => item.appid)
+    const allAppids = denuvoItems.map((item) => item.appid)
 
-    for (const chunk of chunkArray(positiveAppids, CHUNK_SIZE)) {
-      for (const appid of chunk) {
-        const seedItem = loaded.denuvo!.items[String(appid)]
-        const checkedAt = parseCheckedAtDate(seedItem.checkedAt)
+    const catalogByAppid = await loadRowsByAppids(positiveAppids, (chunk) =>
+      db
+        .select({
+          appid: denuvoAntiTamperCatalog.appid,
+          lastSyncedAt: denuvoAntiTamperCatalog.lastSyncedAt,
+        })
+        .from(denuvoAntiTamperCatalog)
+        .where(inArray(denuvoAntiTamperCatalog.appid, chunk))
+    )
 
-        const catalogExisting = await db
-          .select({ lastSyncedAt: denuvoAntiTamperCatalog.lastSyncedAt })
-          .from(denuvoAntiTamperCatalog)
-          .where(eq(denuvoAntiTamperCatalog.appid, appid))
-          .limit(1)
-
-        if (
-          !catalogExisting[0] ||
-          shouldApplySeedTimestamp(catalogExisting[0].lastSyncedAt, seedItem.checkedAt)
-        ) {
-          await db
-            .insert(denuvoAntiTamperCatalog)
-            .values({ appid, lastSyncedAt: checkedAt })
-            .onConflictDoUpdate({
-              target: denuvoAntiTamperCatalog.appid,
-              set: { lastSyncedAt: checkedAt },
-            })
-        }
-      }
-    }
-
-    for (const item of Object.values(loaded.denuvo.items)) {
-      const gameExists = await db
+    const gamesByAppid = await loadRowsByAppids(allAppids, (chunk) =>
+      db
         .select({ appid: steamGames.appid })
         .from(steamGames)
-        .where(eq(steamGames.appid, item.appid))
-        .limit(1)
+        .where(inArray(steamGames.appid, chunk))
+    )
 
-      if (!gameExists[0]) {
-        await db.insert(steamGames).values({
-          appid: item.appid,
-          name: `App ${item.appid}`,
-          storeUrl: `https://store.steampowered.com/app/${item.appid}`,
-          updatedAt: now,
-        })
-        inserted += 1
-      }
-
-      const existingAc = await db
+    const anticheatByAppid = await loadRowsByAppids(allAppids, (chunk) =>
+      db
         .select({
           appid: anticheatEntries.appid,
+          status: anticheatEntries.status,
           denuvoAntiTamper: anticheatEntries.denuvoAntiTamper,
           denuvoConfidence: anticheatEntries.denuvoConfidence,
           denuvoSource: anticheatEntries.denuvoSource,
           denuvoCheckedAt: anticheatEntries.denuvoCheckedAt,
         })
         .from(anticheatEntries)
-        .where(eq(anticheatEntries.appid, item.appid))
-        .limit(1)
+        .where(inArray(anticheatEntries.appid, chunk))
+    )
 
+    const catalogUpserts: Array<{ appid: number; lastSyncedAt: Date }> = []
+    for (const appid of positiveAppids) {
+      const seedItem = loaded.denuvo!.items[String(appid)]
+      const checkedAt = parseCheckedAtDate(seedItem.checkedAt)
+      const catalogExisting = catalogByAppid.get(appid)
+
+      if (
+        !catalogExisting ||
+        shouldApplySeedTimestamp(catalogExisting.lastSyncedAt, seedItem.checkedAt)
+      ) {
+        catalogUpserts.push({ appid, lastSyncedAt: checkedAt })
+      }
+    }
+
+    const gameInserts: Array<{ appid: number }> = []
+    const anticheatInserts: Array<Record<string, unknown>> = []
+    const anticheatUpdates: Array<{ appid: number; values: Record<string, unknown> }> = []
+
+    for (const item of denuvoItems) {
+      if (!gamesByAppid.has(item.appid)) {
+        gameInserts.push({ appid: item.appid })
+      }
+
+      const existingAc = anticheatByAppid.get(item.appid)
       const seedRow = {
         hasDenuvoAntiTamper: item.hasDenuvoAntiTamper,
         confidence: item.confidence,
@@ -174,12 +215,15 @@ export const hydrateSeedData = async (
         checkedAt: item.checkedAt,
       }
 
-      if (!shouldApplySeedDenuvoRow(existingAc[0], seedRow)) {
+      if (!shouldApplySeedDenuvoRow(existingAc, seedRow)) {
         skipped += 1
         continue
       }
 
       const checkedAt = parseCheckedAtDate(item.checkedAt)
+      const hasAwacyData = Boolean(
+        existingAc?.status && existingAc.status !== "Unknown"
+      )
       const values = {
         appid: item.appid,
         denuvoAntiTamper: item.hasDenuvoAntiTamper,
@@ -188,117 +232,178 @@ export const hydrateSeedData = async (
         denuvoEvidence: item.evidence ?? null,
         denuvoCheckedAt: checkedAt,
         updatedAt: now,
+        ...(hasAwacyData ? {} : { lastCheckedAt: null }),
       }
 
-      if (existingAc[0]) {
-        await db
-          .update(anticheatEntries)
-          .set(values)
-          .where(eq(anticheatEntries.appid, item.appid))
-        updated += 1
+      if (existingAc) {
+        anticheatUpdates.push({ appid: item.appid, values })
       } else {
-        await db.insert(anticheatEntries).values(values)
-        inserted += 1
+        anticheatInserts.push({ ...values, lastCheckedAt: null })
       }
     }
+
+    db.transaction((tx) => {
+      for (const row of catalogUpserts) {
+        tx
+          .insert(denuvoAntiTamperCatalog)
+          .values(row)
+          .onConflictDoUpdate({
+            target: denuvoAntiTamperCatalog.appid,
+            set: { lastSyncedAt: row.lastSyncedAt },
+          })
+      }
+
+      for (const row of gameInserts) {
+        tx.insert(steamGames).values({
+          appid: row.appid,
+          name: `App ${row.appid}`,
+          storeUrl: `https://store.steampowered.com/app/${row.appid}`,
+          updatedAt: now,
+        })
+      }
+
+      for (const row of anticheatInserts) {
+        tx.insert(anticheatEntries).values(
+          row as typeof anticheatEntries.$inferInsert
+        )
+      }
+
+      for (const row of anticheatUpdates) {
+        tx
+          .update(anticheatEntries)
+          .set(row.values as Partial<typeof anticheatEntries.$inferInsert>)
+          .where(eq(anticheatEntries.appid, row.appid))
+      }
+    })
+
+    inserted += gameInserts.length + anticheatInserts.length
+    updated += anticheatUpdates.length
   }
 
   if (loaded.appDetailsLite?.items) {
-    for (const item of Object.values(loaded.appDetailsLite.items)) {
-      const gameExists = await db
+    const items = Object.values(loaded.appDetailsLite.items)
+    const appids = items.map((item) => item.appid)
+
+    const gamesByAppid = await loadRowsByAppids(appids, (chunk) =>
+      db
         .select({ appid: steamGames.appid })
         .from(steamGames)
-        .where(eq(steamGames.appid, item.appid))
-        .limit(1)
+        .where(inArray(steamGames.appid, chunk))
+    )
 
-      if (!gameExists[0]) {
-        await db.insert(steamGames).values({
-          appid: item.appid,
-          name: `App ${item.appid}`,
-          storeUrl: `https://store.steampowered.com/app/${item.appid}`,
-          updatedAt: now,
-        })
-        inserted += 1
-      }
-
-      const existing = await db
+    const detailsByAppid = await loadRowsByAppids(appids, (chunk) =>
+      db
         .select({
           appid: steamAppDetails.appid,
           lastCheckedAt: steamAppDetails.lastCheckedAt,
         })
         .from(steamAppDetails)
-        .where(eq(steamAppDetails.appid, item.appid))
-        .limit(1)
+        .where(inArray(steamAppDetails.appid, chunk))
+    )
 
+    const gameInserts: Array<{ appid: number }> = []
+    const detailUpserts: Array<Record<string, unknown>> = []
+    let detailInserted = 0
+    let detailUpdated = 0
+
+    for (const item of items) {
+      if (!gamesByAppid.has(item.appid)) {
+        gameInserts.push({ appid: item.appid })
+      }
+
+      const existing = detailsByAppid.get(item.appid)
       if (
-        existing[0] &&
-        !shouldApplySeedTimestamp(existing[0].lastCheckedAt, item.checkedAt)
+        existing &&
+        !shouldApplySeedTimestamp(existing.lastCheckedAt, item.checkedAt)
       ) {
         skipped += 1
         continue
       }
 
       const checkedAt = parseCheckedAtDate(item.checkedAt)
-      const row = {
+      detailUpserts.push({
         appid: item.appid,
         headerImage: item.headerImage ?? null,
+        type: item.type ?? null,
         developers: item.developers ?? null,
         publishers: item.publishers ?? null,
         genres: item.genres ?? null,
+        categories: item.categories ?? null,
         platforms: item.platforms ?? null,
         releaseDate: item.releaseDate ?? null,
         steamDeckCompatibility: item.steamDeckCompatibility ?? null,
         lastCheckedAt: checkedAt,
         updatedAt: now,
-      }
-
-      await db.insert(steamAppDetails).values(row).onConflictDoUpdate({
-        target: steamAppDetails.appid,
-        set: row,
       })
 
-      if (existing[0]) updated += 1
-      else inserted += 1
+      if (existing) detailUpdated += 1
+      else detailInserted += 1
     }
+
+    db.transaction((tx) => {
+      for (const row of gameInserts) {
+        tx.insert(steamGames).values({
+          appid: row.appid,
+          name: `App ${row.appid}`,
+          storeUrl: `https://store.steampowered.com/app/${row.appid}`,
+          updatedAt: now,
+        })
+      }
+
+      for (const row of detailUpserts) {
+        tx.insert(steamAppDetails).values(row).onConflictDoUpdate({
+          target: steamAppDetails.appid,
+          set: row,
+        })
+      }
+    })
+
+    inserted += gameInserts.length + detailInserted
+    updated += detailUpdated
   }
 
   if (loaded.protondb?.items) {
-    for (const item of Object.values(loaded.protondb.items)) {
-      const gameExists = await db
+    const items = Object.values(loaded.protondb.items)
+    const appids = items.map((item) => item.appid)
+
+    const gamesByAppid = await loadRowsByAppids(appids, (chunk) =>
+      db
         .select({ appid: steamGames.appid })
         .from(steamGames)
-        .where(eq(steamGames.appid, item.appid))
-        .limit(1)
+        .where(inArray(steamGames.appid, chunk))
+    )
 
-      if (!gameExists[0]) {
-        await db.insert(steamGames).values({
-          appid: item.appid,
-          name: `App ${item.appid}`,
-          storeUrl: `https://store.steampowered.com/app/${item.appid}`,
-          updatedAt: now,
-        })
-        inserted += 1
-      }
-
-      const existing = await db
+    const protonByAppid = await loadRowsByAppids(appids, (chunk) =>
+      db
         .select({
           appid: protondbEntries.appid,
           lastCheckedAt: protondbEntries.lastCheckedAt,
         })
         .from(protondbEntries)
-        .where(eq(protondbEntries.appid, item.appid))
-        .limit(1)
+        .where(inArray(protondbEntries.appid, chunk))
+    )
 
+    const gameInserts: Array<{ appid: number }> = []
+    const protonUpserts: Array<Record<string, unknown>> = []
+    let protonInserted = 0
+    let protonUpdated = 0
+
+    for (const item of items) {
+      if (!gamesByAppid.has(item.appid)) {
+        gameInserts.push({ appid: item.appid })
+      }
+
+      const existing = protonByAppid.get(item.appid)
       if (
-        existing[0] &&
-        !shouldApplySeedTimestamp(existing[0].lastCheckedAt, item.checkedAt)
+        existing &&
+        !shouldApplySeedTimestamp(existing.lastCheckedAt, item.checkedAt)
       ) {
         skipped += 1
         continue
       }
 
       const checkedAt = parseCheckedAtDate(item.checkedAt)
-      const row = {
+      protonUpserts.push({
         appid: item.appid,
         tier: item.tier ?? null,
         confidence: item.confidence ?? null,
@@ -309,55 +414,76 @@ export const hydrateSeedData = async (
         sourceUrl: item.sourceUrl ?? null,
         lastCheckedAt: checkedAt,
         updatedAt: now,
-      }
-
-      await db.insert(protondbEntries).values(row).onConflictDoUpdate({
-        target: protondbEntries.appid,
-        set: row,
       })
 
-      if (existing[0]) updated += 1
-      else inserted += 1
+      if (existing) protonUpdated += 1
+      else protonInserted += 1
     }
+
+    db.transaction((tx) => {
+      for (const row of gameInserts) {
+        tx.insert(steamGames).values({
+          appid: row.appid,
+          name: `App ${row.appid}`,
+          storeUrl: `https://store.steampowered.com/app/${row.appid}`,
+          updatedAt: now,
+        })
+      }
+
+      for (const row of protonUpserts) {
+        tx.insert(protondbEntries).values(row).onConflictDoUpdate({
+          target: protondbEntries.appid,
+          set: row,
+        })
+      }
+    })
+
+    inserted += gameInserts.length + protonInserted
+    updated += protonUpdated
   }
 
   if (loaded.hltb?.items) {
-    for (const item of Object.values(loaded.hltb.items)) {
-      const gameExists = await db
+    const items = Object.values(loaded.hltb.items)
+    const appids = items.map((item) => item.appid)
+
+    const gamesByAppid = await loadRowsByAppids(appids, (chunk) =>
+      db
         .select({ appid: steamGames.appid })
         .from(steamGames)
-        .where(eq(steamGames.appid, item.appid))
-        .limit(1)
+        .where(inArray(steamGames.appid, chunk))
+    )
 
-      if (!gameExists[0]) {
-        await db.insert(steamGames).values({
-          appid: item.appid,
-          name: `App ${item.appid}`,
-          storeUrl: `https://store.steampowered.com/app/${item.appid}`,
-          updatedAt: now,
-        })
-        inserted += 1
-      }
-
-      const existing = await db
+    const hltbByAppid = await loadRowsByAppids(appids, (chunk) =>
+      db
         .select({
           appid: howlongtobeatEntries.appid,
           lastCheckedAt: howlongtobeatEntries.lastCheckedAt,
         })
         .from(howlongtobeatEntries)
-        .where(eq(howlongtobeatEntries.appid, item.appid))
-        .limit(1)
+        .where(inArray(howlongtobeatEntries.appid, chunk))
+    )
 
+    const gameInserts: Array<{ appid: number }> = []
+    const hltbUpserts: Array<Record<string, unknown>> = []
+    let hltbInserted = 0
+    let hltbUpdated = 0
+
+    for (const item of items) {
+      if (!gamesByAppid.has(item.appid)) {
+        gameInserts.push({ appid: item.appid })
+      }
+
+      const existing = hltbByAppid.get(item.appid)
       if (
-        existing[0] &&
-        !shouldApplySeedTimestamp(existing[0].lastCheckedAt, item.checkedAt)
+        existing &&
+        !shouldApplySeedTimestamp(existing.lastCheckedAt, item.checkedAt)
       ) {
         skipped += 1
         continue
       }
 
       const checkedAt = parseCheckedAtDate(item.checkedAt)
-      const row = {
+      hltbUpserts.push({
         appid: item.appid,
         hltbId: item.hltbId ?? null,
         matchedName: item.matchedName ?? null,
@@ -372,16 +498,32 @@ export const hydrateSeedData = async (
         sourceUrl: item.sourceUrl ?? null,
         lastCheckedAt: checkedAt,
         updatedAt: now,
-      }
-
-      await db.insert(howlongtobeatEntries).values(row).onConflictDoUpdate({
-        target: howlongtobeatEntries.appid,
-        set: row,
       })
 
-      if (existing[0]) updated += 1
-      else inserted += 1
+      if (existing) hltbUpdated += 1
+      else hltbInserted += 1
     }
+
+    db.transaction((tx) => {
+      for (const row of gameInserts) {
+        tx.insert(steamGames).values({
+          appid: row.appid,
+          name: `App ${row.appid}`,
+          storeUrl: `https://store.steampowered.com/app/${row.appid}`,
+          updatedAt: now,
+        })
+      }
+
+      for (const row of hltbUpserts) {
+        tx.insert(howlongtobeatEntries).values(row).onConflictDoUpdate({
+          target: howlongtobeatEntries.appid,
+          set: row,
+        })
+      }
+    })
+
+    inserted += gameInserts.length + hltbInserted
+    updated += hltbUpdated
   }
 
   if (loaded.manifest) {
@@ -421,7 +563,7 @@ export const hydrateSeedData = async (
 
 /** Called on startup — respects env gates and manifest version. */
 export const hydrateSeedDataIfNeeded = async (
-  seedDir: string = DEFAULT_SEED_DIR
+  seedDir: string = resolveSeedDir()
 ): Promise<SeedHydrateResult> => {
   try {
     const loaded = await loadSeedFiles(seedDir)
@@ -449,5 +591,5 @@ export const hydrateSeedDataIfNeeded = async (
 
 /** Force re-apply missing rows even when manifest version matches. */
 export const hydrateSeedDataMissingOnly = async (
-  seedDir: string = DEFAULT_SEED_DIR
+  seedDir: string = resolveSeedDir()
 ): Promise<SeedHydrateResult> => hydrateSeedData(seedDir)

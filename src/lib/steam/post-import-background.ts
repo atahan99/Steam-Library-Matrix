@@ -1,6 +1,7 @@
 import { bootstrapAnticheatCatalogsIfNeeded } from "@/lib/anticheat/catalog-bootstrap"
 import { enqueueFastProfileSyncJobs } from "@/lib/dashboard/full-profile-sync"
 import { enqueueProfileWarmup } from "@/lib/enrichment/enqueue-profile-warmup"
+import { getRuntimeEnv } from "@/lib/env/runtime-env"
 import { syncSteamWishlist } from "@/lib/steam/sync-wishlist"
 
 export type PostImportAppDetailsEnqueue = {
@@ -12,7 +13,7 @@ export type PostImportAppDetailsEnqueue = {
 export const enqueueAppDetailsAfterImport = async (
   steamid: string
 ): Promise<PostImportAppDetailsEnqueue | null> => {
-  if (process.env.SLM_SKIP_AUTO_APP_DETAILS === "true") return null
+  if (getRuntimeEnv("SLM_SKIP_AUTO_APP_DETAILS") === "true") return null
 
   const jobs = await enqueueFastProfileSyncJobs(steamid, { force: false })
   const appDetails = jobs.find((job) => job.kind === "app_details")
@@ -32,7 +33,7 @@ export const enqueueAppDetailsAfterImport = async (
 
 const scheduleCoverageGapWarmup = (steamid: string) => {
   const delayMs = parsePositiveInt(
-    process.env.SLM_POST_IMPORT_GAP_WARMUP_MS,
+    getRuntimeEnv("SLM_POST_IMPORT_GAP_WARMUP_MS"),
     120_000
   )
 

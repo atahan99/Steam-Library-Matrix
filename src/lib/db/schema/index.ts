@@ -1,5 +1,6 @@
 import { sql } from "drizzle-orm"
 import {
+  foreignKey,
   integer,
   primaryKey,
   real,
@@ -265,7 +266,13 @@ export const profileGameAchievements = sqliteTable(
     createdAt: timestampMs("created_at").default(sql`(cast(unixepoch('subsec') * 1000 as integer))`),
     updatedAt: timestampMs("updated_at").default(sql`(cast(unixepoch('subsec') * 1000 as integer))`),
   },
-  (t) => [primaryKey({ columns: [t.steamid, t.appid] })]
+  (t) => [
+    primaryKey({ columns: [t.steamid, t.appid] }),
+    foreignKey({
+      columns: [t.steamid, t.appid],
+      foreignColumns: [profileGames.steamid, profileGames.appid],
+    }).onDelete("cascade"),
+  ]
 )
 
 export const schema = {

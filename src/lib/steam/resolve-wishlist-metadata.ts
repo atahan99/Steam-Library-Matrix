@@ -87,8 +87,11 @@ export const resolveWishlistItemsFromStore = async (
             steamDeckCompatibility ?? "unknown"
           )
         }
-      } catch {
-        // Keep placeholder for this appid
+      } catch (error) {
+        console.warn(
+          `[wishlist-metadata] Failed to resolve store details for appid ${current.appid}:`,
+          error
+        )
       }
 
       await wait(REQUEST_GAP_MS)

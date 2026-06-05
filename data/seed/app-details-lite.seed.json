@@ -1,6 +1,6 @@
 {
-  "version": 3,
-  "generatedAt": "2026-06-05T02:37:30.652Z",
+  "version": 4,
+  "generatedAt": "2026-06-05T05:17:01.095Z",
   "items": {
     "240": {
       "appid": 240,
@@ -121,6 +121,7 @@
     "730": {
       "appid": 730,
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/730/162664aa5da85f418105350c5d67ca565f6c3713/header.jpg?t=1780435263",
+      "type": "game",
       "developers": [
         "Valve"
       ],
@@ -137,6 +138,80 @@
           "description": "Free To Play"
         }
       ],
+      "categories": [
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 27,
+          "description": "Cross-Platform Multiplayer"
+        },
+        {
+          "id": 29,
+          "description": "Steam Trading Cards"
+        },
+        {
+          "id": 30,
+          "description": "Steam Workshop"
+        },
+        {
+          "id": 35,
+          "description": "In-App Purchases"
+        },
+        {
+          "id": 64,
+          "description": "Adjustable Text Size"
+        },
+        {
+          "id": 67,
+          "description": "Camera Comfort"
+        },
+        {
+          "id": 66,
+          "description": "Color Alternatives"
+        },
+        {
+          "id": 68,
+          "description": "Custom Volume Controls"
+        },
+        {
+          "id": 74,
+          "description": "Playable without Timed Input"
+        },
+        {
+          "id": 69,
+          "description": "Stereo Sound"
+        },
+        {
+          "id": 70,
+          "description": "Surround Sound"
+        },
+        {
+          "id": 8,
+          "description": "Valve Anti-Cheat enabled"
+        },
+        {
+          "id": 15,
+          "description": "Stats"
+        },
+        {
+          "id": 41,
+          "description": "Remote Play on Phone"
+        },
+        {
+          "id": 42,
+          "description": "Remote Play on Tablet"
+        },
+        {
+          "id": 43,
+          "description": "Remote Play on TV"
+        },
+        {
+          "id": 63,
+          "description": "Steam Timeline"
+        }
+      ],
       "platforms": {
         "windows": true,
         "mac": false,
@@ -147,7 +222,7 @@
         "date": "21 Aug, 2012"
       },
       "steamDeckCompatibility": "playable",
-      "checkedAt": "2026-06-04T15:14:00.440Z"
+      "checkedAt": "2026-06-05T05:10:21.152Z"
     },
     "2990": {
       "appid": 2990,
@@ -5810,7 +5885,7 @@
         "date": "25 May, 2026"
       },
       "steamDeckCompatibility": "unknown",
-      "checkedAt": "2026-06-04T14:59:12.705Z"
+      "checkedAt": "2026-06-05T04:59:46.585Z"
     },
     "1119730": {
       "appid": 1119730,
@@ -7325,6 +7400,360 @@
       "steamDeckCompatibility": "playable",
       "checkedAt": "2026-06-04T14:30:15.728Z"
     },
+    "1509960": {
+      "appid": 1509960,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1509960/header.jpg?t=1740033204",
+      "type": "game",
+      "developers": [
+        "TECOPARK"
+      ],
+      "publishers": [
+        "TECOPARK"
+      ],
+      "genres": [
+        {
+          "id": "1",
+          "description": "Action"
+        },
+        {
+          "id": "4",
+          "description": "Casual"
+        },
+        {
+          "id": "23",
+          "description": "Indie"
+        }
+      ],
+      "categories": [
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 9,
+          "description": "Co-op"
+        },
+        {
+          "id": 38,
+          "description": "Online Co-op"
+        },
+        {
+          "id": 39,
+          "description": "Shared/Split Screen Co-op"
+        },
+        {
+          "id": 24,
+          "description": "Shared/Split Screen"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "7 May, 2021"
+      },
+      "steamDeckCompatibility": "verified",
+      "checkedAt": "2026-06-05T05:20:27.501Z"
+    },
+    "1511460": {
+      "appid": 1511460,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1511460/header.jpg?t=1773847551",
+      "type": "game",
+      "developers": [
+        "Dionic Software"
+      ],
+      "publishers": [
+        "Dionic Software"
+      ],
+      "genres": [
+        {
+          "id": "23",
+          "description": "Indie"
+        },
+        {
+          "id": "28",
+          "description": "Simulation"
+        },
+        {
+          "id": "2",
+          "description": "Strategy"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 13,
+          "description": "Captions available"
+        },
+        {
+          "id": 30,
+          "description": "Steam Workshop"
+        },
+        {
+          "id": 64,
+          "description": "Adjustable Text Size"
+        },
+        {
+          "id": 67,
+          "description": "Camera Comfort"
+        },
+        {
+          "id": 68,
+          "description": "Custom Volume Controls"
+        },
+        {
+          "id": 78,
+          "description": "Adjustable Difficulty"
+        },
+        {
+          "id": 74,
+          "description": "Playable without Timed Input"
+        },
+        {
+          "id": 79,
+          "description": "Save Anytime"
+        },
+        {
+          "id": 69,
+          "description": "Stereo Sound"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": true,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "22 Sep, 2023"
+      },
+      "steamDeckCompatibility": "playable",
+      "checkedAt": "2026-06-05T05:20:27.990Z"
+    },
+    "1515210": {
+      "appid": 1515210,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1515210/header.jpg?t=1740070156",
+      "type": "game",
+      "developers": [
+        "Rusty Lake"
+      ],
+      "publishers": [
+        "Rusty Lake"
+      ],
+      "genres": [
+        {
+          "id": "25",
+          "description": "Adventure"
+        },
+        {
+          "id": "23",
+          "description": "Indie"
+        }
+      ],
+      "categories": [
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 9,
+          "description": "Co-op"
+        },
+        {
+          "id": 38,
+          "description": "Online Co-op"
+        },
+        {
+          "id": 27,
+          "description": "Cross-Platform Multiplayer"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": true,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "2 Nov, 2022"
+      },
+      "steamDeckCompatibility": "verified",
+      "checkedAt": "2026-06-05T05:20:28.132Z"
+    },
+    "1517290": {
+      "appid": 1517290,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1517290/header.jpg?t=1777324359",
+      "type": "game",
+      "developers": [
+        "DICE"
+      ],
+      "publishers": [
+        "Electronic Arts"
+      ],
+      "genres": [
+        {
+          "id": "1",
+          "description": "Action"
+        },
+        {
+          "id": "25",
+          "description": "Adventure"
+        },
+        {
+          "id": "4",
+          "description": "Casual"
+        }
+      ],
+      "categories": [
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 49,
+          "description": "PvP"
+        },
+        {
+          "id": 36,
+          "description": "Online PvP"
+        },
+        {
+          "id": 9,
+          "description": "Co-op"
+        },
+        {
+          "id": 38,
+          "description": "Online Co-op"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 29,
+          "description": "Steam Trading Cards"
+        },
+        {
+          "id": 35,
+          "description": "In-App Purchases"
+        },
+        {
+          "id": 66,
+          "description": "Color Alternatives"
+        },
+        {
+          "id": 68,
+          "description": "Custom Volume Controls"
+        },
+        {
+          "id": 69,
+          "description": "Stereo Sound"
+        },
+        {
+          "id": 70,
+          "description": "Surround Sound"
+        },
+        {
+          "id": 61,
+          "description": "HDR available"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "19 Nov, 2021"
+      },
+      "steamDeckCompatibility": "unsupported",
+      "checkedAt": "2026-06-05T05:20:28.795Z"
+    },
+    "1525620": {
+      "appid": 1525620,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1525620/header.jpg?t=1699959831",
+      "type": "game",
+      "developers": [
+        "Enodo Games"
+      ],
+      "publishers": [
+        "5PM Studio"
+      ],
+      "genres": [
+        {
+          "id": "4",
+          "description": "Casual"
+        },
+        {
+          "id": "23",
+          "description": "Indie"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "30 Sep, 2021"
+      },
+      "steamDeckCompatibility": "unknown",
+      "checkedAt": "2026-06-05T05:20:28.972Z"
+    },
     "1525700": {
       "appid": 1525700,
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1525700/header.jpg?t=1760183607",
@@ -7359,6 +7788,7 @@
     "1527950": {
       "appid": 1527950,
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1527950/header.jpg?t=1779375249",
+      "type": "game",
       "developers": [
         "Shiro Games"
       ],
@@ -7383,6 +7813,40 @@
           "description": "Strategy"
         }
       ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 9,
+          "description": "Co-op"
+        },
+        {
+          "id": 38,
+          "description": "Online Co-op"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
       "platforms": {
         "windows": true,
         "mac": false,
@@ -7393,11 +7857,772 @@
         "date": "12 Apr, 2023"
       },
       "steamDeckCompatibility": "verified",
-      "checkedAt": "2026-06-04T12:46:19.695Z"
+      "checkedAt": "2026-06-05T05:20:29.577Z"
+    },
+    "1532200": {
+      "appid": 1532200,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1532200/header.jpg?t=1775608526",
+      "type": "game",
+      "developers": [
+        "Shape Shop"
+      ],
+      "publishers": [
+        "Shape Shop",
+        "Outersloth"
+      ],
+      "genres": [
+        {
+          "id": "23",
+          "description": "Indie"
+        },
+        {
+          "id": "28",
+          "description": "Simulation"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 9,
+          "description": "Co-op"
+        },
+        {
+          "id": 38,
+          "description": "Online Co-op"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 30,
+          "description": "Steam Workshop"
+        },
+        {
+          "id": 67,
+          "description": "Camera Comfort"
+        },
+        {
+          "id": 66,
+          "description": "Color Alternatives"
+        },
+        {
+          "id": 68,
+          "description": "Custom Volume Controls"
+        },
+        {
+          "id": 78,
+          "description": "Adjustable Difficulty"
+        },
+        {
+          "id": 74,
+          "description": "Playable without Timed Input"
+        },
+        {
+          "id": 79,
+          "description": "Save Anytime"
+        },
+        {
+          "id": 69,
+          "description": "Stereo Sound"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "25 Sep, 2025"
+      },
+      "steamDeckCompatibility": "verified",
+      "checkedAt": "2026-06-05T05:20:29.842Z"
+    },
+    "1532690": {
+      "appid": 1532690,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1532690/header.jpg?t=1761836902",
+      "type": "game",
+      "developers": [
+        "THE PARASIGHT"
+      ],
+      "publishers": [
+        "Focus Entertainment"
+      ],
+      "genres": [
+        {
+          "id": "1",
+          "description": "Action"
+        },
+        {
+          "id": "25",
+          "description": "Adventure"
+        },
+        {
+          "id": "3",
+          "description": "RPG"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 29,
+          "description": "Steam Trading Cards"
+        },
+        {
+          "id": 64,
+          "description": "Adjustable Text Size"
+        },
+        {
+          "id": 68,
+          "description": "Custom Volume Controls"
+        },
+        {
+          "id": 74,
+          "description": "Playable without Timed Input"
+        },
+        {
+          "id": 79,
+          "description": "Save Anytime"
+        },
+        {
+          "id": 69,
+          "description": "Stereo Sound"
+        },
+        {
+          "id": 65,
+          "description": "Subtitle Options"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "15 Dec, 2022"
+      },
+      "steamDeckCompatibility": "verified",
+      "checkedAt": "2026-06-05T05:20:30.230Z"
+    },
+    "1533390": {
+      "appid": 1533390,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1533390/header.jpg?t=1715638911",
+      "type": "game",
+      "developers": [
+        "Another Axiom Inc."
+      ],
+      "publishers": [
+        "Another Axiom Inc."
+      ],
+      "genres": [
+        {
+          "id": "1",
+          "description": "Action"
+        },
+        {
+          "id": "4",
+          "description": "Casual"
+        }
+      ],
+      "categories": [
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 49,
+          "description": "PvP"
+        },
+        {
+          "id": 36,
+          "description": "Online PvP"
+        },
+        {
+          "id": 27,
+          "description": "Cross-Platform Multiplayer"
+        },
+        {
+          "id": 52,
+          "description": "Tracked Controller Support"
+        },
+        {
+          "id": 54,
+          "description": "VR Only"
+        },
+        {
+          "id": 35,
+          "description": "In-App Purchases"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "1 Jan, 2023"
+      },
+      "steamDeckCompatibility": "unsupported",
+      "checkedAt": "2026-06-05T05:20:30.525Z"
+    },
+    "1538550": {
+      "appid": 1538550,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1538550/db718ae2be60558df2ef9fcd65302ad87a6045d4/header.jpg?t=1765323947",
+      "type": "game",
+      "developers": [
+        "Light Brick Studio"
+      ],
+      "publishers": [
+        "Annapurna Interactive"
+      ],
+      "genres": [
+        {
+          "id": "25",
+          "description": "Adventure"
+        },
+        {
+          "id": "4",
+          "description": "Casual"
+        }
+      ],
+      "categories": [
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 9,
+          "description": "Co-op"
+        },
+        {
+          "id": 38,
+          "description": "Online Co-op"
+        },
+        {
+          "id": 39,
+          "description": "Shared/Split Screen Co-op"
+        },
+        {
+          "id": 24,
+          "description": "Shared/Split Screen"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 44,
+          "description": "Remote Play Together"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "15 Sep, 2025"
+      },
+      "steamDeckCompatibility": "verified",
+      "checkedAt": "2026-06-05T05:20:30.849Z"
+    },
+    "1538570": {
+      "appid": 1538570,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1538570/header.jpg?t=1747242345",
+      "type": "game",
+      "developers": [
+        "Overseer Games"
+      ],
+      "publishers": [
+        "Overseer Games"
+      ],
+      "genres": [
+        {
+          "id": "28",
+          "description": "Simulation"
+        },
+        {
+          "id": "2",
+          "description": "Strategy"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 29,
+          "description": "Steam Trading Cards"
+        },
+        {
+          "id": 30,
+          "description": "Steam Workshop"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "10 Aug, 2021"
+      },
+      "steamDeckCompatibility": "unsupported",
+      "checkedAt": "2026-06-05T05:20:31.145Z"
+    },
+    "1540210": {
+      "appid": 1540210,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1540210/header.jpg?t=1780581551",
+      "type": "game",
+      "developers": [
+        "Vertigo Games"
+      ],
+      "publishers": [
+        "Vertigo Games"
+      ],
+      "genres": [
+        {
+          "id": "1",
+          "description": "Action"
+        },
+        {
+          "id": "25",
+          "description": "Adventure"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 9,
+          "description": "Co-op"
+        },
+        {
+          "id": 38,
+          "description": "Online Co-op"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 52,
+          "description": "Tracked Controller Support"
+        },
+        {
+          "id": 54,
+          "description": "VR Only"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "7 Dec, 2023"
+      },
+      "steamDeckCompatibility": "unsupported",
+      "checkedAt": "2026-06-05T05:20:31.451Z"
+    },
+    "1543280": {
+      "appid": 1543280,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1543280/header.jpg?t=1775733786",
+      "type": "game",
+      "developers": [
+        "DreamWay Games"
+      ],
+      "publishers": [
+        "PlayWay S.A."
+      ],
+      "genres": [
+        {
+          "id": "28",
+          "description": "Simulation"
+        },
+        {
+          "id": "2",
+          "description": "Strategy"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 68,
+          "description": "Custom Volume Controls"
+        },
+        {
+          "id": 78,
+          "description": "Adjustable Difficulty"
+        },
+        {
+          "id": 79,
+          "description": "Save Anytime"
+        },
+        {
+          "id": 69,
+          "description": "Stereo Sound"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "7 Jun, 2023"
+      },
+      "steamDeckCompatibility": "playable",
+      "checkedAt": "2026-06-05T05:20:31.800Z"
+    },
+    "1545450": {
+      "appid": 1545450,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1545450/header.jpg?t=1736795580",
+      "type": "game",
+      "developers": [
+        "So Far So Good"
+      ],
+      "publishers": [
+        "So Far So Good"
+      ],
+      "genres": [
+        {
+          "id": "4",
+          "description": "Casual"
+        },
+        {
+          "id": "23",
+          "description": "Indie"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 29,
+          "description": "Steam Trading Cards"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": true,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "30 Apr, 2021"
+      },
+      "steamDeckCompatibility": "verified",
+      "checkedAt": "2026-06-05T05:20:32.093Z"
+    },
+    "1546090": {
+      "appid": 1546090,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1546090/17cfdc21b7565286e8061cdf5544b756c77c6c38/header_alt_assets_13.jpg?t=1780509835",
+      "type": "game",
+      "developers": [
+        "Phodex Games"
+      ],
+      "publishers": [
+        "Phodex Games"
+      ],
+      "genres": [
+        {
+          "id": "1",
+          "description": "Action"
+        },
+        {
+          "id": "25",
+          "description": "Adventure"
+        },
+        {
+          "id": "3",
+          "description": "RPG"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 64,
+          "description": "Adjustable Text Size"
+        },
+        {
+          "id": 67,
+          "description": "Camera Comfort"
+        },
+        {
+          "id": 68,
+          "description": "Custom Volume Controls"
+        },
+        {
+          "id": 78,
+          "description": "Adjustable Difficulty"
+        },
+        {
+          "id": 74,
+          "description": "Playable without Timed Input"
+        },
+        {
+          "id": 69,
+          "description": "Stereo Sound"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "3 Jun, 2026"
+      },
+      "steamDeckCompatibility": "verified",
+      "checkedAt": "2026-06-05T05:20:32.403Z"
+    },
+    "1546310": {
+      "appid": 1546310,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1546310/header.jpg?t=1745355712",
+      "type": "game",
+      "developers": [
+        "Strange Scaffold"
+      ],
+      "publishers": [
+        "Strange Scaffold"
+      ],
+      "genres": [
+        {
+          "id": "1",
+          "description": "Action"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "26 Sep, 2023"
+      },
+      "steamDeckCompatibility": "verified",
+      "checkedAt": "2026-06-05T05:20:32.687Z"
+    },
+    "1549970": {
+      "appid": 1549970,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1549970/header.jpg?t=1727102951",
+      "type": "game",
+      "developers": [
+        "Cold Iron Studios"
+      ],
+      "publishers": [
+        "Cold Iron Studios",
+        "Focus Entertainment"
+      ],
+      "genres": [
+        {
+          "id": "1",
+          "description": "Action"
+        },
+        {
+          "id": "3",
+          "description": "RPG"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 9,
+          "description": "Co-op"
+        },
+        {
+          "id": 38,
+          "description": "Online Co-op"
+        },
+        {
+          "id": 27,
+          "description": "Cross-Platform Multiplayer"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "23 Aug, 2021"
+      },
+      "steamDeckCompatibility": "verified",
+      "checkedAt": "2026-06-05T05:20:33.372Z"
     },
     "1551360": {
       "appid": 1551360,
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1551360/header.jpg?t=1746471508",
+      "type": "game",
       "developers": [
         "Playground Games"
       ],
@@ -7426,6 +8651,60 @@
           "description": "Sports"
         }
       ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 49,
+          "description": "PvP"
+        },
+        {
+          "id": 36,
+          "description": "Online PvP"
+        },
+        {
+          "id": 9,
+          "description": "Co-op"
+        },
+        {
+          "id": 38,
+          "description": "Online Co-op"
+        },
+        {
+          "id": 27,
+          "description": "Cross-Platform Multiplayer"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 29,
+          "description": "Steam Trading Cards"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 61,
+          "description": "HDR available"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
       "platforms": {
         "windows": true,
         "mac": false,
@@ -7436,11 +8715,451 @@
         "date": "8 Nov, 2021"
       },
       "steamDeckCompatibility": "playable",
-      "checkedAt": "2026-06-04T12:41:40.512Z"
+      "checkedAt": "2026-06-05T05:20:33.373Z"
+    },
+    "1555140": {
+      "appid": 1555140,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1555140/header.jpg?t=1780579118",
+      "type": "game",
+      "developers": [
+        "WildArts Games"
+      ],
+      "publishers": [
+        "Dear Villagers"
+      ],
+      "genres": [
+        {
+          "id": "25",
+          "description": "Adventure"
+        },
+        {
+          "id": "4",
+          "description": "Casual"
+        },
+        {
+          "id": "23",
+          "description": "Indie"
+        },
+        {
+          "id": "3",
+          "description": "RPG"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "5 Dec, 2023"
+      },
+      "steamDeckCompatibility": "playable",
+      "checkedAt": "2026-06-05T05:20:34.001Z"
+    },
+    "1557740": {
+      "appid": 1557740,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1557740/header.jpg?t=1759328419",
+      "type": "game",
+      "developers": [
+        "Landfall"
+      ],
+      "publishers": [
+        "Landfall"
+      ],
+      "genres": [
+        {
+          "id": "1",
+          "description": "Action"
+        },
+        {
+          "id": "23",
+          "description": "Indie"
+        }
+      ],
+      "categories": [
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 49,
+          "description": "PvP"
+        },
+        {
+          "id": 36,
+          "description": "Online PvP"
+        },
+        {
+          "id": 37,
+          "description": "Shared/Split Screen PvP"
+        },
+        {
+          "id": 24,
+          "description": "Shared/Split Screen"
+        },
+        {
+          "id": 18,
+          "description": "Partial Controller Support"
+        },
+        {
+          "id": 44,
+          "description": "Remote Play Together"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": true,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "1 Apr, 2021"
+      },
+      "steamDeckCompatibility": "playable",
+      "checkedAt": "2026-06-05T05:20:34.275Z"
+    },
+    "1562430": {
+      "appid": 1562430,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1562430/header.jpg?t=1780479732",
+      "type": "game",
+      "developers": [
+        "Black Salt Games"
+      ],
+      "publishers": [
+        "Team17"
+      ],
+      "genres": [
+        {
+          "id": "25",
+          "description": "Adventure"
+        },
+        {
+          "id": "3",
+          "description": "RPG"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 29,
+          "description": "Steam Trading Cards"
+        },
+        {
+          "id": 67,
+          "description": "Camera Comfort"
+        },
+        {
+          "id": 66,
+          "description": "Color Alternatives"
+        },
+        {
+          "id": 68,
+          "description": "Custom Volume Controls"
+        },
+        {
+          "id": 78,
+          "description": "Adjustable Difficulty"
+        },
+        {
+          "id": 75,
+          "description": "Keyboard Only Option"
+        },
+        {
+          "id": 69,
+          "description": "Stereo Sound"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": true,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "30 Mar, 2023"
+      },
+      "steamDeckCompatibility": "verified",
+      "checkedAt": "2026-06-05T05:20:34.632Z"
+    },
+    "1567020": {
+      "appid": 1567020,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1567020/header.jpg?t=1676560649",
+      "type": "game",
+      "developers": [
+        "Supermassive Games"
+      ],
+      "publishers": [
+        "Bandai Namco Entertainment Europe"
+      ],
+      "genres": [
+        {
+          "id": "25",
+          "description": "Adventure"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 9,
+          "description": "Co-op"
+        },
+        {
+          "id": 38,
+          "description": "Online Co-op"
+        },
+        {
+          "id": 39,
+          "description": "Shared/Split Screen Co-op"
+        },
+        {
+          "id": 24,
+          "description": "Shared/Split Screen"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 29,
+          "description": "Steam Trading Cards"
+        },
+        {
+          "id": 44,
+          "description": "Remote Play Together"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "17 Nov, 2022"
+      },
+      "steamDeckCompatibility": "verified",
+      "checkedAt": "2026-06-05T05:20:34.946Z"
+    },
+    "1568590": {
+      "appid": 1568590,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1568590/header.jpg?t=1778102536",
+      "type": "game",
+      "developers": [
+        "Gaggle Studios, Inc."
+      ],
+      "publishers": [
+        "Gaggle Studios, Inc."
+      ],
+      "genres": [
+        {
+          "id": "4",
+          "description": "Casual"
+        },
+        {
+          "id": "23",
+          "description": "Indie"
+        },
+        {
+          "id": "29",
+          "description": "Massively Multiplayer"
+        },
+        {
+          "id": "2",
+          "description": "Strategy"
+        },
+        {
+          "id": "37",
+          "description": "Free To Play"
+        }
+      ],
+      "categories": [
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 49,
+          "description": "PvP"
+        },
+        {
+          "id": 36,
+          "description": "Online PvP"
+        },
+        {
+          "id": 9,
+          "description": "Co-op"
+        },
+        {
+          "id": 38,
+          "description": "Online Co-op"
+        },
+        {
+          "id": 27,
+          "description": "Cross-Platform Multiplayer"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 35,
+          "description": "In-App Purchases"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": true,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "3 Oct, 2021"
+      },
+      "steamDeckCompatibility": "playable",
+      "checkedAt": "2026-06-05T05:20:35.211Z"
+    },
+    "1569190": {
+      "appid": 1569190,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1569190/52dbd48692072ed3d8f39c4022d287c9c10319e5/header.jpg?t=1780585866",
+      "type": "dlc",
+      "developers": [
+        "Frozen Way",
+        "Empyrean"
+      ],
+      "publishers": [
+        "Frozen Way",
+        "Frozen District",
+        "PlayWay S.A."
+      ],
+      "genres": [
+        {
+          "id": "4",
+          "description": "Casual"
+        },
+        {
+          "id": "23",
+          "description": "Indie"
+        },
+        {
+          "id": "28",
+          "description": "Simulation"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 21,
+          "description": "Downloadable Content"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 29,
+          "description": "Steam Trading Cards"
+        },
+        {
+          "id": 30,
+          "description": "Steam Workshop"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": true,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "12 May, 2022"
+      },
+      "steamDeckCompatibility": "unknown",
+      "checkedAt": "2026-06-05T05:20:35.551Z"
     },
     "1569580": {
       "appid": 1569580,
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1569580/879ac248a3b548a6bbc32771b950756378e7e922/header.jpg?t=1776265019",
+      "type": "game",
       "developers": [
         "Dogubomb"
       ],
@@ -7461,6 +9180,28 @@
           "description": "Strategy"
         }
       ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
       "platforms": {
         "windows": true,
         "mac": true,
@@ -7471,11 +9212,664 @@
         "date": "10 Apr, 2025"
       },
       "steamDeckCompatibility": "verified",
-      "checkedAt": "2026-06-04T12:41:42.447Z"
+      "checkedAt": "2026-06-05T05:20:35.823Z"
+    },
+    "1570010": {
+      "appid": 1570010,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1570010/header.jpg?t=1769095040",
+      "type": "game",
+      "developers": [
+        "Okomotive"
+      ],
+      "publishers": [
+        "Frontier Foundry"
+      ],
+      "genres": [
+        {
+          "id": "1",
+          "description": "Action"
+        },
+        {
+          "id": "25",
+          "description": "Adventure"
+        },
+        {
+          "id": "23",
+          "description": "Indie"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 43,
+          "description": "Remote Play on TV"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "1 Mar, 2022"
+      },
+      "steamDeckCompatibility": "verified",
+      "checkedAt": "2026-06-05T05:20:36.171Z"
+    },
+    "1573360": {
+      "appid": 1573360,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1573360/header.jpg?t=1761837583",
+      "type": "game",
+      "developers": [
+        "YOUZU (SINGAPORE) PTE. LTD."
+      ],
+      "publishers": [
+        "YOUZU (SINGAPORE) PTE. LTD."
+      ],
+      "genres": [
+        {
+          "id": "25",
+          "description": "Adventure"
+        },
+        {
+          "id": "37",
+          "description": "Free To Play"
+        },
+        {
+          "id": "29",
+          "description": "Massively Multiplayer"
+        },
+        {
+          "id": "2",
+          "description": "Strategy"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 20,
+          "description": "MMO"
+        },
+        {
+          "id": 49,
+          "description": "PvP"
+        },
+        {
+          "id": 36,
+          "description": "Online PvP"
+        },
+        {
+          "id": 27,
+          "description": "Cross-Platform Multiplayer"
+        },
+        {
+          "id": 35,
+          "description": "In-App Purchases"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": true,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "1 Jul, 2021"
+      },
+      "steamDeckCompatibility": "verified",
+      "checkedAt": "2026-06-05T05:20:36.416Z"
+    },
+    "1574570": {
+      "appid": 1574570,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1574570/b522e5e5e565f6e262877cc5c8117754d4fb5ee3/header.jpg?t=1779106065",
+      "type": "game",
+      "developers": [
+        "Blazing Planet Studio"
+      ],
+      "publishers": [
+        "Blazing Planet Studio"
+      ],
+      "genres": [
+        {
+          "id": "25",
+          "description": "Adventure"
+        },
+        {
+          "id": "4",
+          "description": "Casual"
+        },
+        {
+          "id": "23",
+          "description": "Indie"
+        },
+        {
+          "id": "3",
+          "description": "RPG"
+        },
+        {
+          "id": "28",
+          "description": "Simulation"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 67,
+          "description": "Camera Comfort"
+        },
+        {
+          "id": 68,
+          "description": "Custom Volume Controls"
+        },
+        {
+          "id": 75,
+          "description": "Keyboard Only Option"
+        },
+        {
+          "id": 76,
+          "description": "Mouse Only Option"
+        },
+        {
+          "id": 74,
+          "description": "Playable without Timed Input"
+        },
+        {
+          "id": 79,
+          "description": "Save Anytime"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": true,
+        "linux": true
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "6 Nov, 2025"
+      },
+      "steamDeckCompatibility": "verified",
+      "checkedAt": "2026-06-05T05:20:36.831Z"
+    },
+    "1574580": {
+      "appid": 1574580,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1574580/header.jpg?t=1772459223",
+      "type": "game",
+      "developers": [
+        "Bad Viking"
+      ],
+      "publishers": [
+        "Iceberg Interactive"
+      ],
+      "genres": [
+        {
+          "id": "25",
+          "description": "Adventure"
+        },
+        {
+          "id": "23",
+          "description": "Indie"
+        },
+        {
+          "id": "28",
+          "description": "Simulation"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 29,
+          "description": "Steam Trading Cards"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": true,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "21 Jan, 2022"
+      },
+      "steamDeckCompatibility": "verified",
+      "checkedAt": "2026-06-05T05:20:37.043Z"
+    },
+    "1575520": {
+      "appid": 1575520,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1575520/header.jpg?t=1680858495",
+      "type": "game",
+      "developers": [
+        "Halfbrick Studios Pty Ltd"
+      ],
+      "publishers": [
+        "Halfbrick Studios Pty Ltd"
+      ],
+      "genres": [
+        {
+          "id": "1",
+          "description": "Action"
+        },
+        {
+          "id": "4",
+          "description": "Casual"
+        },
+        {
+          "id": "28",
+          "description": "Simulation"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 9,
+          "description": "Co-op"
+        },
+        {
+          "id": 38,
+          "description": "Online Co-op"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 52,
+          "description": "Tracked Controller Support"
+        },
+        {
+          "id": 54,
+          "description": "VR Only"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "7 Apr, 2023"
+      },
+      "steamDeckCompatibility": "unsupported",
+      "checkedAt": "2026-06-05T05:20:37.450Z"
+    },
+    "1577120": {
+      "appid": 1577120,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1577120/header.jpg?t=1730303267",
+      "type": "game",
+      "developers": [
+        "Supermassive Games"
+      ],
+      "publishers": [
+        "2K Games"
+      ],
+      "genres": [
+        {
+          "id": "25",
+          "description": "Adventure"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 9,
+          "description": "Co-op"
+        },
+        {
+          "id": 39,
+          "description": "Shared/Split Screen Co-op"
+        },
+        {
+          "id": 24,
+          "description": "Shared/Split Screen"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "9 Jun, 2022"
+      },
+      "steamDeckCompatibility": "unsupported",
+      "checkedAt": "2026-06-05T05:20:37.665Z"
+    },
+    "1580790": {
+      "appid": 1580790,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1580790/header.jpg?t=1760595578",
+      "type": "game",
+      "developers": [
+        "KOEI TECMO GAMES CO., LTD."
+      ],
+      "publishers": [
+        "KOEI TECMO GAMES CO., LTD."
+      ],
+      "genres": [
+        {
+          "id": "1",
+          "description": "Action"
+        },
+        {
+          "id": "25",
+          "description": "Adventure"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 67,
+          "description": "Camera Comfort"
+        },
+        {
+          "id": 68,
+          "description": "Custom Volume Controls"
+        },
+        {
+          "id": 78,
+          "description": "Adjustable Difficulty"
+        },
+        {
+          "id": 74,
+          "description": "Playable without Timed Input"
+        },
+        {
+          "id": 69,
+          "description": "Stereo Sound"
+        },
+        {
+          "id": 18,
+          "description": "Partial Controller Support"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "9 Jun, 2021"
+      },
+      "steamDeckCompatibility": "verified",
+      "checkedAt": "2026-06-05T05:20:38.091Z"
+    },
+    "1582650": {
+      "appid": 1582650,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1582650/header.jpg?t=1757404894",
+      "type": "game",
+      "developers": [
+        "Studio Plane Toast"
+      ],
+      "publishers": [
+        "Dear Villagers"
+      ],
+      "genres": [
+        {
+          "id": "25",
+          "description": "Adventure"
+        },
+        {
+          "id": "4",
+          "description": "Casual"
+        },
+        {
+          "id": "23",
+          "description": "Indie"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "12 Sep, 2024"
+      },
+      "steamDeckCompatibility": "verified",
+      "checkedAt": "2026-06-05T05:20:38.282Z"
+    },
+    "1583320": {
+      "appid": 1583320,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1583320/a877ee75120bc254ccf11fc172f31291184d9055/header.jpg?t=1780480604",
+      "type": "game",
+      "developers": [
+        "Skywall Studios LLC"
+      ],
+      "publishers": [
+        "Skywall Studios LLC"
+      ],
+      "genres": [
+        {
+          "id": "18",
+          "description": "Sports"
+        }
+      ],
+      "categories": [
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 49,
+          "description": "PvP"
+        },
+        {
+          "id": 36,
+          "description": "Online PvP"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 35,
+          "description": "In-App Purchases"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "5 Dec, 2025"
+      },
+      "steamDeckCompatibility": "playable",
+      "checkedAt": "2026-06-05T05:20:38.700Z"
+    },
+    "1588530": {
+      "appid": 1588530,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1588530/be129675f1dfb2599fdb870bea42edcad49838e4/header.jpg?t=1773744469",
+      "type": "game",
+      "developers": [
+        "Briganti"
+      ],
+      "publishers": [
+        "Briganti"
+      ],
+      "genres": [
+        {
+          "id": "3",
+          "description": "RPG"
+        },
+        {
+          "id": "70",
+          "description": "Early Access"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 30,
+          "description": "Steam Workshop"
+        },
+        {
+          "id": 17,
+          "description": "Includes level editor"
+        },
+        {
+          "id": 44,
+          "description": "Remote Play Together"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": true,
+        "linux": true
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "31 Mar, 2022"
+      },
+      "steamDeckCompatibility": "playable",
+      "checkedAt": "2026-06-05T05:20:39.205Z"
     },
     "1588550": {
       "appid": 1588550,
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1588550/header.jpg?t=1770987275",
+      "type": "game",
       "developers": [
         "The Game Bakers"
       ],
@@ -7504,6 +9898,52 @@
           "description": "Sports"
         }
       ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 78,
+          "description": "Adjustable Difficulty"
+        },
+        {
+          "id": 74,
+          "description": "Playable without Timed Input"
+        },
+        {
+          "id": 79,
+          "description": "Save Anytime"
+        },
+        {
+          "id": 69,
+          "description": "Stereo Sound"
+        },
+        {
+          "id": 65,
+          "description": "Subtitle Options"
+        },
+        {
+          "id": 70,
+          "description": "Surround Sound"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
       "platforms": {
         "windows": true,
         "mac": false,
@@ -7514,11 +9954,12 @@
         "date": "29 Jan, 2026"
       },
       "steamDeckCompatibility": "verified",
-      "checkedAt": "2026-06-04T14:30:16.772Z"
+      "checkedAt": "2026-06-05T05:20:39.294Z"
     },
     "1593500": {
       "appid": 1593500,
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1593500/header.jpg?t=1763059412",
+      "type": "game",
       "developers": [
         "Santa Monica Studio",
         "Jetpack Interactive"
@@ -7540,6 +9981,80 @@
           "description": "RPG"
         }
       ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 64,
+          "description": "Adjustable Text Size"
+        },
+        {
+          "id": 67,
+          "description": "Camera Comfort"
+        },
+        {
+          "id": 66,
+          "description": "Color Alternatives"
+        },
+        {
+          "id": 68,
+          "description": "Custom Volume Controls"
+        },
+        {
+          "id": 78,
+          "description": "Adjustable Difficulty"
+        },
+        {
+          "id": 75,
+          "description": "Keyboard Only Option"
+        },
+        {
+          "id": 71,
+          "description": "Narrated Game Menus"
+        },
+        {
+          "id": 74,
+          "description": "Playable without Timed Input"
+        },
+        {
+          "id": 79,
+          "description": "Save Anytime"
+        },
+        {
+          "id": 69,
+          "description": "Stereo Sound"
+        },
+        {
+          "id": 65,
+          "description": "Subtitle Options"
+        },
+        {
+          "id": 70,
+          "description": "Surround Sound"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 43,
+          "description": "Remote Play on TV"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
       "platforms": {
         "windows": true,
         "mac": false,
@@ -7550,11 +10065,12 @@
         "date": "14 Jan, 2022"
       },
       "steamDeckCompatibility": "verified",
-      "checkedAt": "2026-06-04T14:47:35.612Z"
+      "checkedAt": "2026-06-05T05:20:39.824Z"
     },
     "1594320": {
       "appid": 1594320,
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1594320/2ab6e9a5ec9aedca02b0347bb017c92caff0580b/header.jpg?t=1776465561",
+      "type": "game",
       "developers": [
         "MaFi Games"
       ],
@@ -7579,6 +10095,56 @@
           "description": "Early Access"
         }
       ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 64,
+          "description": "Adjustable Text Size"
+        },
+        {
+          "id": 67,
+          "description": "Camera Comfort"
+        },
+        {
+          "id": 68,
+          "description": "Custom Volume Controls"
+        },
+        {
+          "id": 78,
+          "description": "Adjustable Difficulty"
+        },
+        {
+          "id": 76,
+          "description": "Mouse Only Option"
+        },
+        {
+          "id": 74,
+          "description": "Playable without Timed Input"
+        },
+        {
+          "id": 79,
+          "description": "Save Anytime"
+        },
+        {
+          "id": 69,
+          "description": "Stereo Sound"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 17,
+          "description": "Includes level editor"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
       "platforms": {
         "windows": true,
         "mac": false,
@@ -7589,11 +10155,378 @@
         "date": "31 May, 2022"
       },
       "steamDeckCompatibility": "playable",
-      "checkedAt": "2026-06-04T12:41:45.132Z"
+      "checkedAt": "2026-06-05T05:20:39.962Z"
+    },
+    "1598230": {
+      "appid": 1598230,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1598230/b7b739d7fde1998a9305c957e2e0576901f97429/header_alt_assets_2.jpg?t=1780331953",
+      "type": "game",
+      "developers": [
+        "Square Enix",
+        "Tactic Studios"
+      ],
+      "publishers": [
+        "Square Enix"
+      ],
+      "genres": [
+        {
+          "id": "1",
+          "description": "Action"
+        },
+        {
+          "id": "4",
+          "description": "Casual"
+        },
+        {
+          "id": "29",
+          "description": "Massively Multiplayer"
+        },
+        {
+          "id": "70",
+          "description": "Early Access"
+        }
+      ],
+      "categories": [
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 49,
+          "description": "PvP"
+        },
+        {
+          "id": 36,
+          "description": "Online PvP"
+        },
+        {
+          "id": 9,
+          "description": "Co-op"
+        },
+        {
+          "id": 38,
+          "description": "Online Co-op"
+        },
+        {
+          "id": 29,
+          "description": "Steam Trading Cards"
+        },
+        {
+          "id": 35,
+          "description": "In-App Purchases"
+        },
+        {
+          "id": 67,
+          "description": "Camera Comfort"
+        },
+        {
+          "id": 68,
+          "description": "Custom Volume Controls"
+        },
+        {
+          "id": 74,
+          "description": "Playable without Timed Input"
+        },
+        {
+          "id": 69,
+          "description": "Stereo Sound"
+        },
+        {
+          "id": 65,
+          "description": "Subtitle Options"
+        },
+        {
+          "id": 70,
+          "description": "Surround Sound"
+        },
+        {
+          "id": 18,
+          "description": "Partial Controller Support"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "12 Feb, 2026"
+      },
+      "steamDeckCompatibility": "playable",
+      "checkedAt": "2026-06-05T05:20:40.483Z"
+    },
+    "1599340": {
+      "appid": 1599340,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1599340/header.jpg?t=1763571534",
+      "type": "game",
+      "developers": [
+        "Smilegate RPG"
+      ],
+      "publishers": [
+        "Amazon Game Studios"
+      ],
+      "genres": [
+        {
+          "id": "1",
+          "description": "Action"
+        },
+        {
+          "id": "25",
+          "description": "Adventure"
+        },
+        {
+          "id": "29",
+          "description": "Massively Multiplayer"
+        },
+        {
+          "id": "3",
+          "description": "RPG"
+        },
+        {
+          "id": "37",
+          "description": "Free To Play"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 20,
+          "description": "MMO"
+        },
+        {
+          "id": 49,
+          "description": "PvP"
+        },
+        {
+          "id": 36,
+          "description": "Online PvP"
+        },
+        {
+          "id": 9,
+          "description": "Co-op"
+        },
+        {
+          "id": 38,
+          "description": "Online Co-op"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 35,
+          "description": "In-App Purchases"
+        },
+        {
+          "id": 64,
+          "description": "Adjustable Text Size"
+        },
+        {
+          "id": 67,
+          "description": "Camera Comfort"
+        },
+        {
+          "id": 66,
+          "description": "Color Alternatives"
+        },
+        {
+          "id": 68,
+          "description": "Custom Volume Controls"
+        },
+        {
+          "id": 75,
+          "description": "Keyboard Only Option"
+        },
+        {
+          "id": 74,
+          "description": "Playable without Timed Input"
+        },
+        {
+          "id": 79,
+          "description": "Save Anytime"
+        },
+        {
+          "id": 18,
+          "description": "Partial Controller Support"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "11 Feb, 2022"
+      },
+      "steamDeckCompatibility": "playable",
+      "checkedAt": "2026-06-05T05:20:40.607Z"
+    },
+    "1599560": {
+      "appid": 1599560,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1599560/header.jpg?t=1761237816",
+      "type": "game",
+      "developers": [
+        "Mighty Eyes"
+      ],
+      "publishers": [
+        "Mighty Eyes"
+      ],
+      "genres": [
+        {
+          "id": "1",
+          "description": "Action"
+        },
+        {
+          "id": "25",
+          "description": "Adventure"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 52,
+          "description": "Tracked Controller Support"
+        },
+        {
+          "id": 53,
+          "description": "VR Supported"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "27 Jan, 2022"
+      },
+      "steamDeckCompatibility": "unsupported",
+      "checkedAt": "2026-06-05T05:20:41.090Z"
+    },
+    "1599600": {
+      "appid": 1599600,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1599600/eb8fa3ad44fb5b4e4de4ef402101a55063797958/header.jpg?t=1777365800",
+      "type": "game",
+      "developers": [
+        "It's happening"
+      ],
+      "publishers": [
+        "Yogscast Games",
+        "Gamersky Games"
+      ],
+      "genres": [
+        {
+          "id": "1",
+          "description": "Action"
+        },
+        {
+          "id": "4",
+          "description": "Casual"
+        },
+        {
+          "id": "23",
+          "description": "Indie"
+        },
+        {
+          "id": "2",
+          "description": "Strategy"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 9,
+          "description": "Co-op"
+        },
+        {
+          "id": 38,
+          "description": "Online Co-op"
+        },
+        {
+          "id": 39,
+          "description": "Shared/Split Screen Co-op"
+        },
+        {
+          "id": 24,
+          "description": "Shared/Split Screen"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 30,
+          "description": "Steam Workshop"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 43,
+          "description": "Remote Play on TV"
+        },
+        {
+          "id": 44,
+          "description": "Remote Play Together"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "4 Aug, 2022"
+      },
+      "steamDeckCompatibility": "verified",
+      "checkedAt": "2026-06-05T05:20:41.237Z"
     },
     "1601570": {
       "appid": 1601570,
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1601570/header.jpg?t=1779808619",
+      "type": "game",
       "developers": [
         "11 bit studios"
       ],
@@ -7606,6 +10539,64 @@
           "description": "Adventure"
         }
       ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 29,
+          "description": "Steam Trading Cards"
+        },
+        {
+          "id": 64,
+          "description": "Adjustable Text Size"
+        },
+        {
+          "id": 67,
+          "description": "Camera Comfort"
+        },
+        {
+          "id": 68,
+          "description": "Custom Volume Controls"
+        },
+        {
+          "id": 78,
+          "description": "Adjustable Difficulty"
+        },
+        {
+          "id": 74,
+          "description": "Playable without Timed Input"
+        },
+        {
+          "id": 69,
+          "description": "Stereo Sound"
+        },
+        {
+          "id": 65,
+          "description": "Subtitle Options"
+        },
+        {
+          "id": 70,
+          "description": "Surround Sound"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
       "platforms": {
         "windows": true,
         "mac": false,
@@ -7616,11 +10607,12 @@
         "date": "13 Jun, 2025"
       },
       "steamDeckCompatibility": "verified",
-      "checkedAt": "2026-06-05T02:24:20.286Z"
+      "checkedAt": "2026-06-05T05:20:41.763Z"
     },
     "1601580": {
       "appid": 1601580,
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1601580/578eb4c6e2c0164eb4ff0518b713ea35de6928b0/header_alt_assets_5.jpg?t=1780326779",
+      "type": "game",
       "developers": [
         "11 bit studios"
       ],
@@ -7637,6 +10629,60 @@
           "description": "Strategy"
         }
       ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 29,
+          "description": "Steam Trading Cards"
+        },
+        {
+          "id": 30,
+          "description": "Steam Workshop"
+        },
+        {
+          "id": 64,
+          "description": "Adjustable Text Size"
+        },
+        {
+          "id": 68,
+          "description": "Custom Volume Controls"
+        },
+        {
+          "id": 78,
+          "description": "Adjustable Difficulty"
+        },
+        {
+          "id": 79,
+          "description": "Save Anytime"
+        },
+        {
+          "id": 69,
+          "description": "Stereo Sound"
+        },
+        {
+          "id": 70,
+          "description": "Surround Sound"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
       "platforms": {
         "windows": true,
         "mac": true,
@@ -7647,11 +10693,12 @@
         "date": "20 Sep, 2024"
       },
       "steamDeckCompatibility": "playable",
-      "checkedAt": "2026-06-04T12:41:46.495Z"
+      "checkedAt": "2026-06-05T05:20:41.858Z"
     },
     "1604030": {
       "appid": 1604030,
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1604030/be49834ab147ad22ba17005fb847c93917d18b97/header.jpg?t=1776271883",
+      "type": "game",
       "developers": [
         "Stunlock Studios"
       ],
@@ -7672,6 +10719,88 @@
           "description": "Massively Multiplayer"
         }
       ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 49,
+          "description": "PvP"
+        },
+        {
+          "id": 36,
+          "description": "Online PvP"
+        },
+        {
+          "id": 47,
+          "description": "LAN PvP"
+        },
+        {
+          "id": 9,
+          "description": "Co-op"
+        },
+        {
+          "id": 38,
+          "description": "Online Co-op"
+        },
+        {
+          "id": 48,
+          "description": "LAN Co-op"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 67,
+          "description": "Camera Comfort"
+        },
+        {
+          "id": 68,
+          "description": "Custom Volume Controls"
+        },
+        {
+          "id": 78,
+          "description": "Adjustable Difficulty"
+        },
+        {
+          "id": 74,
+          "description": "Playable without Timed Input"
+        },
+        {
+          "id": 79,
+          "description": "Save Anytime"
+        },
+        {
+          "id": 69,
+          "description": "Stereo Sound"
+        },
+        {
+          "id": 65,
+          "description": "Subtitle Options"
+        },
+        {
+          "id": 70,
+          "description": "Surround Sound"
+        },
+        {
+          "id": 18,
+          "description": "Partial Controller Support"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
       "platforms": {
         "windows": true,
         "mac": false,
@@ -7682,7 +10811,7 @@
         "date": "8 May, 2024"
       },
       "steamDeckCompatibility": "verified",
-      "checkedAt": "2026-06-04T14:47:36.194Z"
+      "checkedAt": "2026-06-05T05:20:42.374Z"
     },
     "1604270": {
       "appid": 1604270,
@@ -7714,6 +10843,7 @@
     "1605220": {
       "appid": 1605220,
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1605220/header.jpg?t=1733479296",
+      "type": "game",
       "developers": [
         "Shiro Games"
       ],
@@ -7727,6 +10857,52 @@
           "description": "Strategy"
         }
       ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 49,
+          "description": "PvP"
+        },
+        {
+          "id": 36,
+          "description": "Online PvP"
+        },
+        {
+          "id": 9,
+          "description": "Co-op"
+        },
+        {
+          "id": 38,
+          "description": "Online Co-op"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 29,
+          "description": "Steam Trading Cards"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
       "platforms": {
         "windows": true,
         "mac": false,
@@ -7737,11 +10913,531 @@
         "date": "14 Sep, 2023"
       },
       "steamDeckCompatibility": "playable",
-      "checkedAt": "2026-06-04T12:41:48.066Z"
+      "checkedAt": "2026-06-05T05:20:42.811Z"
+    },
+    "1607680": {
+      "appid": 1607680,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1607680/header.jpg?t=1773071421",
+      "type": "game",
+      "developers": [
+        "SandCastles Studio"
+      ],
+      "publishers": [
+        "Infogrames",
+        "Atari"
+      ],
+      "genres": [
+        {
+          "id": "1",
+          "description": "Action"
+        },
+        {
+          "id": "25",
+          "description": "Adventure"
+        },
+        {
+          "id": "4",
+          "description": "Casual"
+        },
+        {
+          "id": "23",
+          "description": "Indie"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 9,
+          "description": "Co-op"
+        },
+        {
+          "id": 38,
+          "description": "Online Co-op"
+        },
+        {
+          "id": 39,
+          "description": "Shared/Split Screen Co-op"
+        },
+        {
+          "id": 24,
+          "description": "Shared/Split Screen"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 29,
+          "description": "Steam Trading Cards"
+        },
+        {
+          "id": 44,
+          "description": "Remote Play Together"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": true,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "23 May, 2023"
+      },
+      "steamDeckCompatibility": "playable",
+      "checkedAt": "2026-06-05T05:20:42.986Z"
+    },
+    "1607890": {
+      "appid": 1607890,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1607890/header.jpg?t=1699645162",
+      "type": "dlc",
+      "developers": [
+        "Hopoo Games"
+      ],
+      "publishers": [
+        "Gearbox Publishing"
+      ],
+      "genres": [
+        {
+          "id": "1",
+          "description": "Action"
+        },
+        {
+          "id": "23",
+          "description": "Indie"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 49,
+          "description": "PvP"
+        },
+        {
+          "id": 36,
+          "description": "Online PvP"
+        },
+        {
+          "id": 9,
+          "description": "Co-op"
+        },
+        {
+          "id": 38,
+          "description": "Online Co-op"
+        },
+        {
+          "id": 21,
+          "description": "Downloadable Content"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 25,
+          "description": "Steam Leaderboards"
+        },
+        {
+          "id": 41,
+          "description": "Remote Play on Phone"
+        },
+        {
+          "id": 42,
+          "description": "Remote Play on Tablet"
+        },
+        {
+          "id": 43,
+          "description": "Remote Play on TV"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "1 Mar, 2022"
+      },
+      "steamDeckCompatibility": "unknown",
+      "checkedAt": "2026-06-05T05:20:43.425Z"
+    },
+    "1608230": {
+      "appid": 1608230,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1608230/afc987687f2f80c5c4a93293f2f0f53a62032212/header.jpg?t=1772728759",
+      "type": "game",
+      "developers": [
+        "Wishfully"
+      ],
+      "publishers": [
+        "Thunderful Publishing"
+      ],
+      "genres": [
+        {
+          "id": "1",
+          "description": "Action"
+        },
+        {
+          "id": "25",
+          "description": "Adventure"
+        },
+        {
+          "id": "23",
+          "description": "Indie"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 29,
+          "description": "Steam Trading Cards"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "23 May, 2023"
+      },
+      "steamDeckCompatibility": "verified",
+      "checkedAt": "2026-06-05T05:20:43.618Z"
+    },
+    "1610460": {
+      "appid": 1610460,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1610460/header.jpg?t=1744270609",
+      "type": "game",
+      "developers": [
+        "Milestone S.r.l."
+      ],
+      "publishers": [
+        "Milestone S.r.l."
+      ],
+      "genres": [
+        {
+          "id": "9",
+          "description": "Racing"
+        },
+        {
+          "id": "28",
+          "description": "Simulation"
+        },
+        {
+          "id": "18",
+          "description": "Sports"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 49,
+          "description": "PvP"
+        },
+        {
+          "id": 36,
+          "description": "Online PvP"
+        },
+        {
+          "id": 37,
+          "description": "Shared/Split Screen PvP"
+        },
+        {
+          "id": 24,
+          "description": "Shared/Split Screen"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 44,
+          "description": "Remote Play Together"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "17 Mar, 2022"
+      },
+      "steamDeckCompatibility": "playable",
+      "checkedAt": "2026-06-05T05:20:44.064Z"
+    },
+    "1611600": {
+      "appid": 1611600,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1611600/header.jpg?t=1780470046",
+      "type": "game",
+      "developers": [
+        "Eugen Systems"
+      ],
+      "publishers": [
+        "Eugen Systems"
+      ],
+      "genres": [
+        {
+          "id": "1",
+          "description": "Action"
+        },
+        {
+          "id": "23",
+          "description": "Indie"
+        },
+        {
+          "id": "28",
+          "description": "Simulation"
+        },
+        {
+          "id": "2",
+          "description": "Strategy"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 49,
+          "description": "PvP"
+        },
+        {
+          "id": 36,
+          "description": "Online PvP"
+        },
+        {
+          "id": 9,
+          "description": "Co-op"
+        },
+        {
+          "id": 38,
+          "description": "Online Co-op"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 17,
+          "description": "Includes level editor"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "23 May, 2024"
+      },
+      "steamDeckCompatibility": "playable",
+      "checkedAt": "2026-06-05T05:20:44.257Z"
+    },
+    "1611910": {
+      "appid": 1611910,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1611910/header.jpg?t=1764856974",
+      "type": "game",
+      "developers": [
+        "Complex Games"
+      ],
+      "publishers": [
+        "Frontier Foundry"
+      ],
+      "genres": [
+        {
+          "id": "3",
+          "description": "RPG"
+        },
+        {
+          "id": "2",
+          "description": "Strategy"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 29,
+          "description": "Steam Trading Cards"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "5 May, 2022"
+      },
+      "steamDeckCompatibility": "unsupported",
+      "checkedAt": "2026-06-05T05:20:44.677Z"
+    },
+    "1612770": {
+      "appid": 1612770,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1612770/header.jpg?t=1762785929",
+      "type": "game",
+      "developers": [
+        "Ernestas Norvaišas"
+      ],
+      "publishers": [
+        "Team17"
+      ],
+      "genres": [
+        {
+          "id": "23",
+          "description": "Indie"
+        },
+        {
+          "id": "28",
+          "description": "Simulation"
+        },
+        {
+          "id": "2",
+          "description": "Strategy"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 30,
+          "description": "Steam Workshop"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "22 Apr, 2024"
+      },
+      "steamDeckCompatibility": "verified",
+      "checkedAt": "2026-06-05T05:20:44.907Z"
     },
     "1617400": {
       "appid": 1617400,
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1617400/eac2893cccab684a615561e84831b6d4f7a39410/header.jpg?t=1775066388",
+      "type": "game",
       "developers": [
         "Tempo"
       ],
@@ -7754,6 +11450,44 @@
           "description": "Strategy"
         }
       ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 49,
+          "description": "PvP"
+        },
+        {
+          "id": 36,
+          "description": "Online PvP"
+        },
+        {
+          "id": 35,
+          "description": "In-App Purchases"
+        },
+        {
+          "id": 68,
+          "description": "Custom Volume Controls"
+        },
+        {
+          "id": 74,
+          "description": "Playable without Timed Input"
+        },
+        {
+          "id": 79,
+          "description": "Save Anytime"
+        },
+        {
+          "id": 69,
+          "description": "Stereo Sound"
+        }
+      ],
       "platforms": {
         "windows": true,
         "mac": true,
@@ -7764,7 +11498,7 @@
         "date": "13 Aug, 2025"
       },
       "steamDeckCompatibility": "verified",
-      "checkedAt": "2026-06-05T02:24:20.516Z"
+      "checkedAt": "2026-06-05T05:20:45.280Z"
     },
     "1621690": {
       "appid": 1621690,
@@ -7810,9 +11544,529 @@
       "steamDeckCompatibility": "verified",
       "checkedAt": "2026-06-04T14:47:36.965Z"
     },
+    "1622100": {
+      "appid": 1622100,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1622100/header.jpg?t=1701451540",
+      "type": "dlc",
+      "developers": [
+        "Mobius Digital"
+      ],
+      "publishers": [
+        "Annapurna Interactive"
+      ],
+      "genres": [
+        {
+          "id": "1",
+          "description": "Action"
+        },
+        {
+          "id": "25",
+          "description": "Adventure"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 21,
+          "description": "Downloadable Content"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 29,
+          "description": "Steam Trading Cards"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 43,
+          "description": "Remote Play on TV"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "28 Sep, 2021"
+      },
+      "steamDeckCompatibility": "unknown",
+      "checkedAt": "2026-06-05T05:20:45.955Z"
+    },
+    "1623730": {
+      "appid": 1623730,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1623730/058bd87dc17a7179e07c446aa64d0574ca43ab9d/header.jpg?t=1779864445",
+      "type": "game",
+      "developers": [
+        "Pocketpair"
+      ],
+      "publishers": [
+        "Pocketpair"
+      ],
+      "genres": [
+        {
+          "id": "1",
+          "description": "Action"
+        },
+        {
+          "id": "25",
+          "description": "Adventure"
+        },
+        {
+          "id": "23",
+          "description": "Indie"
+        },
+        {
+          "id": "3",
+          "description": "RPG"
+        },
+        {
+          "id": "70",
+          "description": "Early Access"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 9,
+          "description": "Co-op"
+        },
+        {
+          "id": 38,
+          "description": "Online Co-op"
+        },
+        {
+          "id": 27,
+          "description": "Cross-Platform Multiplayer"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 29,
+          "description": "Steam Trading Cards"
+        },
+        {
+          "id": 30,
+          "description": "Steam Workshop"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "18 Jan, 2024"
+      },
+      "steamDeckCompatibility": "verified",
+      "checkedAt": "2026-06-05T05:20:45.956Z"
+    },
+    "1627720": {
+      "appid": 1627720,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1627720/header.jpg?t=1764565054",
+      "type": "game",
+      "developers": [
+        "NEOWIZ"
+      ],
+      "publishers": [
+        "NEOWIZ"
+      ],
+      "genres": [
+        {
+          "id": "1",
+          "description": "Action"
+        },
+        {
+          "id": "25",
+          "description": "Adventure"
+        },
+        {
+          "id": "3",
+          "description": "RPG"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 67,
+          "description": "Camera Comfort"
+        },
+        {
+          "id": 66,
+          "description": "Color Alternatives"
+        },
+        {
+          "id": 68,
+          "description": "Custom Volume Controls"
+        },
+        {
+          "id": 78,
+          "description": "Adjustable Difficulty"
+        },
+        {
+          "id": 79,
+          "description": "Save Anytime"
+        },
+        {
+          "id": 69,
+          "description": "Stereo Sound"
+        },
+        {
+          "id": 70,
+          "description": "Surround Sound"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": true,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "18 Sep, 2023"
+      },
+      "steamDeckCompatibility": "playable",
+      "checkedAt": "2026-06-05T05:20:46.563Z"
+    },
+    "1629520": {
+      "appid": 1629520,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1629520/header.jpg?t=1779988692",
+      "type": "game",
+      "developers": [
+        "Max Inferno"
+      ],
+      "publishers": [
+        "Secret Mode"
+      ],
+      "genres": [
+        {
+          "id": "4",
+          "description": "Casual"
+        },
+        {
+          "id": "23",
+          "description": "Indie"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 29,
+          "description": "Steam Trading Cards"
+        },
+        {
+          "id": 67,
+          "description": "Camera Comfort"
+        },
+        {
+          "id": 66,
+          "description": "Color Alternatives"
+        },
+        {
+          "id": 68,
+          "description": "Custom Volume Controls"
+        },
+        {
+          "id": 78,
+          "description": "Adjustable Difficulty"
+        },
+        {
+          "id": 75,
+          "description": "Keyboard Only Option"
+        },
+        {
+          "id": 76,
+          "description": "Mouse Only Option"
+        },
+        {
+          "id": 74,
+          "description": "Playable without Timed Input"
+        },
+        {
+          "id": 77,
+          "description": "Touch Only Option"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": true,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "9 Nov, 2022"
+      },
+      "steamDeckCompatibility": "verified",
+      "checkedAt": "2026-06-05T05:20:46.530Z"
+    },
+    "1629910": {
+      "appid": 1629910,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1629910/header.jpg?t=1698202908",
+      "type": "game",
+      "developers": [
+        "FUTU Studio"
+      ],
+      "publishers": [
+        "Astrolabe Games"
+      ],
+      "genres": [
+        {
+          "id": "1",
+          "description": "Action"
+        },
+        {
+          "id": "25",
+          "description": "Adventure"
+        },
+        {
+          "id": "23",
+          "description": "Indie"
+        },
+        {
+          "id": "3",
+          "description": "RPG"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 18,
+          "description": "Partial Controller Support"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "13 Feb, 2023"
+      },
+      "steamDeckCompatibility": "verified",
+      "checkedAt": "2026-06-05T05:20:47.144Z"
+    },
+    "1631270": {
+      "appid": 1631270,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1631270/b6f1c5dbdec7ca47b75f96c5e827b8f0115132fa/header_alt_assets_3.jpg?t=1778741421",
+      "type": "game",
+      "developers": [
+        "Creepy Jar"
+      ],
+      "publishers": [
+        "Creepy Jar"
+      ],
+      "genres": [
+        {
+          "id": "1",
+          "description": "Action"
+        },
+        {
+          "id": "25",
+          "description": "Adventure"
+        },
+        {
+          "id": "23",
+          "description": "Indie"
+        },
+        {
+          "id": "28",
+          "description": "Simulation"
+        },
+        {
+          "id": "70",
+          "description": "Early Access"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 9,
+          "description": "Co-op"
+        },
+        {
+          "id": 38,
+          "description": "Online Co-op"
+        },
+        {
+          "id": 68,
+          "description": "Custom Volume Controls"
+        },
+        {
+          "id": 74,
+          "description": "Playable without Timed Input"
+        },
+        {
+          "id": 79,
+          "description": "Save Anytime"
+        },
+        {
+          "id": 69,
+          "description": "Stereo Sound"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "6 Jan, 2026"
+      },
+      "steamDeckCompatibility": "playable",
+      "checkedAt": "2026-06-05T05:20:47.181Z"
+    },
+    "1636440": {
+      "appid": 1636440,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1636440/0ed1cb4bc30631f95b92f7f13bb06c15d49b4afa/header.jpg?t=1780437869",
+      "type": "game",
+      "developers": [
+        "Screen Burn"
+      ],
+      "publishers": [
+        "KONAMI",
+        " Annapurna Interactive"
+      ],
+      "genres": [
+        {
+          "id": "1",
+          "description": "Action"
+        },
+        {
+          "id": "25",
+          "description": "Adventure"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": true,
+        "date": "23 Sep, 2026"
+      },
+      "steamDeckCompatibility": "unknown",
+      "checkedAt": "2026-06-05T05:20:47.808Z"
+    },
     "1637320": {
       "appid": 1637320,
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1637320/334439c379674a719de3f12028f76977aeb176c6/header.jpg?t=1780397451",
+      "type": "game",
       "developers": [
         "Bippinbits"
       ],
@@ -7837,6 +12091,88 @@
           "description": "Simulation"
         }
       ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 49,
+          "description": "PvP"
+        },
+        {
+          "id": 36,
+          "description": "Online PvP"
+        },
+        {
+          "id": 47,
+          "description": "LAN PvP"
+        },
+        {
+          "id": 37,
+          "description": "Shared/Split Screen PvP"
+        },
+        {
+          "id": 9,
+          "description": "Co-op"
+        },
+        {
+          "id": 38,
+          "description": "Online Co-op"
+        },
+        {
+          "id": 48,
+          "description": "LAN Co-op"
+        },
+        {
+          "id": 39,
+          "description": "Shared/Split Screen Co-op"
+        },
+        {
+          "id": 24,
+          "description": "Shared/Split Screen"
+        },
+        {
+          "id": 27,
+          "description": "Cross-Platform Multiplayer"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 29,
+          "description": "Steam Trading Cards"
+        },
+        {
+          "id": 30,
+          "description": "Steam Workshop"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 25,
+          "description": "Steam Leaderboards"
+        },
+        {
+          "id": 44,
+          "description": "Remote Play Together"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
       "platforms": {
         "windows": true,
         "mac": true,
@@ -7847,11 +12183,230 @@
         "date": "27 Sep, 2022"
       },
       "steamDeckCompatibility": "verified",
-      "checkedAt": "2026-06-05T02:24:20.585Z"
+      "checkedAt": "2026-06-05T05:20:47.842Z"
+    },
+    "1641960": {
+      "appid": 1641960,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1641960/5afd7a74cd852f48c07294a9a2a1a2801af87aeb/header.jpg?t=1780590235",
+      "type": "game",
+      "developers": [
+        "Far From Home"
+      ],
+      "publishers": [
+        "Far From Home"
+      ],
+      "genres": [
+        {
+          "id": "1",
+          "description": "Action"
+        },
+        {
+          "id": "25",
+          "description": "Adventure"
+        },
+        {
+          "id": "23",
+          "description": "Indie"
+        },
+        {
+          "id": "28",
+          "description": "Simulation"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 9,
+          "description": "Co-op"
+        },
+        {
+          "id": 38,
+          "description": "Online Co-op"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "14 Apr, 2025"
+      },
+      "steamDeckCompatibility": "verified",
+      "checkedAt": "2026-06-05T05:20:48.422Z"
+    },
+    "1648532": {
+      "appid": 1648532,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1648532/8646311dfa3658dff43fc37b1c682e3a8e5e0dd0/header.jpg?t=1770264150",
+      "type": "dlc",
+      "developers": [
+        "RocketWerkz"
+      ],
+      "publishers": [
+        "RocketWerkz"
+      ],
+      "genres": [
+        {
+          "id": "1",
+          "description": "Action"
+        },
+        {
+          "id": "25",
+          "description": "Adventure"
+        },
+        {
+          "id": "28",
+          "description": "Simulation"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 9,
+          "description": "Co-op"
+        },
+        {
+          "id": 38,
+          "description": "Online Co-op"
+        },
+        {
+          "id": 21,
+          "description": "Downloadable Content"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "24 Aug, 2023"
+      },
+      "steamDeckCompatibility": "unknown",
+      "checkedAt": "2026-06-05T05:20:48.730Z"
+    },
+    "1648533": {
+      "appid": 1648533,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1648533/947b3d84caf5cc320d4f8b65dd298a01f426a8ed/header.jpg?t=1772745213",
+      "type": "dlc",
+      "developers": [
+        "RocketWerkz"
+      ],
+      "publishers": [
+        "RocketWerkz"
+      ],
+      "genres": [
+        {
+          "id": "1",
+          "description": "Action"
+        },
+        {
+          "id": "25",
+          "description": "Adventure"
+        },
+        {
+          "id": "28",
+          "description": "Simulation"
+        },
+        {
+          "id": "37",
+          "description": "Free To Play"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 9,
+          "description": "Co-op"
+        },
+        {
+          "id": 38,
+          "description": "Online Co-op"
+        },
+        {
+          "id": 21,
+          "description": "Downloadable Content"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "5 Mar, 2026"
+      },
+      "steamDeckCompatibility": "unknown",
+      "checkedAt": "2026-06-05T05:20:49.099Z"
     },
     "1651560": {
       "appid": 1651560,
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1651560/header.jpg?t=1758877732",
+      "type": "game",
       "developers": [
         "Grenaa Games"
       ],
@@ -7873,6 +12428,20 @@
           "description": "Strategy"
         }
       ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
       "platforms": {
         "windows": true,
         "mac": false,
@@ -7883,11 +12452,82 @@
         "date": "13 May, 2024"
       },
       "steamDeckCompatibility": "playable",
-      "checkedAt": "2026-06-04T14:30:17.296Z"
+      "checkedAt": "2026-06-05T05:20:49.407Z"
+    },
+    "1657630": {
+      "appid": 1657630,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1657630/e0ebd5982e69895132d4ffdf80a1a6048ab53d25/header.jpg?t=1776359011",
+      "type": "game",
+      "developers": [
+        "Monomi Park"
+      ],
+      "publishers": [
+        "Monomi Park"
+      ],
+      "genres": [
+        {
+          "id": "1",
+          "description": "Action"
+        },
+        {
+          "id": "25",
+          "description": "Adventure"
+        },
+        {
+          "id": "4",
+          "description": "Casual"
+        },
+        {
+          "id": "23",
+          "description": "Indie"
+        },
+        {
+          "id": "28",
+          "description": "Simulation"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 29,
+          "description": "Steam Trading Cards"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "23 Sep, 2025"
+      },
+      "steamDeckCompatibility": "verified",
+      "checkedAt": "2026-06-05T05:20:49.714Z"
     },
     "1659040": {
       "appid": 1659040,
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1659040/c62446d5c95f583a296d7f1b99045a61e2f81dea/header.jpg?t=1780060872",
+      "type": "game",
       "developers": [
         "IO Interactive A/S"
       ],
@@ -7904,6 +12544,56 @@
           "description": "Adventure"
         }
       ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 52,
+          "description": "Tracked Controller Support"
+        },
+        {
+          "id": 31,
+          "description": "VR Support"
+        },
+        {
+          "id": 68,
+          "description": "Custom Volume Controls"
+        },
+        {
+          "id": 74,
+          "description": "Playable without Timed Input"
+        },
+        {
+          "id": 69,
+          "description": "Stereo Sound"
+        },
+        {
+          "id": 65,
+          "description": "Subtitle Options"
+        },
+        {
+          "id": 70,
+          "description": "Surround Sound"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
       "platforms": {
         "windows": true,
         "mac": true,
@@ -7914,11 +12604,12 @@
         "date": "20 Jan, 2022"
       },
       "steamDeckCompatibility": "verified",
-      "checkedAt": "2026-06-04T12:41:50.866Z"
+      "checkedAt": "2026-06-05T05:20:50.350Z"
     },
     "1659420": {
       "appid": 1659420,
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1659420/header.jpg?t=1779309472",
+      "type": "game",
       "developers": [
         "Naughty Dog LLC",
         "Iron Galaxy Studios"
@@ -7932,6 +12623,52 @@
           "description": "Adventure"
         }
       ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 68,
+          "description": "Custom Volume Controls"
+        },
+        {
+          "id": 78,
+          "description": "Adjustable Difficulty"
+        },
+        {
+          "id": 79,
+          "description": "Save Anytime"
+        },
+        {
+          "id": 69,
+          "description": "Stereo Sound"
+        },
+        {
+          "id": 70,
+          "description": "Surround Sound"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 43,
+          "description": "Remote Play on TV"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
       "platforms": {
         "windows": true,
         "mac": false,
@@ -7942,11 +12679,512 @@
         "date": "19 Oct, 2022"
       },
       "steamDeckCompatibility": "verified",
-      "checkedAt": "2026-06-04T12:41:51.516Z"
+      "checkedAt": "2026-06-05T05:20:50.322Z"
+    },
+    "1663220": {
+      "appid": 1663220,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1663220/header.jpg?t=1753949707",
+      "type": "game",
+      "developers": [
+        "Toge Productions"
+      ],
+      "publishers": [
+        "Toge Productions"
+      ],
+      "genres": [
+        {
+          "id": "25",
+          "description": "Adventure"
+        },
+        {
+          "id": "4",
+          "description": "Casual"
+        },
+        {
+          "id": "23",
+          "description": "Indie"
+        },
+        {
+          "id": "28",
+          "description": "Simulation"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 30,
+          "description": "Steam Workshop"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": true,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "20 Apr, 2023"
+      },
+      "steamDeckCompatibility": "verified",
+      "checkedAt": "2026-06-05T05:20:50.961Z"
+    },
+    "1663850": {
+      "appid": 1663850,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1663850/9079d7a26c8720ed0616f1bd7f912ccc22a535d4/header.jpg?t=1778689671",
+      "type": "game",
+      "developers": [
+        "Sad Cat Studios"
+      ],
+      "publishers": [
+        "Thunderful Publishing"
+      ],
+      "genres": [
+        {
+          "id": "1",
+          "description": "Action"
+        },
+        {
+          "id": "25",
+          "description": "Adventure"
+        },
+        {
+          "id": "23",
+          "description": "Indie"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "14 Apr, 2026"
+      },
+      "steamDeckCompatibility": "verified",
+      "checkedAt": "2026-06-05T05:20:50.989Z"
+    },
+    "1665460": {
+      "appid": 1665460,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1665460/9182eac331f562e4a3aab2384b6759c3e1a95797/header.jpg?t=1780538438",
+      "type": "game",
+      "developers": [
+        "KONAMI"
+      ],
+      "publishers": [
+        "KONAMI"
+      ],
+      "genres": [
+        {
+          "id": "28",
+          "description": "Simulation"
+        },
+        {
+          "id": "18",
+          "description": "Sports"
+        },
+        {
+          "id": "37",
+          "description": "Free To Play"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 49,
+          "description": "PvP"
+        },
+        {
+          "id": 36,
+          "description": "Online PvP"
+        },
+        {
+          "id": 37,
+          "description": "Shared/Split Screen PvP"
+        },
+        {
+          "id": 9,
+          "description": "Co-op"
+        },
+        {
+          "id": 38,
+          "description": "Online Co-op"
+        },
+        {
+          "id": 39,
+          "description": "Shared/Split Screen Co-op"
+        },
+        {
+          "id": 24,
+          "description": "Shared/Split Screen"
+        },
+        {
+          "id": 27,
+          "description": "Cross-Platform Multiplayer"
+        },
+        {
+          "id": 35,
+          "description": "In-App Purchases"
+        },
+        {
+          "id": 18,
+          "description": "Partial Controller Support"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "29 Sep, 2021"
+      },
+      "steamDeckCompatibility": "playable",
+      "checkedAt": "2026-06-05T05:20:51.583Z"
+    },
+    "1669000": {
+      "appid": 1669000,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1669000/6117cd8a24c0af366d7c9cdb2fc1565c4a97d8cf/header.jpg?t=1779195454",
+      "type": "game",
+      "developers": [
+        "Triumph Studios"
+      ],
+      "publishers": [
+        "Paradox Interactive"
+      ],
+      "genres": [
+        {
+          "id": "3",
+          "description": "RPG"
+        },
+        {
+          "id": "2",
+          "description": "Strategy"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 49,
+          "description": "PvP"
+        },
+        {
+          "id": 36,
+          "description": "Online PvP"
+        },
+        {
+          "id": 9,
+          "description": "Co-op"
+        },
+        {
+          "id": 38,
+          "description": "Online Co-op"
+        },
+        {
+          "id": 27,
+          "description": "Cross-Platform Multiplayer"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 29,
+          "description": "Steam Trading Cards"
+        },
+        {
+          "id": 30,
+          "description": "Steam Workshop"
+        },
+        {
+          "id": 67,
+          "description": "Camera Comfort"
+        },
+        {
+          "id": 72,
+          "description": "Chat Speech-to-text"
+        },
+        {
+          "id": 73,
+          "description": "Chat Text-to-speech"
+        },
+        {
+          "id": 68,
+          "description": "Custom Volume Controls"
+        },
+        {
+          "id": 78,
+          "description": "Adjustable Difficulty"
+        },
+        {
+          "id": 74,
+          "description": "Playable without Timed Input"
+        },
+        {
+          "id": 79,
+          "description": "Save Anytime"
+        },
+        {
+          "id": 69,
+          "description": "Stereo Sound"
+        },
+        {
+          "id": 70,
+          "description": "Surround Sound"
+        },
+        {
+          "id": 18,
+          "description": "Partial Controller Support"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 44,
+          "description": "Remote Play Together"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "2 May, 2023"
+      },
+      "steamDeckCompatibility": "playable",
+      "checkedAt": "2026-06-05T05:20:51.722Z"
+    },
+    "1670430": {
+      "appid": 1670430,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1670430/header.jpg?t=1733417297",
+      "type": "dlc",
+      "developers": [
+        "Facepunch Studios"
+      ],
+      "publishers": [
+        "Facepunch Studios"
+      ],
+      "genres": [
+        {
+          "id": "1",
+          "description": "Action"
+        },
+        {
+          "id": "25",
+          "description": "Adventure"
+        },
+        {
+          "id": "23",
+          "description": "Indie"
+        },
+        {
+          "id": "29",
+          "description": "Massively Multiplayer"
+        },
+        {
+          "id": "3",
+          "description": "RPG"
+        }
+      ],
+      "categories": [
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 20,
+          "description": "MMO"
+        },
+        {
+          "id": 49,
+          "description": "PvP"
+        },
+        {
+          "id": 36,
+          "description": "Online PvP"
+        },
+        {
+          "id": 9,
+          "description": "Co-op"
+        },
+        {
+          "id": 38,
+          "description": "Online Co-op"
+        },
+        {
+          "id": 27,
+          "description": "Cross-Platform Multiplayer"
+        },
+        {
+          "id": 21,
+          "description": "Downloadable Content"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 29,
+          "description": "Steam Trading Cards"
+        },
+        {
+          "id": 30,
+          "description": "Steam Workshop"
+        },
+        {
+          "id": 35,
+          "description": "In-App Purchases"
+        },
+        {
+          "id": 8,
+          "description": "Valve Anti-Cheat enabled"
+        },
+        {
+          "id": 15,
+          "description": "Stats"
+        },
+        {
+          "id": 42,
+          "description": "Remote Play on Tablet"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": true,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "1 Jul, 2021"
+      },
+      "steamDeckCompatibility": "unknown",
+      "checkedAt": "2026-06-05T05:20:52.245Z"
+    },
+    "1670460": {
+      "appid": 1670460,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1670460/header.jpg?t=1701282993",
+      "type": "game",
+      "developers": [
+        "YoYo Games Ltd."
+      ],
+      "publishers": [
+        "YoYo Games Ltd."
+      ],
+      "genres": [
+        {
+          "id": "51",
+          "description": "Animation & Modeling"
+        },
+        {
+          "id": "53",
+          "description": "Design & Illustration"
+        },
+        {
+          "id": "54",
+          "description": "Education"
+        },
+        {
+          "id": "56",
+          "description": "Software Training"
+        },
+        {
+          "id": "57",
+          "description": "Utilities"
+        },
+        {
+          "id": "59",
+          "description": "Web Publishing"
+        },
+        {
+          "id": "60",
+          "description": "Game Development"
+        }
+      ],
+      "categories": [
+        {
+          "id": 35,
+          "description": "In-App Purchases"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": true,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "3 May, 2022"
+      },
+      "steamDeckCompatibility": "unsupported",
+      "checkedAt": "2026-06-05T05:20:52.317Z"
     },
     "1671210": {
       "appid": 1671210,
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1671210/7ccda5b1631d2e60cc756a3271e845dbb9168821/header.jpg?t=1749252480",
+      "type": "game",
       "developers": [
         "tobyfox"
       ],
@@ -7963,6 +13201,24 @@
           "description": "RPG"
         }
       ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
       "platforms": {
         "windows": true,
         "mac": true,
@@ -7973,11 +13229,291 @@
         "date": "4 Jun, 2025"
       },
       "steamDeckCompatibility": "verified",
-      "checkedAt": "2026-06-04T14:30:17.294Z"
+      "checkedAt": "2026-06-05T05:20:52.848Z"
+    },
+    "1672970": {
+      "appid": 1672970,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1672970/header.jpg?t=1717003107",
+      "type": "game",
+      "developers": [
+        "Mojang Studios",
+        "‪Double Eleven"
+      ],
+      "publishers": [
+        "Xbox Game Studios"
+      ],
+      "genres": [
+        {
+          "id": "1",
+          "description": "Action"
+        },
+        {
+          "id": "25",
+          "description": "Adventure"
+        },
+        {
+          "id": "3",
+          "description": "RPG"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 9,
+          "description": "Co-op"
+        },
+        {
+          "id": 38,
+          "description": "Online Co-op"
+        },
+        {
+          "id": 39,
+          "description": "Shared/Split Screen Co-op"
+        },
+        {
+          "id": 24,
+          "description": "Shared/Split Screen"
+        },
+        {
+          "id": 27,
+          "description": "Cross-Platform Multiplayer"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 29,
+          "description": "Steam Trading Cards"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "22 Sep, 2021"
+      },
+      "steamDeckCompatibility": "unsupported",
+      "checkedAt": "2026-06-05T05:20:52.944Z"
+    },
+    "1674200": {
+      "appid": 1674200,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1674200/5040e18cd24479ff19fdda1a557c320496a91d5c/header.jpg?t=1780507551",
+      "type": "game",
+      "developers": [
+        "Baked Games"
+      ],
+      "publishers": [
+        "Baked Games S.A."
+      ],
+      "genres": [
+        {
+          "id": "1",
+          "description": "Action"
+        },
+        {
+          "id": "25",
+          "description": "Adventure"
+        },
+        {
+          "id": "4",
+          "description": "Casual"
+        },
+        {
+          "id": "23",
+          "description": "Indie"
+        },
+        {
+          "id": "3",
+          "description": "RPG"
+        },
+        {
+          "id": "28",
+          "description": "Simulation"
+        },
+        {
+          "id": "2",
+          "description": "Strategy"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "14 Apr, 2026"
+      },
+      "steamDeckCompatibility": "unsupported",
+      "checkedAt": "2026-06-05T05:20:53.458Z"
+    },
+    "1676840": {
+      "appid": 1676840,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1676840/146cf4b5fad9a49caea91b23c7e43bb2c74bfa85/header_alt_assets_13.jpg?t=1779102679",
+      "type": "game",
+      "developers": [
+        "IronOak Games"
+      ],
+      "publishers": [
+        "Curve Games"
+      ],
+      "genres": [
+        {
+          "id": "25",
+          "description": "Adventure"
+        },
+        {
+          "id": "23",
+          "description": "Indie"
+        },
+        {
+          "id": "3",
+          "description": "RPG"
+        },
+        {
+          "id": "2",
+          "description": "Strategy"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 9,
+          "description": "Co-op"
+        },
+        {
+          "id": 38,
+          "description": "Online Co-op"
+        },
+        {
+          "id": 39,
+          "description": "Shared/Split Screen Co-op"
+        },
+        {
+          "id": 24,
+          "description": "Shared/Split Screen"
+        },
+        {
+          "id": 27,
+          "description": "Cross-Platform Multiplayer"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 29,
+          "description": "Steam Trading Cards"
+        },
+        {
+          "id": 64,
+          "description": "Adjustable Text Size"
+        },
+        {
+          "id": 67,
+          "description": "Camera Comfort"
+        },
+        {
+          "id": 68,
+          "description": "Custom Volume Controls"
+        },
+        {
+          "id": 78,
+          "description": "Adjustable Difficulty"
+        },
+        {
+          "id": 75,
+          "description": "Keyboard Only Option"
+        },
+        {
+          "id": 76,
+          "description": "Mouse Only Option"
+        },
+        {
+          "id": 79,
+          "description": "Save Anytime"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 44,
+          "description": "Remote Play Together"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "2 Nov, 2023"
+      },
+      "steamDeckCompatibility": "verified",
+      "checkedAt": "2026-06-05T05:20:53.636Z"
     },
     "1677280": {
       "appid": 1677280,
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1677280/header.jpg?t=1778776992",
+      "type": "game",
       "developers": [
         "Relic Entertainment"
       ],
@@ -7994,6 +13530,52 @@
           "description": "Strategy"
         }
       ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 49,
+          "description": "PvP"
+        },
+        {
+          "id": 36,
+          "description": "Online PvP"
+        },
+        {
+          "id": 9,
+          "description": "Co-op"
+        },
+        {
+          "id": 38,
+          "description": "Online Co-op"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 29,
+          "description": "Steam Trading Cards"
+        },
+        {
+          "id": 30,
+          "description": "Steam Workshop"
+        },
+        {
+          "id": 15,
+          "description": "Stats"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
       "platforms": {
         "windows": true,
         "mac": false,
@@ -8004,7 +13586,1104 @@
         "date": "23 Feb, 2023"
       },
       "steamDeckCompatibility": "playable",
-      "checkedAt": "2026-06-05T02:24:20.828Z"
+      "checkedAt": "2026-06-05T05:20:54.124Z"
+    },
+    "1677740": {
+      "appid": 1677740,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1677740/header.jpg?t=1755116858",
+      "type": "game",
+      "developers": [
+        "Scopely"
+      ],
+      "publishers": [
+        "Scopely"
+      ],
+      "genres": [
+        {
+          "id": "1",
+          "description": "Action"
+        },
+        {
+          "id": "4",
+          "description": "Casual"
+        },
+        {
+          "id": "23",
+          "description": "Indie"
+        },
+        {
+          "id": "29",
+          "description": "Massively Multiplayer"
+        },
+        {
+          "id": "9",
+          "description": "Racing"
+        },
+        {
+          "id": "37",
+          "description": "Free To Play"
+        }
+      ],
+      "categories": [
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 49,
+          "description": "PvP"
+        },
+        {
+          "id": 36,
+          "description": "Online PvP"
+        },
+        {
+          "id": 27,
+          "description": "Cross-Platform Multiplayer"
+        },
+        {
+          "id": 35,
+          "description": "In-App Purchases"
+        },
+        {
+          "id": 18,
+          "description": "Partial Controller Support"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "7 Oct, 2021"
+      },
+      "steamDeckCompatibility": "playable",
+      "checkedAt": "2026-06-05T05:20:54.245Z"
+    },
+    "1677770": {
+      "appid": 1677770,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1677770/header.jpg?t=1758227116",
+      "type": "game",
+      "developers": [
+        "Color Gray Games"
+      ],
+      "publishers": [
+        "Playstack"
+      ],
+      "genres": [
+        {
+          "id": "25",
+          "description": "Adventure"
+        },
+        {
+          "id": "23",
+          "description": "Indie"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 29,
+          "description": "Steam Trading Cards"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": true,
+        "linux": true
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "13 Oct, 2022"
+      },
+      "steamDeckCompatibility": "verified",
+      "checkedAt": "2026-06-05T05:20:54.729Z"
+    },
+    "1683340": {
+      "appid": 1683340,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1683340/header.jpg?t=1750776477",
+      "type": "game",
+      "developers": [
+        "Better Than Life"
+      ],
+      "publishers": [
+        "Better Than Life"
+      ],
+      "genres": [
+        {
+          "id": "25",
+          "description": "Adventure"
+        },
+        {
+          "id": "4",
+          "description": "Casual"
+        },
+        {
+          "id": "23",
+          "description": "Indie"
+        },
+        {
+          "id": "9",
+          "description": "Racing"
+        },
+        {
+          "id": "28",
+          "description": "Simulation"
+        },
+        {
+          "id": "18",
+          "description": "Sports"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 9,
+          "description": "Co-op"
+        },
+        {
+          "id": 38,
+          "description": "Online Co-op"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 52,
+          "description": "Tracked Controller Support"
+        },
+        {
+          "id": 54,
+          "description": "VR Only"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "12 Jul, 2022"
+      },
+      "steamDeckCompatibility": "unsupported",
+      "checkedAt": "2026-06-05T05:20:55.210Z"
+    },
+    "1692250": {
+      "appid": 1692250,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1692250/header.jpg?t=1709056193",
+      "type": "game",
+      "developers": [
+        "Codemasters"
+      ],
+      "publishers": [
+        "Electronic Arts"
+      ],
+      "genres": [
+        {
+          "id": "9",
+          "description": "Racing"
+        },
+        {
+          "id": "18",
+          "description": "Sports"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 49,
+          "description": "PvP"
+        },
+        {
+          "id": 36,
+          "description": "Online PvP"
+        },
+        {
+          "id": 47,
+          "description": "LAN PvP"
+        },
+        {
+          "id": 37,
+          "description": "Shared/Split Screen PvP"
+        },
+        {
+          "id": 9,
+          "description": "Co-op"
+        },
+        {
+          "id": 38,
+          "description": "Online Co-op"
+        },
+        {
+          "id": 48,
+          "description": "LAN Co-op"
+        },
+        {
+          "id": 24,
+          "description": "Shared/Split Screen"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 53,
+          "description": "VR Supported"
+        },
+        {
+          "id": 30,
+          "description": "Steam Workshop"
+        },
+        {
+          "id": 35,
+          "description": "In-App Purchases"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 44,
+          "description": "Remote Play Together"
+        },
+        {
+          "id": 61,
+          "description": "HDR available"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "1 Jul, 2022"
+      },
+      "steamDeckCompatibility": "verified",
+      "checkedAt": "2026-06-05T05:20:55.729Z"
+    },
+    "1696670": {
+      "appid": 1696670,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1696670/header.jpg?t=1669024604",
+      "type": "game",
+      "developers": [
+        "FF Digital"
+      ],
+      "publishers": [
+        "FF Digital"
+      ],
+      "genres": [
+        {
+          "id": "1",
+          "description": "Action"
+        },
+        {
+          "id": "25",
+          "description": "Adventure"
+        },
+        {
+          "id": "23",
+          "description": "Indie"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "21 Oct, 2022"
+      },
+      "steamDeckCompatibility": "unknown",
+      "checkedAt": "2026-06-05T05:20:56.165Z"
+    },
+    "1697700": {
+      "appid": 1697700,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1697700/header.jpg?t=1725418523",
+      "type": "game",
+      "developers": [
+        "Garage Heathen"
+      ],
+      "publishers": [
+        "Garage Heathen",
+        "IndieArk"
+      ],
+      "genres": [
+        {
+          "id": "25",
+          "description": "Adventure"
+        },
+        {
+          "id": "4",
+          "description": "Casual"
+        },
+        {
+          "id": "23",
+          "description": "Indie"
+        },
+        {
+          "id": "3",
+          "description": "RPG"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 29,
+          "description": "Steam Trading Cards"
+        },
+        {
+          "id": 30,
+          "description": "Steam Workshop"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "23 Feb, 2022"
+      },
+      "steamDeckCompatibility": "verified",
+      "checkedAt": "2026-06-05T05:20:56.343Z"
+    },
+    "1700870": {
+      "appid": 1700870,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1700870/header.jpg?t=1779785384",
+      "type": "game",
+      "developers": [
+        "MinMax Games Ltd."
+      ],
+      "publishers": [
+        "Hooded Horse"
+      ],
+      "genres": [
+        {
+          "id": "3",
+          "description": "RPG"
+        },
+        {
+          "id": "28",
+          "description": "Simulation"
+        },
+        {
+          "id": "2",
+          "description": "Strategy"
+        },
+        {
+          "id": "70",
+          "description": "Early Access"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 64,
+          "description": "Adjustable Text Size"
+        },
+        {
+          "id": 68,
+          "description": "Custom Volume Controls"
+        },
+        {
+          "id": 78,
+          "description": "Adjustable Difficulty"
+        },
+        {
+          "id": 79,
+          "description": "Save Anytime"
+        },
+        {
+          "id": 69,
+          "description": "Stereo Sound"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "14 Jul, 2022"
+      },
+      "steamDeckCompatibility": "playable",
+      "checkedAt": "2026-06-05T05:20:56.751Z"
+    },
+    "1701720": {
+      "appid": 1701720,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1701720/header.jpg?t=1677846699",
+      "type": "music",
+      "developers": [
+        "Facepunch Studios"
+      ],
+      "publishers": [
+        "Facepunch Studios"
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": true,
+        "linux": true
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "3 Mar, 2022"
+      },
+      "steamDeckCompatibility": "unknown",
+      "checkedAt": "2026-06-05T05:20:56.981Z"
+    },
+    "1702010": {
+      "appid": 1702010,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1702010/16a107028f000149c4a391b2eb4db71bac77c9b5/header.jpg?t=1777883948",
+      "type": "game",
+      "developers": [
+        "Superkami"
+      ],
+      "publishers": [
+        "Toplitz Productions"
+      ],
+      "genres": [
+        {
+          "id": "25",
+          "description": "Adventure"
+        },
+        {
+          "id": "3",
+          "description": "RPG"
+        },
+        {
+          "id": "28",
+          "description": "Simulation"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 9,
+          "description": "Co-op"
+        },
+        {
+          "id": 38,
+          "description": "Online Co-op"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "8 Nov, 2024"
+      },
+      "steamDeckCompatibility": "playable",
+      "checkedAt": "2026-06-05T05:20:57.313Z"
+    },
+    "1710580": {
+      "appid": 1710580,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1710580/header.jpg?t=1728470115",
+      "type": "game",
+      "developers": [
+        "Milestone S.r.l."
+      ],
+      "publishers": [
+        "Milestone S.r.l."
+      ],
+      "genres": [
+        {
+          "id": "9",
+          "description": "Racing"
+        },
+        {
+          "id": "28",
+          "description": "Simulation"
+        },
+        {
+          "id": "18",
+          "description": "Sports"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 49,
+          "description": "PvP"
+        },
+        {
+          "id": 36,
+          "description": "Online PvP"
+        },
+        {
+          "id": 37,
+          "description": "Shared/Split Screen PvP"
+        },
+        {
+          "id": 24,
+          "description": "Shared/Split Screen"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 29,
+          "description": "Steam Trading Cards"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 44,
+          "description": "Remote Play Together"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "21 Apr, 2022"
+      },
+      "steamDeckCompatibility": "playable",
+      "checkedAt": "2026-06-05T05:20:57.611Z"
+    },
+    "1710820": {
+      "appid": 1710820,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1710820/7b622881e3880e57db21f3ed9e1d55be6547101d/header.jpg?t=1773803807",
+      "type": "game",
+      "developers": [
+        "Not Knowing Corporation"
+      ],
+      "publishers": [
+        "MicroProse Software"
+      ],
+      "genres": [
+        {
+          "id": "1",
+          "description": "Action"
+        },
+        {
+          "id": "23",
+          "description": "Indie"
+        },
+        {
+          "id": "70",
+          "description": "Early Access"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": true
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "20 Nov, 2025"
+      },
+      "steamDeckCompatibility": "verified",
+      "checkedAt": "2026-06-05T05:20:57.889Z"
+    },
+    "1715280": {
+      "appid": 1715280,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1715280/header.jpg?t=1729256349",
+      "type": "game",
+      "developers": [
+        "MS GAMES",
+        "MK STUDIOS"
+      ],
+      "publishers": [
+        "Iceberg Interactive"
+      ],
+      "genres": [
+        {
+          "id": "4",
+          "description": "Casual"
+        },
+        {
+          "id": "23",
+          "description": "Indie"
+        },
+        {
+          "id": "28",
+          "description": "Simulation"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 9,
+          "description": "Co-op"
+        },
+        {
+          "id": 38,
+          "description": "Online Co-op"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 30,
+          "description": "Steam Workshop"
+        },
+        {
+          "id": 17,
+          "description": "Includes level editor"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "19 Oct, 2023"
+      },
+      "steamDeckCompatibility": "playable",
+      "checkedAt": "2026-06-05T05:20:58.254Z"
+    },
+    "1721470": {
+      "appid": 1721470,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1721470/00ca34a0c863a8d86c6582904249216d6aa263bd/header.jpg?t=1770858202",
+      "type": "game",
+      "developers": [
+        "Mob Entertainment"
+      ],
+      "publishers": [
+        "Mob Entertainment"
+      ],
+      "genres": [
+        {
+          "id": "1",
+          "description": "Action"
+        },
+        {
+          "id": "25",
+          "description": "Adventure"
+        },
+        {
+          "id": "23",
+          "description": "Indie"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "12 Oct, 2021"
+      },
+      "steamDeckCompatibility": "playable",
+      "checkedAt": "2026-06-05T05:20:58.833Z"
+    },
+    "1731070": {
+      "appid": 1731070,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1731070/header.jpg?t=1763649406",
+      "type": "game",
+      "developers": [
+        "Acme Gamestudio"
+      ],
+      "publishers": [
+        "tinyBuild"
+      ],
+      "genres": [
+        {
+          "id": "1",
+          "description": "Action"
+        },
+        {
+          "id": "25",
+          "description": "Adventure"
+        },
+        {
+          "id": "3",
+          "description": "RPG"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 29,
+          "description": "Steam Trading Cards"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "11 Oct, 2022"
+      },
+      "steamDeckCompatibility": "verified",
+      "checkedAt": "2026-06-05T05:20:59.196Z"
+    },
+    "1731080": {
+      "appid": 1731080,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1731080/header.jpg?t=1776927212",
+      "type": "dlc",
+      "developers": [
+        "CAPCOM Co., Ltd."
+      ],
+      "publishers": [
+        "CAPCOM Co., Ltd."
+      ],
+      "genres": [
+        {
+          "id": "1",
+          "description": "Action"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 21,
+          "description": "Downloadable Content"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 29,
+          "description": "Steam Trading Cards"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "27 Oct, 2022"
+      },
+      "steamDeckCompatibility": "unknown",
+      "checkedAt": "2026-06-05T05:20:59.646Z"
+    },
+    "1745780": {
+      "appid": 1745780,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1745780/header.jpg?t=1741715127",
+      "type": "game",
+      "developers": [
+        "Adobe"
+      ],
+      "publishers": [
+        "Adobe"
+      ],
+      "genres": [
+        {
+          "id": "51",
+          "description": "Animation & Modeling"
+        },
+        {
+          "id": "53",
+          "description": "Design & Illustration"
+        }
+      ],
+      "categories": [
+        {
+          "id": 52,
+          "description": "Tracked Controller Support"
+        },
+        {
+          "id": 53,
+          "description": "VR Supported"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "15 Dec, 2022"
+      },
+      "steamDeckCompatibility": "unknown",
+      "checkedAt": "2026-06-05T05:20:59.885Z"
+    },
+    "1760030": {
+      "appid": 1760030,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1760030/header.jpg?t=1700037617",
+      "type": "dlc",
+      "developers": [
+        "Double Eleven",
+        "Introversion Software"
+      ],
+      "publishers": [
+        "Paradox Interactive"
+      ],
+      "genres": [
+        {
+          "id": "23",
+          "description": "Indie"
+        },
+        {
+          "id": "28",
+          "description": "Simulation"
+        },
+        {
+          "id": "2",
+          "description": "Strategy"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 21,
+          "description": "Downloadable Content"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 29,
+          "description": "Steam Trading Cards"
+        },
+        {
+          "id": 30,
+          "description": "Steam Workshop"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 17,
+          "description": "Includes level editor"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": true,
+        "linux": true
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "27 Jan, 2022"
+      },
+      "steamDeckCompatibility": "unknown",
+      "checkedAt": "2026-06-05T05:21:00.637Z"
     },
     "1766060": {
       "appid": 1766060,
@@ -8040,6 +14719,84 @@
       },
       "steamDeckCompatibility": "unsupported",
       "checkedAt": "2026-06-04T14:30:17.822Z"
+    },
+    "1771300": {
+      "appid": 1771300,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1771300/header.jpg?t=1777975568",
+      "type": "game",
+      "developers": [
+        "Warhorse Studios"
+      ],
+      "publishers": [
+        "Deep Silver"
+      ],
+      "genres": [
+        {
+          "id": "1",
+          "description": "Action"
+        },
+        {
+          "id": "25",
+          "description": "Adventure"
+        },
+        {
+          "id": "3",
+          "description": "RPG"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 29,
+          "description": "Steam Trading Cards"
+        },
+        {
+          "id": 68,
+          "description": "Custom Volume Controls"
+        },
+        {
+          "id": 74,
+          "description": "Playable without Timed Input"
+        },
+        {
+          "id": 69,
+          "description": "Stereo Sound"
+        },
+        {
+          "id": 70,
+          "description": "Surround Sound"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "4 Feb, 2025"
+      },
+      "steamDeckCompatibility": "playable",
+      "checkedAt": "2026-06-05T05:21:01.029Z"
     },
     "1778820": {
       "appid": 1778820,
@@ -8146,6 +14903,80 @@
       "steamDeckCompatibility": "verified",
       "checkedAt": "2026-06-05T02:24:21.361Z"
     },
+    "1805320": {
+      "appid": 1805320,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1805320/7ba6783ca5acd8068abd3bd924801ce173fc39e8/header.jpg?t=1780586314",
+      "type": "game",
+      "developers": [
+        "Beartwigs"
+      ],
+      "publishers": [
+        "Three Friends"
+      ],
+      "genres": [
+        {
+          "id": "1",
+          "description": "Action"
+        },
+        {
+          "id": "25",
+          "description": "Adventure"
+        },
+        {
+          "id": "23",
+          "description": "Indie"
+        },
+        {
+          "id": "3",
+          "description": "RPG"
+        },
+        {
+          "id": "70",
+          "description": "Early Access"
+        }
+      ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 1,
+          "description": "Multi-player"
+        },
+        {
+          "id": 9,
+          "description": "Co-op"
+        },
+        {
+          "id": 38,
+          "description": "Online Co-op"
+        },
+        {
+          "id": 48,
+          "description": "LAN Co-op"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": false,
+        "linux": false
+      },
+      "releaseDate": {
+        "coming_soon": false,
+        "date": "25 May, 2026"
+      },
+      "steamDeckCompatibility": "playable",
+      "checkedAt": "2026-06-05T05:21:02.764Z"
+    },
     "1808500": {
       "appid": 1808500,
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1808500/04baafaf64a5aa5f46ecda5d71889a4848dc0628/header.jpg?t=1776865359",
@@ -8215,11 +15046,12 @@
         "date": "23 Apr, 2024"
       },
       "steamDeckCompatibility": "unknown",
-      "checkedAt": "2026-06-05T02:24:21.445Z"
+      "checkedAt": "2026-06-05T05:00:05.746Z"
     },
     "1817070": {
       "appid": 1817070,
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1817070/header.jpg?t=1763569047",
+      "type": "game",
       "developers": [
         "Insomniac Games",
         "Nixxes Software"
@@ -8241,6 +15073,72 @@
           "description": "Casual"
         }
       ],
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 64,
+          "description": "Adjustable Text Size"
+        },
+        {
+          "id": 67,
+          "description": "Camera Comfort"
+        },
+        {
+          "id": 66,
+          "description": "Color Alternatives"
+        },
+        {
+          "id": 68,
+          "description": "Custom Volume Controls"
+        },
+        {
+          "id": 78,
+          "description": "Adjustable Difficulty"
+        },
+        {
+          "id": 74,
+          "description": "Playable without Timed Input"
+        },
+        {
+          "id": 79,
+          "description": "Save Anytime"
+        },
+        {
+          "id": 69,
+          "description": "Stereo Sound"
+        },
+        {
+          "id": 65,
+          "description": "Subtitle Options"
+        },
+        {
+          "id": 70,
+          "description": "Surround Sound"
+        },
+        {
+          "id": 18,
+          "description": "Partial Controller Support"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 43,
+          "description": "Remote Play on TV"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
       "platforms": {
         "windows": true,
         "mac": false,
@@ -8251,7 +15149,7 @@
         "date": "12 Aug, 2022"
       },
       "steamDeckCompatibility": "verified",
-      "checkedAt": "2026-06-04T12:42:01.858Z"
+      "checkedAt": "2026-06-05T05:21:03.924Z"
     },
     "1817190": {
       "appid": 1817190,
@@ -10554,7 +17452,7 @@
         "date": "27 Nov, 2025"
       },
       "steamDeckCompatibility": "unknown",
-      "checkedAt": "2026-06-04T14:30:24.945Z"
+      "checkedAt": "2026-06-05T05:00:26.038Z"
     },
     "2784470": {
       "appid": 2784470,
@@ -10796,7 +17694,7 @@
         "date": "4 Dec, 2025"
       },
       "steamDeckCompatibility": "unknown",
-      "checkedAt": "2026-06-04T14:30:25.854Z"
+      "checkedAt": "2026-06-05T05:00:29.725Z"
     },
     "3025440": {
       "appid": 3025440,
@@ -10827,7 +17725,7 @@
         "date": "10 Jul, 2025"
       },
       "steamDeckCompatibility": "unknown",
-      "checkedAt": "2026-06-04T14:30:25.965Z"
+      "checkedAt": "2026-06-05T05:00:30.095Z"
     },
     "3035570": {
       "appid": 3035570,
@@ -11423,7 +18321,7 @@
         "date": "25 Feb, 2025"
       },
       "steamDeckCompatibility": "unknown",
-      "checkedAt": "2026-06-04T14:30:27.592Z"
+      "checkedAt": "2026-06-05T05:00:37.720Z"
     },
     "3483740": {
       "appid": 3483740,
@@ -11494,7 +18392,7 @@
         "date": "14 May, 2026"
       },
       "steamDeckCompatibility": "unknown",
-      "checkedAt": "2026-06-04T14:30:27.784Z"
+      "checkedAt": "2026-06-05T05:00:38.043Z"
     },
     "3527290": {
       "appid": 3527290,
@@ -11589,7 +18487,7 @@
         "date": "12 Feb, 2027"
       },
       "steamDeckCompatibility": "unknown",
-      "checkedAt": "2026-06-04T14:59:23.318Z"
+      "checkedAt": "2026-06-05T05:00:39.007Z"
     },
     "3669870": {
       "appid": 3669870,
@@ -11624,7 +18522,7 @@
         "date": "24 Sep, 2026"
       },
       "steamDeckCompatibility": "unknown",
-      "checkedAt": "2026-06-04T14:30:28.538Z"
+      "checkedAt": "2026-06-05T05:00:40.592Z"
     },
     "3746540": {
       "appid": 3746540,
@@ -11651,7 +18549,7 @@
         "date": "7 May, 2026"
       },
       "steamDeckCompatibility": "unknown",
-      "checkedAt": "2026-06-04T14:30:28.830Z"
+      "checkedAt": "2026-06-05T05:00:41.864Z"
     },
     "3751950": {
       "appid": 3751950,
@@ -11692,7 +18590,7 @@
         "date": "9 Jul, 2026"
       },
       "steamDeckCompatibility": "unknown",
-      "checkedAt": "2026-06-04T14:30:29.025Z"
+      "checkedAt": "2026-06-05T05:00:42.153Z"
     },
     "3764200": {
       "appid": 3764200,

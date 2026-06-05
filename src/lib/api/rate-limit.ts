@@ -54,6 +54,9 @@ export const checkRateLimit = (
   }
 
   pruneWindow(entry, now)
+  if (entry.timestamps.length === 0) {
+    windows.delete(key)
+  }
 
   if (entry.timestamps.length >= limit) {
     const retryAfterSec = Math.ceil(
@@ -71,5 +74,6 @@ export const checkRateLimit = (
   }
 
   entry.timestamps.push(now)
+  windows.set(key, entry)
   return null
 }

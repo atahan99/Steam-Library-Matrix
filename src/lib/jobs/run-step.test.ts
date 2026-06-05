@@ -9,6 +9,15 @@ vi.mock("@/lib/jobs/steps/protondb-step", () => ({
   runProtonDbBatch: vi.fn(),
 }))
 
+vi.mock("@/lib/jobs/batch-config", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/lib/jobs/batch-config")>()
+  return {
+    ...actual,
+    getProtonDbBatch: () => 50,
+    getProtonDbConcurrency: () => 10,
+  }
+})
+
 import { resolveAppidsForSource } from "@/lib/enrichment/resolve-enrichment-appids"
 import { runProtonDbBatch } from "@/lib/jobs/steps/protondb-step"
 

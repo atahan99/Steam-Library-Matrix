@@ -76,5 +76,4 @@ export const shouldApplySeedTimestamp = (
 ): boolean =>
   parseCheckedAtMs(existingCheckedAt) <= parseCheckedAtMs(seedCheckedAt)
 
-export const isPlaceholderGameName = (name: string): boolean =>
-  /^App \d+$/i.test(name.trim())
+export { isPlaceholderGameName } from "@/lib/utils/placeholder-game-name"

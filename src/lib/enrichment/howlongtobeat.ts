@@ -27,6 +27,63 @@ const DELAY_MS = 400
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
 
+type HltbUpsertRow = {
+  appid: number
+  hltbId: string
+  matchedName: string
+  matchConfidence: number
+  mainStoryMinutes: number | null
+  mainExtraMinutes: number | null
+  completionistMinutes: number | null
+  allStylesMinutes: number | null
+  imageUrl: string | null
+  platforms: string[] | null
+  reviewScore: number | null
+  sourceUrl: string
+  lastCheckedAt: Date
+  updatedAt: Date
+}
+
+const upsertHltbSuccessRow = async (row: HltbUpsertRow) => {
+  const db = getDb()
+  await db
+    .insert(howlongtobeatEntries)
+    .values({
+      appid: row.appid,
+      hltbId: row.hltbId,
+      matchedName: row.matchedName,
+      matchConfidence: row.matchConfidence,
+      mainStoryMinutes: row.mainStoryMinutes,
+      mainExtraMinutes: row.mainExtraMinutes,
+      completionistMinutes: row.completionistMinutes,
+      allStylesMinutes: row.allStylesMinutes,
+      imageUrl: row.imageUrl,
+      platforms: row.platforms,
+      reviewScore: row.reviewScore,
+      sourceUrl: row.sourceUrl,
+      lastCheckedAt: row.lastCheckedAt,
+      updatedAt: row.updatedAt,
+    })
+    .onConflictDoUpdate({
+      target: howlongtobeatEntries.appid,
+      set: {
+        hltbId: row.hltbId,
+        matchedName: row.matchedName,
+        matchConfidence: row.matchConfidence,
+        mainStoryMinutes: row.mainStoryMinutes,
+        mainExtraMinutes: row.mainExtraMinutes,
+        completionistMinutes: row.completionistMinutes,
+        allStylesMinutes: row.allStylesMinutes,
+        imageUrl: row.imageUrl,
+        platforms: row.platforms,
+        reviewScore: row.reviewScore,
+        sourceUrl: row.sourceUrl,
+        lastCheckedAt: row.lastCheckedAt,
+        updatedAt: row.updatedAt,
+      },
+    })
+}
+
 const upsertHltbNegativeCache = async (
   appid: number,
   reason: string,
@@ -77,7 +134,7 @@ const enrichOneGame = async (
   appid: number,
   gameName: string
 ): Promise<
-  | { status: "updated"; row: Record<string, unknown> }
+  | { status: "updated"; row: HltbUpsertRow }
   | { status: "failed" | "skipped"; reason: string }
 > => {
   const query = buildSearchQuery(gameName)
@@ -143,25 +200,25 @@ const enrichOneGame = async (
 
   const matchConfidence = acceptance.confidence
 
-  const now = new Date().toISOString()
+  const now = new Date()
 
   return {
     status: "updated",
     row: {
       appid,
-      hltb_id: match.hit.gameId,
-      matched_name: detail.gameName,
-      match_confidence: matchConfidence,
-      main_story_minutes: mainStoryMinutes,
-      main_extra_minutes: mainExtraMinutes,
-      completionist_minutes: completionistMinutes,
-      all_styles_minutes: allStylesMinutes,
-      image_url: detail.imageUrl ?? match.hit.imageUrl ?? null,
+      hltbId: match.hit.gameId,
+      matchedName: detail.gameName,
+      matchConfidence,
+      mainStoryMinutes,
+      mainExtraMinutes,
+      completionistMinutes,
+      allStylesMinutes,
+      imageUrl: detail.imageUrl ?? match.hit.imageUrl ?? null,
       platforms: detail.platforms.length ? detail.platforms : match.hit.platforms ?? null,
-      review_score: detail.reviewScore ?? match.hit.reviewScore ?? null,
-      source_url: `https://howlongtobeat.com/game/${match.hit.gameId}`,
-      last_checked_at: now,
-      updated_at: now,
+      reviewScore: detail.reviewScore ?? match.hit.reviewScore ?? null,
+      sourceUrl: `https://howlongtobeat.com/game/${match.hit.gameId}`,
+      lastCheckedAt: now,
+      updatedAt: now,
     },
   }
 }
@@ -249,44 +306,8 @@ export const enrichHowLongToBeat = async (
     const result = await enrichOneGame(appid, gameName)
 
     if (result.status === "updated") {
-      const row = result.row
       try {
-        await db
-          .insert(howlongtobeatEntries)
-          .values({
-            appid: row.appid as number,
-            hltbId: row.hltb_id as string,
-            matchedName: row.matched_name as string,
-            matchConfidence: (row.match_confidence as number) ?? null,
-            mainStoryMinutes: row.main_story_minutes as number | null,
-            mainExtraMinutes: row.main_extra_minutes as number | null,
-            completionistMinutes: row.completionist_minutes as number | null,
-            allStylesMinutes: row.all_styles_minutes as number | null,
-            imageUrl: row.image_url as string | null,
-            platforms: row.platforms as string[] | null,
-            reviewScore: row.review_score as number | null,
-            sourceUrl: row.source_url as string,
-            lastCheckedAt: new Date(row.last_checked_at as string),
-            updatedAt: new Date(row.updated_at as string),
-          })
-          .onConflictDoUpdate({
-            target: howlongtobeatEntries.appid,
-            set: {
-              hltbId: row.hltb_id as string,
-              matchedName: row.matched_name as string,
-              matchConfidence: (row.match_confidence as number) ?? null,
-              mainStoryMinutes: row.main_story_minutes as number | null,
-              mainExtraMinutes: row.main_extra_minutes as number | null,
-              completionistMinutes: row.completionist_minutes as number | null,
-              allStylesMinutes: row.all_styles_minutes as number | null,
-              imageUrl: row.image_url as string | null,
-              platforms: row.platforms as string[] | null,
-              reviewScore: row.review_score as number | null,
-              sourceUrl: row.source_url as string,
-              lastCheckedAt: new Date(row.last_checked_at as string),
-              updatedAt: new Date(row.updated_at as string),
-            },
-          })
+        await upsertHltbSuccessRow(result.row)
         stats.updated = 1
       } catch (upsertError) {
         stats.failed = 1
@@ -370,51 +391,15 @@ export const enrichSingleHowLongToBeatGame = async (
       await sleepBetween(DELAY_MS)
     }
   }
-  const db = getDb()
   const result = await enrichOneGame(appid, gameName)
 
   if (result.status === "updated") {
-    const row = result.row
     try {
-      await db
-        .insert(howlongtobeatEntries)
-        .values({
-          appid: row.appid as number,
-          hltbId: row.hltb_id as string,
-          matchedName: row.matched_name as string,
-          matchConfidence: (row.match_confidence as number) ?? null,
-          mainStoryMinutes: row.main_story_minutes as number | null,
-          mainExtraMinutes: row.main_extra_minutes as number | null,
-          completionistMinutes: row.completionist_minutes as number | null,
-          allStylesMinutes: row.all_styles_minutes as number | null,
-          imageUrl: row.image_url as string | null,
-          platforms: row.platforms as string[] | null,
-          reviewScore: row.review_score as number | null,
-          sourceUrl: row.source_url as string,
-          lastCheckedAt: new Date(row.last_checked_at as string),
-          updatedAt: new Date(row.updated_at as string),
-        })
-        .onConflictDoUpdate({
-          target: howlongtobeatEntries.appid,
-          set: {
-            hltbId: row.hltb_id as string,
-            matchedName: row.matched_name as string,
-            matchConfidence: (row.match_confidence as number) ?? null,
-            mainStoryMinutes: row.main_story_minutes as number | null,
-            mainExtraMinutes: row.main_extra_minutes as number | null,
-            completionistMinutes: row.completionist_minutes as number | null,
-            allStylesMinutes: row.all_styles_minutes as number | null,
-            imageUrl: row.image_url as string | null,
-            platforms: row.platforms as string[] | null,
-            reviewScore: row.review_score as number | null,
-            sourceUrl: row.source_url as string,
-            lastCheckedAt: new Date(row.last_checked_at as string),
-            updatedAt: new Date(row.updated_at as string),
-          },
-        })
+      await upsertHltbSuccessRow(result.row)
       await maybeDelay()
       return { checked: 1, updated: 1, failed: 0, skippedLowConfidence: 0 }
-    } catch {
+    } catch (error) {
+      console.warn(`[hltb] upsert failed appid=${appid}`, error)
       await maybeDelay()
       return { checked: 1, updated: 0, failed: 1, skippedLowConfidence: 0 }
     }
@@ -423,8 +408,8 @@ export const enrichSingleHowLongToBeatGame = async (
   if (result.status === "skipped") {
     try {
       await upsertHltbNegativeCache(appid, `skipped: ${result.reason}`)
-    } catch {
-      /* ignore */
+    } catch (error) {
+      console.warn(`[hltb] Negative cache upsert failed for appid ${appid}:`, error)
     }
     await maybeDelay()
     return { checked: 1, updated: 0, failed: 0, skippedLowConfidence: 1 }
@@ -432,8 +417,8 @@ export const enrichSingleHowLongToBeatGame = async (
 
   try {
     await upsertHltbNegativeCache(appid, `failed: ${result.reason}`)
-  } catch {
-    /* ignore */
+  } catch (error) {
+    console.warn(`[hltb] Negative cache upsert failed for appid ${appid}:`, error)
   }
   await maybeDelay()
   return { checked: 1, updated: 0, failed: 1, skippedLowConfidence: 0 }

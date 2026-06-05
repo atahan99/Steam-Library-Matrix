@@ -36,6 +36,12 @@ export type SyncStatusSourceRow = {
   processed: number
   missing: number
   percent: number
+  /** Titles satisfied from bundled/global cache (no live fetch needed). */
+  cachedReady?: number
+  /** Titles still needing background fetch. */
+  backgroundRemaining?: number
+  /** Scope for enrichment denominators. */
+  scope?: "library" | "enrich_pool"
 }
 
 /** @deprecated Use SyncStatusSourceRow */
@@ -45,6 +51,9 @@ export type SyncProgressSource = SyncStatusSourceRow & {
 
 export type SyncProgressSnapshot = {
   enrichTotal: number
+  libraryTotal: number
+  cacheReadyCount: number
+  backgroundRemainingCount: number
   percent: number
   processedUnits: number
   totalUnits: number
@@ -73,6 +82,9 @@ export const processedCountForSource = (source: SourceCoverage): number => {
 export const computeSyncProgressFromSources = (input: {
   sources: SyncStatusSourceRow[]
   enrichTotal: number
+  libraryTotal?: number
+  cacheReadyCount?: number
+  backgroundRemainingCount?: number
   activeJobs: ActiveJobSummary[]
 }): SyncProgressSnapshot => {
   const totalUnits = input.sources.reduce((sum, source) => sum + source.total, 0)
@@ -102,6 +114,9 @@ export const computeSyncProgressFromSources = (input: {
 
   return {
     enrichTotal: input.enrichTotal,
+    libraryTotal: input.libraryTotal ?? input.enrichTotal,
+    cacheReadyCount: input.cacheReadyCount ?? 0,
+    backgroundRemainingCount: input.backgroundRemainingCount ?? 0,
     percent: isComplete ? 100 : percent,
     processedUnits,
     totalUnits,
@@ -139,6 +154,7 @@ export const computeSyncProgress = (input: {
   return computeSyncProgressFromSources({
     sources,
     enrichTotal: input.enrichTotal,
+    libraryTotal: input.enrichTotal,
     activeJobs: input.activeJobs,
   })
 }

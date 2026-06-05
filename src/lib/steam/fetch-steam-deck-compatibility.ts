@@ -1,4 +1,6 @@
 import type { SteamDeckCompatibility } from "@/lib/utils/detect-steam-deck"
+import { buildSteamStoreFetchInit, waitForSteamStoreRequestSlot } from "@/lib/steam/steam-store-fetch"
+import { fetchWithTimeout } from "@/lib/utils/fetch-with-timeout"
 
 type DeckApiResponse = {
   success?: number
@@ -35,7 +37,8 @@ export const fetchSteamDeckCompatibility = async (
   url.searchParams.set("cc", "US")
 
   try {
-    const res = await fetch(url.toString(), { next: { revalidate: 0 } })
+    await waitForSteamStoreRequestSlot()
+    const res = await fetchWithTimeout(url.toString(), buildSteamStoreFetchInit(0))
     if (!res.ok) return "unknown"
     const json = (await res.json()) as DeckApiResponse
     if (json.success !== 1 || !json.results) return "unknown"

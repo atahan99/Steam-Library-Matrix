@@ -1,6 +1,13 @@
 import { eq, inArray } from "drizzle-orm"
 import { getDb } from "@/lib/db/client"
-import type { SteamGameJoinRow } from "@/lib/db/map-dashboard-game"
+import {
+  type AnticheatJoin,
+  type HowlongtobeatJoin,
+  type ProtondbJoin,
+  type SteamAppDetailsJoin,
+  type SteamGameJoinRow,
+  toIsoString,
+} from "@/lib/db/steam-game-join-types"
 import { parseSteamPlatforms } from "@/lib/steam/parse-steam-platforms"
 import {
   anticheatEntries,
@@ -10,72 +17,87 @@ import {
   steamGames,
 } from "@/lib/db/schema"
 
-const mapAppDetails = (row: typeof steamAppDetails.$inferSelect | null) => {
+const mapAppDetails = (
+  row: typeof steamAppDetails.$inferSelect | null
+): SteamAppDetailsJoin | null => {
   if (!row) return null
   return {
     type: row.type ?? undefined,
     platforms: parseSteamPlatforms(row.platforms),
-    categories: row.categories as unknown[],
-    steam_deck_compatibility: row.steamDeckCompatibility,
-    genres: row.genres as unknown[],
-    release_date: row.releaseDate,
-    header_image: row.headerImage ?? undefined,
-    last_checked_at: row.lastCheckedAt?.toISOString(),
+    categories: row.categories as unknown[] | undefined,
+    steamDeckCompatibility: row.steamDeckCompatibility,
+    genres: row.genres as unknown[] | undefined,
+    headerImage: row.headerImage ?? undefined,
+    releaseDate: row.releaseDate,
+    lastCheckedAt: toIsoString(row.lastCheckedAt),
   }
 }
 
-const mapHltb = (row: typeof howlongtobeatEntries.$inferSelect | null) => {
+const mapHltb = (
+  row: typeof howlongtobeatEntries.$inferSelect | null
+): HowlongtobeatJoin | null => {
   if (!row) return null
   return {
-    hltb_id: row.hltbId,
-    matched_name: row.matchedName,
-    match_confidence: row.matchConfidence,
-    main_story_minutes: row.mainStoryMinutes,
-    main_extra_minutes: row.mainExtraMinutes,
-    completionist_minutes: row.completionistMinutes,
-    all_styles_minutes: row.allStylesMinutes,
-    image_url: row.imageUrl,
+    hltbId: row.hltbId,
+    matchedName: row.matchedName,
+    matchConfidence: row.matchConfidence,
+    mainStoryMinutes: row.mainStoryMinutes,
+    mainExtraMinutes: row.mainExtraMinutes,
+    completionistMinutes: row.completionistMinutes,
+    allStylesMinutes: row.allStylesMinutes,
+    imageUrl: row.imageUrl,
     platforms: row.platforms,
-    review_score: row.reviewScore,
-    source_url: row.sourceUrl,
-    last_checked_at: row.lastCheckedAt?.toISOString(),
+    reviewScore: row.reviewScore,
+    sourceUrl: row.sourceUrl,
+    lastCheckedAt: toIsoString(row.lastCheckedAt),
   }
 }
 
-const mapAnticheat = (row: typeof anticheatEntries.$inferSelect | null) => {
+const mapAnticheat = (
+  row: typeof anticheatEntries.$inferSelect | null
+): AnticheatJoin | null => {
   if (!row) return null
   return {
-    matched_name: row.matchedName,
-    anticheat_names: row.anticheatNames,
+    matchedName: row.matchedName,
+    anticheatNames: row.anticheatNames,
     status: row.status,
-    kernel_level: row.kernelLevel,
+    kernelLevel: row.kernelLevel,
     notes: row.notes,
-    awacy_slug: row.awacySlug,
-    native_linux: row.nativeLinux,
-    levvvel_matched_name: row.levvvelMatchedName,
-    levvvel_anticheat_names: row.levvvelAnticheatNames,
-    denuvo_anti_tamper: row.denuvoAntiTamper,
-    denuvo_anti_cheat: row.denuvoAntiCheat,
-    denuvo_confidence: row.denuvoConfidence,
-    denuvo_source: row.denuvoSource,
-    denuvo_evidence: row.denuvoEvidence,
-    denuvo_checked_at: row.denuvoCheckedAt?.toISOString(),
-    source_url: row.sourceUrl,
-    last_checked_at: row.lastCheckedAt?.toISOString(),
+    awacySlug: row.awacySlug,
+    nativeLinux: row.nativeLinux,
+    levvvelMatchedName: row.levvvelMatchedName,
+    levvvelAnticheatNames: row.levvvelAnticheatNames,
+    levvvelDeveloper: row.levvvelDeveloper,
+    levvvelPublisher: row.levvvelPublisher,
+    awacyDateChanged: toIsoString(row.awacyDateChanged),
+    matchConfidence: row.matchConfidence,
+    levvvelSourceUrl: row.levvvelSourceUrl,
+    denuvoAntiTamper: row.denuvoAntiTamper,
+    denuvoAntiCheat: row.denuvoAntiCheat,
+    denuvoConfidence: row.denuvoConfidence,
+    denuvoSource: row.denuvoSource,
+    denuvoEvidence: row.denuvoEvidence,
+    denuvoCheckedAt: toIsoString(row.denuvoCheckedAt),
+    sourceUrl: row.sourceUrl,
+    lastCheckedAt: toIsoString(row.lastCheckedAt),
   }
 }
 
-const mapProton = (row: typeof protondbEntries.$inferSelect | null) => {
+const mapProton = (
+  row: typeof protondbEntries.$inferSelect | null
+): ProtondbJoin | null => {
   if (!row) return null
   return {
     tier: row.tier,
     confidence: row.confidence,
-    total_reports: row.totalReports,
-    latest_reported_at: row.latestReportedAt?.toISOString(),
-    source_url: row.sourceUrl,
-    last_checked_at: row.lastCheckedAt?.toISOString(),
+    totalReports: row.totalReports,
+    latestReportedAt: toIsoString(row.latestReportedAt),
+    sourceUrl: row.sourceUrl,
+    lastCheckedAt: toIsoString(row.lastCheckedAt),
   }
 }
+
+export type { SteamGameJoinRow } from "@/lib/db/steam-game-join-types"
 
 export const loadSteamGameJoinRowsByAppids = async (
   appids: number[]
@@ -111,13 +133,13 @@ export const loadSteamGameJoinRowsByAppids = async (
       result.set(g.appid, {
         appid: g.appid,
         name: g.name,
-        icon_url: g.iconUrl ?? undefined,
-        logo_url: g.logoUrl ?? undefined,
-        store_url: g.storeUrl ?? undefined,
-        steam_app_details: mapAppDetails(row.details),
-        howlongtobeat_entries: mapHltb(row.hltb),
-        anticheat_entries: mapAnticheat(row.anticheat),
-        protondb_entries: mapProton(row.proton),
+        iconUrl: g.iconUrl ?? undefined,
+        logoUrl: g.logoUrl ?? undefined,
+        storeUrl: g.storeUrl ?? undefined,
+        steamAppDetails: mapAppDetails(row.details),
+        howlongtobeatEntry: mapHltb(row.hltb),
+        anticheatEntry: mapAnticheat(row.anticheat),
+        protondbEntry: mapProton(row.proton),
       })
     }
   }

@@ -31,6 +31,7 @@ import {
   LEVVVEL_TABLE_ID,
 } from "@/lib/anticheat/anticheatTypes"
 import { normalizeGameName } from "@/lib/utils/normalize-game-name"
+import { fetchWithTimeout } from "@/lib/utils/fetch-with-timeout"
 
 export { clearAntiCheatCache } from "@/lib/anticheat/anticheatCache"
 export {
@@ -129,7 +130,7 @@ export const fetchAwacyGamesRaw = async (): Promise<{
   if (cached?.length) return { entries: cached }
 
   try {
-    const res = await fetch(AWACY_GAMES_JSON_URL, {
+    const res = await fetchWithTimeout(AWACY_GAMES_JSON_URL, {
       headers: { Accept: "application/json" },
       next: { revalidate: 43200 },
     })
@@ -205,7 +206,7 @@ const fetchLevvvelAjaxPage = async (
   length: number
 ): Promise<{ rows: LevvvelNormalizedRow[]; total?: number }> => {
   const url = `https://levvvel.com/wp-admin/admin-ajax.php?action=get_wdtable&table_id=${LEVVVEL_TABLE_ID}`
-  const res = await fetch(url, {
+  const res = await fetchWithTimeout(url, {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
@@ -292,7 +293,7 @@ const buildLevvvelIncompleteError = (
 }
 
 const fetchLevvvelKernelGamesOnce = async (): Promise<LevvvelDataset> => {
-  const res = await fetch(LEVVVEL_KERNEL_URL, {
+  const res = await fetchWithTimeout(LEVVVEL_KERNEL_URL, {
     headers: {
       "User-Agent": FETCH_USER_AGENT,
       Accept: "text/html",

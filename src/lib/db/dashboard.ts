@@ -8,15 +8,16 @@ import {
 } from "@/lib/db/profile-achievements-safe"
 import { loadSteamGameJoinRowsByAppids } from "@/lib/db/load-steam-game-join-rows"
 import {
+  mapProfileAchievementToJoinInput,
+  type SteamGameJoinRow,
+} from "@/lib/db/steam-game-join-types"
+import {
   dedupeCatalogErrorMessage,
   parseAnticheatCatalogErrors,
   parseAnticheatLinkErrors,
 } from "@/lib/anticheat/refresh-message"
 import { sanitizeWishlistSyncError } from "@/lib/steam/sync-wishlist"
-import {
-  mapSteamGameToDashboard,
-  type SteamGameJoinRow,
-} from "@/lib/db/map-dashboard-game"
+import { mapSteamGameToDashboard } from "@/lib/db/map-dashboard-game"
 import {
   profileMetadataIsMissing,
   syncProfileMetadata,
@@ -28,27 +29,6 @@ import {
   steamProfiles,
 } from "@/lib/db/schema"
 import type { DashboardGame, DashboardPayload } from "@/types/dashboard"
-
-const pickOne = <T,>(value: T | T[] | null | undefined): T | null => {
-  if (!value) return null
-  return Array.isArray(value) ? value[0] ?? null : value
-}
-
-const mapJoinedRow = (
-  rawGame: SteamGameJoinRow | SteamGameJoinRow[] | null,
-  playtime: {
-    playtimeForeverMinutes: number
-    playtime2WeeksMinutes: number
-    lastSyncedAt?: string
-  },
-  achievements?: ProfileGameAchievementRow | ProfileGameAchievementRow[] | null
-): DashboardGame | null => {
-  const gameTyped = pickOne(rawGame)
-  if (!gameTyped) return null
-  return mapSteamGameToDashboard(gameTyped, playtime, {
-    achievements: pickOne(achievements),
-  })
-}
 
 export const fetchDashboardPayload = async (
   steamid: string
@@ -80,8 +60,11 @@ export const fetchDashboardPayload = async (
       steamLevel = synced.steamLevel ?? steamLevel
       accountCreatedAt = synced.accountCreatedAt ?? accountCreatedAt
       countryCode = synced.countryCode ?? countryCode
-    } catch {
-      // Steam API unavailable — dashboard still loads without metadata chips
+    } catch (error) {
+      console.warn(
+        `[dashboard] Steam profile metadata sync failed for ${profile.steamid}:`,
+        error
+      )
     }
   }
 
@@ -92,7 +75,6 @@ export const fetchDashboardPayload = async (
 
   const libraryAppids = libraryLinks.map((r) => r.appid)
 
-
   let wishlistLinks: { appid: number; lastSyncedAt: Date | null }[] = []
   try {
     wishlistLinks = await db
@@ -102,7 +84,8 @@ export const fetchDashboardPayload = async (
       })
       .from(profileWishlist)
       .where(eq(profileWishlist.steamid, steamid))
-  } catch {
+  } catch (error) {
+    console.warn(`[dashboard] Failed to load wishlist for ${steamid}:`, error)
     wishlistLinks = []
   }
 
@@ -111,17 +94,17 @@ export const fetchDashboardPayload = async (
   const gamesByAppid = await loadSteamGameJoinRowsByAppids(joinAppids)
 
   const libraryRows = libraryLinks.map((link) => ({
-    playtime_forever_minutes: link.playtimeForeverMinutes,
-    playtime_2weeks_minutes: link.playtime2weeksMinutes,
-    last_synced_at: link.lastSyncedAt?.toISOString(),
-    steam_games: gamesByAppid.get(link.appid) ?? null,
+    playtimeForeverMinutes: link.playtimeForeverMinutes ?? 0,
+    playtime2WeeksMinutes: link.playtime2weeksMinutes ?? 0,
+    lastSyncedAt: link.lastSyncedAt?.toISOString(),
+    game: gamesByAppid.get(link.appid) ?? null,
   }))
 
   const achievementByAppid = await loadProfileAchievementsByAppid(steamid)
 
   const wishlistRows = wishlistLinks.map((link) => ({
-    last_synced_at: link.lastSyncedAt?.toISOString(),
-    steam_games: gamesByAppid.get(link.appid) ?? null,
+    lastSyncedAt: link.lastSyncedAt?.toISOString(),
+    game: gamesByAppid.get(link.appid) ?? null,
   }))
 
   const playtimeByAppid = new Map<
@@ -130,62 +113,60 @@ export const fetchDashboardPayload = async (
   >()
 
   for (const row of libraryRows) {
-    const game = pickOne(
-      row.steam_games as SteamGameJoinRow | SteamGameJoinRow[] | null
-    )
-    if (!game) continue
-    playtimeByAppid.set(game.appid, {
-      playtimeForeverMinutes: row.playtime_forever_minutes ?? 0,
-      playtime2WeeksMinutes: row.playtime_2weeks_minutes ?? 0,
-      lastSyncedAt: row.last_synced_at ?? undefined,
+    if (!row.game) continue
+    playtimeByAppid.set(row.game.appid, {
+      playtimeForeverMinutes: row.playtimeForeverMinutes,
+      playtime2WeeksMinutes: row.playtime2WeeksMinutes,
+      lastSyncedAt: row.lastSyncedAt,
     })
   }
 
-  const mapRow = (
-    raw: SteamGameJoinRow | SteamGameJoinRow[] | null,
+  const mapJoinedGame = (
+    game: SteamGameJoinRow | null,
     playtime: {
       playtimeForeverMinutes: number
       playtime2WeeksMinutes: number
       lastSyncedAt?: string
     },
-    achievements?: ProfileGameAchievementRow | ProfileGameAchievementRow[] | null
-  ) => mapJoinedRow(raw, playtime, achievements)
+    achievements?: ProfileGameAchievementRow | null
+  ): DashboardGame | null => {
+    if (!game) return null
+    return mapSteamGameToDashboard(game, playtime, {
+      achievements: achievements
+        ? mapProfileAchievementToJoinInput(achievements)
+        : undefined,
+    })
+  }
 
   const games = libraryRows
-    .map((row) => {
-      const game = pickOne(
-        row.steam_games as SteamGameJoinRow | SteamGameJoinRow[] | null
-      )
-      return mapRow(
-        row.steam_games as SteamGameJoinRow | SteamGameJoinRow[] | null,
+    .map((row) =>
+      mapJoinedGame(
+        row.game,
         {
-          playtimeForeverMinutes: row.playtime_forever_minutes ?? 0,
-          playtime2WeeksMinutes: row.playtime_2weeks_minutes ?? 0,
-          lastSyncedAt: row.last_synced_at ?? undefined,
+          playtimeForeverMinutes: row.playtimeForeverMinutes,
+          playtime2WeeksMinutes: row.playtime2WeeksMinutes,
+          lastSyncedAt: row.lastSyncedAt,
         },
-        game ? achievementByAppid.get(game.appid) ?? null : null
+        row.game ? achievementByAppid.get(row.game.appid) ?? null : null
       )
-    })
-    .filter((g): g is DashboardGame => g !== null)
+    )
+    .filter((game): game is DashboardGame => game !== null)
 
   const wishlistGames = wishlistRows
     .map((row) => {
-      const game = pickOne(
-        row.steam_games as SteamGameJoinRow | SteamGameJoinRow[] | null
-      )
-      if (!game) return null
-      const owned = playtimeByAppid.get(game.appid)
-      return mapRow(
-        row.steam_games as SteamGameJoinRow | SteamGameJoinRow[] | null,
+      if (!row.game) return null
+      const owned = playtimeByAppid.get(row.game.appid)
+      return mapJoinedGame(
+        row.game,
         {
           playtimeForeverMinutes: owned?.playtimeForeverMinutes ?? 0,
           playtime2WeeksMinutes: owned?.playtime2WeeksMinutes ?? 0,
-          lastSyncedAt: owned?.lastSyncedAt ?? row.last_synced_at ?? undefined,
+          lastSyncedAt: owned?.lastSyncedAt ?? row.lastSyncedAt,
         },
         undefined
       )
     })
-    .filter((g): g is DashboardGame => g !== null)
+    .filter((game): game is DashboardGame => game !== null)
 
   games.sort((a, b) => a.name.localeCompare(b.name))
   wishlistGames.sort((a, b) => a.name.localeCompare(b.name))

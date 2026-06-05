@@ -1,4 +1,5 @@
 import { DENUVO_CURATOR_ID } from "@/lib/steam/denuvo-curator-constants"
+import { fetchWithTimeout } from "@/lib/utils/fetch-with-timeout"
 import {
   parseSteamStoreAppidsFromHtml,
   parseSteamStoreTotalCountFromHtml,
@@ -39,7 +40,7 @@ const fetchCuratorPage = async (
   })
 
   try {
-    const res = await fetch(curatorRecommendationsUrl(clanId), {
+    const res = await fetchWithTimeout(curatorRecommendationsUrl(clanId), {
       method: "POST",
       headers: {
         "User-Agent": STEAM_STORE_USER_AGENT,
@@ -151,7 +152,7 @@ export const fetchDenuvoCuratorTotalFromLandingPage = async (
   clanId = DENUVO_CURATOR_ID
 ): Promise<number | undefined> => {
   try {
-    const res = await fetch(
+    const res = await fetchWithTimeout(
       `https://store.steampowered.com/curator/${clanId}-Denuvo-Watch/`,
       {
         headers: {

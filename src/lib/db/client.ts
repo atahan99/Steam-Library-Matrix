@@ -5,8 +5,15 @@ import { drizzle, type BetterSQLite3Database } from "drizzle-orm/better-sqlite3"
 import { getRuntimeEnv, prepareServerEnv } from "@/lib/env/runtime-env"
 import { schema, type AppDatabase } from "@/lib/db/schema"
 
-let sqliteClient: Database.Database | null = null
-let dbInstance: BetterSQLite3Database<AppDatabase> | null = null
+const SQLITE_GLOBAL_KEY = "__slm_sqlite_client__"
+const DRIZZLE_GLOBAL_KEY = "__slm_drizzle_db__"
+
+type SqliteGlobalState = typeof globalThis & {
+  [SQLITE_GLOBAL_KEY]?: Database.Database
+  [DRIZZLE_GLOBAL_KEY]?: BetterSQLite3Database<AppDatabase>
+}
+
+const getGlobalState = (): SqliteGlobalState => globalThis as SqliteGlobalState
 
 const getDatabaseUrl = (): string | undefined => getRuntimeEnv("DATABASE_URL")
 
@@ -49,28 +56,33 @@ export const getRawSqlite = (): Database.Database => {
     )
   }
 
-  if (!sqliteClient) {
+  const state = getGlobalState()
+  if (!state[SQLITE_GLOBAL_KEY]) {
     const filePath = resolveSqliteFilePath(url)
     mkdirSync(path.dirname(filePath), { recursive: true })
-    sqliteClient = new Database(filePath)
+    const sqliteClient = new Database(filePath)
     sqliteClient.pragma("journal_mode = WAL")
     sqliteClient.pragma("foreign_keys = ON")
+    sqliteClient.pragma("busy_timeout = 5000")
+    state[SQLITE_GLOBAL_KEY] = sqliteClient
   }
 
-  return sqliteClient
+  return state[SQLITE_GLOBAL_KEY]
 }
 
 export const getDb = (): BetterSQLite3Database<AppDatabase> => {
-  if (!dbInstance) {
-    dbInstance = drizzle(getRawSqlite(), { schema })
+  const state = getGlobalState()
+  if (!state[DRIZZLE_GLOBAL_KEY]) {
+    state[DRIZZLE_GLOBAL_KEY] = drizzle(getRawSqlite(), { schema })
   }
-  return dbInstance
+  return state[DRIZZLE_GLOBAL_KEY]
 }
 
 export const closeDb = async () => {
-  if (sqliteClient) {
-    sqliteClient.close()
-    sqliteClient = null
-    dbInstance = null
+  const state = getGlobalState()
+  if (state[SQLITE_GLOBAL_KEY]) {
+    state[SQLITE_GLOBAL_KEY].close()
+    delete state[SQLITE_GLOBAL_KEY]
+    delete state[DRIZZLE_GLOBAL_KEY]
   }
 }

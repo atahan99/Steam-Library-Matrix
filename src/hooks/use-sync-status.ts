@@ -30,6 +30,9 @@ const POLL_IDLE_MS = 30000
 export const useSyncStatus = (steamid: string) => {
   const [state, setState] = useState<SyncStatusState>({
     enrichTotal: 0,
+    libraryTotal: 0,
+    cacheReadyCount: 0,
+    backgroundRemainingCount: 0,
     percent: 0,
     processedUnits: 0,
     totalUnits: 0,

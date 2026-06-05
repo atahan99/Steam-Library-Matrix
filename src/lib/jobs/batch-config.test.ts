@@ -1,17 +1,22 @@
 import { afterEach, describe, expect, it, vi } from "vitest"
+
+vi.mock("@/lib/env/runtime-env", () => ({
+  getRuntimeEnv: (name: string) => process.env[name],
+}))
+
 import {
-  APP_DETAILS_BATCH,
-  APP_DETAILS_CONCURRENCY,
-  ACHIEVEMENTS_BATCH,
-  ANTICHEAT_BATCH,
+  getAchievementsBatch,
+  getAnticheatBatch,
+  getAppDetailsBatch,
+  getAppDetailsConcurrency,
   getEmbedWorkerIntervalMs,
+  getHltbBatch,
+  getHltbFullSyncDelayMs,
   getHltbStaggerMs,
+  getProtonDbBatch,
   getWorkerMaxJobsPerTick,
   getWorkerMaxParallelTicks,
   getWorkerStepBudgetMs,
-  HLTB_BATCH,
-  HLTB_FULL_SYNC_DELAY_MS,
-  PROTONDB_BATCH,
 } from "@/lib/jobs/batch-config"
 
 describe("batch-config", () => {
@@ -40,8 +45,8 @@ describe("batch-config", () => {
     expect(getWorkerStepBudgetMs()).toBe(50_000)
   })
 
-  it("HLTB_FULL_SYNC_DELAY_MS defaults to 0", () => {
-    expect(HLTB_FULL_SYNC_DELAY_MS).toBe(0)
+  it("getHltbFullSyncDelayMs defaults to 0", () => {
+    expect(getHltbFullSyncDelayMs()).toBe(0)
   })
 
   it("getHltbStaggerMs defaults to 300", () => {
@@ -49,23 +54,20 @@ describe("batch-config", () => {
   })
 
   it("uses default batch sizes when env is unset", () => {
-    expect(APP_DETAILS_BATCH).toBe(30)
-    expect(APP_DETAILS_CONCURRENCY).toBe(6)
-    expect(PROTONDB_BATCH).toBe(50)
-    expect(HLTB_BATCH).toBe(16)
-    expect(ACHIEVEMENTS_BATCH).toBe(60)
-    expect(ANTICHEAT_BATCH).toBe(50)
+    expect(getAppDetailsBatch()).toBe(30)
+    expect(getAppDetailsConcurrency()).toBe(6)
+    expect(getProtonDbBatch()).toBe(50)
+    expect(getHltbBatch()).toBe(16)
+    expect(getAchievementsBatch()).toBe(60)
+    expect(getAnticheatBatch()).toBe(50)
   })
 
-  it("reads SLM_* batch env vars at module load", async () => {
+  it("reads SLM_* batch env vars at call time", () => {
     vi.stubEnv("SLM_APP_DETAILS_BATCH", "12")
     vi.stubEnv("SLM_PROTONDB_BATCH", "40")
     vi.stubEnv("SLM_HLTB_BATCH", "9")
-    vi.resetModules()
-
-    const config = await import("@/lib/jobs/batch-config")
-    expect(config.APP_DETAILS_BATCH).toBe(12)
-    expect(config.PROTONDB_BATCH).toBe(40)
-    expect(config.HLTB_BATCH).toBe(9)
+    expect(getAppDetailsBatch()).toBe(12)
+    expect(getProtonDbBatch()).toBe(40)
+    expect(getHltbBatch()).toBe(9)
   })
 })
