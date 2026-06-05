@@ -55,7 +55,7 @@ export const DashboardHeader = () => {
     : "Never"
 
   return (
-    <header className="border-neon-bottom sticky top-0 z-40 flex h-(--header-height) shrink-0 items-center border-b bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+    <header className="border-neon-bottom relative sticky top-0 z-40 flex h-(--header-height) shrink-0 items-center border-b bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/80">
       <div className="flex min-w-0 flex-1 items-center gap-3">
         <SidebarTrigger />
         <Link
@@ -77,10 +77,10 @@ export const DashboardHeader = () => {
           </p>
         </div>
       </div>
-      <p className="text-brand-neon pointer-events-none absolute left-1/2 -translate-x-1/2 text-sm font-bold md:text-base">
+      <p className="text-brand-neon pointer-events-none absolute left-1/2 hidden -translate-x-1/2 text-sm font-bold xl:block xl:text-base">
         {APP_NAME}
       </p>
-      <div className="flex flex-1 items-center justify-end gap-2">
+      <div className="flex shrink-0 flex-1 items-center justify-end gap-1 sm:gap-2">
         <Button
           variant="outline"
           size="sm"
@@ -116,7 +116,24 @@ export const DashboardHeader = () => {
         />
         <Button
           variant="ghost"
+          size="icon-sm"
+          className="sm:hidden"
+          nativeButton={false}
+          render={
+            <Link
+              href={profile.profileUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Open Steam profile"
+            />
+          }
+        >
+          <SteamIcon className="size-3.5" />
+        </Button>
+        <Button
+          variant="ghost"
           size="sm"
+          className="hidden sm:inline-flex"
           nativeButton={false}
           render={
             <Link

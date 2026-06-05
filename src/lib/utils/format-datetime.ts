@@ -7,9 +7,10 @@ const DISPLAY_OPTIONS: Intl.DateTimeFormatOptions = {
   hour: "numeric",
   minute: "2-digit",
   hour12: true,
+  timeZone: "UTC",
 }
 
-/** Stable server/client datetime text (avoids locale hydration mismatches). */
+/** Stable server/client datetime text (fixed locale + UTC timezone). */
 export const formatDateTimeDisplay = (iso: string | Date): string => {
   const date = typeof iso === "string" ? new Date(iso) : iso
   if (Number.isNaN(date.getTime())) return "—"
