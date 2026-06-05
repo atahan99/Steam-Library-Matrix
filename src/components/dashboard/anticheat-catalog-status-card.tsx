@@ -4,11 +4,7 @@ import { useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import {
-  useDashboard,
-  useServerRefreshActions,
-} from "@/components/dashboard/dashboard-context"
-import { refreshAnticheatCatalog } from "@/app/actions/data-refresh"
+import { useDashboard } from "@/components/dashboard/dashboard-context"
 import type { DashboardGame } from "@/types/dashboard"
 import {
   AWACY_SITE,
@@ -25,9 +21,36 @@ const uniqueEnrichGames = (games: DashboardGame[], wishlistGames: DashboardGame[
   return [...byAppid.values()]
 }
 
+const pollJobUntilDone = async (
+  jobId: string,
+  onProgress: (message: string) => void
+) => {
+  for (let i = 0; i < 120; i += 1) {
+    const res = await fetch(`/api/jobs/${jobId}`)
+    const job = (await res.json()) as {
+      status?: string
+      progress?: { message?: string }
+      error?: string
+    }
+    if (!res.ok) {
+      throw new Error(job.error ?? "Job status failed")
+    }
+    if (job.progress?.message) {
+      onProgress(job.progress.message)
+    }
+    if (job.status === "completed") {
+      return job
+    }
+    if (job.status === "failed" || job.status === "cancelled") {
+      throw new Error(job.error ?? "Job failed")
+    }
+    await new Promise((r) => setTimeout(r, 2000))
+  }
+  throw new Error("Job timed out waiting for completion")
+}
+
 export const AnticheatCatalogStatusCard = () => {
   const { profile, games, wishlistGames } = useDashboard()
-  const serverRefresh = useServerRefreshActions()
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState<string | null>(null)
@@ -66,39 +89,22 @@ export const AnticheatCatalogStatusCard = () => {
     setLoading(true)
     setMessage(null)
     try {
-      const json = serverRefresh
-        ? await refreshAnticheatCatalog(profile.steamid, { force: true })
-        : await (async () => {
-            const res = await fetch("/api/anticheat/catalog-sync", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ steamid: profile.steamid, force: true }),
-            })
-            const data = await res.json()
-            if (!res.ok) throw new Error(data.error ?? "Catalog sync failed")
-            return data
-          })()
-      if (json.skipped) {
-        setMessage(
-          `Catalogs up to date (AWACY ${json.awacyCount}, Levvvel ${json.levvvelCount}, Denuvo ${json.denuvoAntiTamperCount})`
-        )
-      } else if (json.awacyError) {
-        setMessage(`AWACY: ${json.awacyError}`)
-      } else if (json.levvvelError || json.denuvoAntiTamperError) {
-        const parts = [
-          `AWACY ${json.awacyCount}`,
-          `Levvvel ${json.levvvelCount}`,
-          `Denuvo ${json.denuvoAntiTamperCount}`,
-        ]
-        const errors = [json.levvvelError, json.denuvoAntiTamperError]
-          .filter(Boolean)
-          .join(" · ")
-        setMessage(`${parts.join(", ")} · ${errors}`)
-      } else {
-        setMessage(
-          `Synced AWACY ${json.awacyCount}, Levvvel ${json.levvvelCount}, Denuvo Anti-Tamper ${json.denuvoAntiTamperCount}`
-        )
+      const res = await fetch("/api/jobs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          steamid: profile.steamid,
+          kind: "anticheat_catalog",
+          force: true,
+        }),
+      })
+      const enqueued = (await res.json()) as { id?: string; error?: string }
+      if (!res.ok || !enqueued.id) {
+        throw new Error(enqueued.error ?? "Failed to enqueue job")
       }
+      setMessage("Job queued…")
+      await pollJobUntilDone(enqueued.id, setMessage)
+      setMessage("Catalog sync completed")
       router.refresh()
     } catch (err) {
       setMessage(err instanceof Error ? err.message : "Catalog sync failed")

@@ -4,7 +4,6 @@ import Link from "next/link"
 import { DashboardShell } from "@/components/dashboard/dashboard-shell"
 import { fetchDashboardPayload } from "@/lib/db/dashboard"
 import { isDbConfiguredAtRuntime } from "@/lib/db/client"
-import { shouldUseServerRefreshActions } from "@/lib/api/server-refresh-mode"
 import { getErrorMessage } from "@/lib/utils/get-error-message"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
@@ -62,14 +61,8 @@ export default async function DashboardLayout({
     notFound()
   }
 
-  const useServerRefreshActions = shouldUseServerRefreshActions()
-
   return (
-    <DashboardShell
-      steamid={steamid}
-      data={data}
-      useServerRefreshActions={useServerRefreshActions}
-    >
+    <DashboardShell steamid={steamid} data={data}>
       {children}
     </DashboardShell>
   )

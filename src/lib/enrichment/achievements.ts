@@ -4,9 +4,8 @@ import {
   isMissingAchievementsSchema,
 } from "@/lib/db/profile-achievements-safe"
 import { getDb } from "@/lib/db/client"
-import { profileGameAchievements, profileGames } from "@/lib/db/schema"
+import { profileGameAchievements } from "@/lib/db/schema"
 import { ACHIEVEMENTS_TTL_HOURS } from "@/lib/enrichment/resolve-enrichment-appids"
-import { finishRefreshLog, startRefreshLog } from "@/lib/db/refresh-log"
 import { getPlayerAchievementStats } from "@/lib/steam/steam-api"
 import { isCacheFresh } from "@/lib/utils/cache"
 
@@ -110,55 +109,3 @@ export const enrichSingleAchievement = async (
   }
 }
 
-const getLibraryAppids = async (steamid: string): Promise<number[]> => {
-  const db = getDb()
-  const data = await db
-    .select({ appid: profileGames.appid })
-    .from(profileGames)
-    .where(eq(profileGames.steamid, steamid))
-
-  return data.map((row) => row.appid)
-}
-
-export const enrichAchievements = async (
-  steamid: string,
-  force = false
-): Promise<{ checked: number; updated: number; failed: number }> => {
-  const logId = await startRefreshLog(steamid, "steam_achievements")
-
-  let appids: number[]
-  try {
-    appids = await getLibraryAppids(steamid)
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to load appids"
-    await finishRefreshLog(logId, "failed", message)
-    throw error
-  }
-
-  let checked = 0
-  let updated = 0
-  let failed = 0
-
-  for (const appid of appids) {
-    try {
-      const result = await enrichSingleAchievement(steamid, appid, force)
-      checked += result.checked
-      updated += result.updated
-      failed += result.failed
-    } catch (error) {
-      if (error instanceof Error && error.message === ACHIEVEMENTS_MIGRATION_HINT) {
-        await finishRefreshLog(logId, "failed", ACHIEVEMENTS_MIGRATION_HINT)
-        throw error
-      }
-      failed += 1
-    }
-  }
-
-  await finishRefreshLog(
-    logId,
-    failed > 0 ? "partial" : "success",
-    `checked=${checked} updated=${updated} failed=${failed}`
-  )
-
-  return { checked, updated, failed }
-}

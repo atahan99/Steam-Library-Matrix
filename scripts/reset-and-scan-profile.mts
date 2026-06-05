@@ -3,7 +3,7 @@ import { getDb } from "../src/lib/db/client.ts"
 import { importSteamLibrary } from "../src/lib/steam/import-library.ts"
 import { syncSteamWishlist } from "../src/lib/steam/sync-wishlist.ts"
 import { getProfileAppids } from "../src/lib/db/profile-appids.ts"
-import { enrichHowLongToBeat } from "../src/lib/enrichment/howlongtobeat.ts"
+import { runEnrichmentToCompletion } from "../src/lib/jobs/run-enrichment-to-completion.ts"
 import { howlongtobeatEntries } from "../src/lib/db/schema/index.ts"
 const input = process.argv[2]
 const skipHltb = process.argv.includes("--skip-hltb")
@@ -58,13 +58,13 @@ const main = async () => {
   }
 
   console.log("[5/5] Running HLTB enrichment (force)...")
-  const hltb = await enrichHowLongToBeat(steamid, true)
+  const hltb = await runEnrichmentToCompletion(steamid, "hltb", { force: true })
   console.log("Done:", {
     steamid,
     redirectUrl: imported.redirectUrl,
     gameCount: imported.gameCount,
     wishlist: wish,
-    hltb,
+    hltb: hltb.progress,
   })
 }
 

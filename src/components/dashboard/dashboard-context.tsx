@@ -33,19 +33,16 @@ type GameSearchContextValue = {
 
 type DashboardProviderProps = {
   value: DashboardPayload
-  useServerRefreshActions?: boolean
   children: React.ReactNode
 }
 
 const DashboardContext = createContext<DashboardPayload | null>(null)
-const RefreshModeContext = createContext(false)
 const CollectionContext = createContext<CollectionContextValue | null>(null)
 const GameDetailContext = createContext<GameDetailContextValue | null>(null)
 const GameSearchContext = createContext<GameSearchContextValue | null>(null)
 
 export const DashboardProvider = ({
   value,
-  useServerRefreshActions = false,
   children,
 }: DashboardProviderProps) => {
   const [payload, setPayload] = useState(value)
@@ -114,21 +111,16 @@ export const DashboardProvider = ({
 
   return (
     <DashboardContext.Provider value={dashboardValue}>
-      <RefreshModeContext.Provider value={useServerRefreshActions}>
-        <CollectionContext.Provider value={{ collection, setCollection }}>
-          <GameDetailContext.Provider value={gameDetailValue}>
-            <GameSearchContext.Provider value={gameSearchValue}>
-              {children}
-            </GameSearchContext.Provider>
-          </GameDetailContext.Provider>
-        </CollectionContext.Provider>
-      </RefreshModeContext.Provider>
+      <CollectionContext.Provider value={{ collection, setCollection }}>
+        <GameDetailContext.Provider value={gameDetailValue}>
+          <GameSearchContext.Provider value={gameSearchValue}>
+            {children}
+          </GameSearchContext.Provider>
+        </GameDetailContext.Provider>
+      </CollectionContext.Provider>
     </DashboardContext.Provider>
   )
 }
-
-export const useServerRefreshActions = (): boolean =>
-  useContext(RefreshModeContext)
 
 export type DashboardContextValue = DashboardPayload & {
   refreshDashboard: () => Promise<void>

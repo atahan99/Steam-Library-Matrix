@@ -5,13 +5,11 @@ import {
   loadAllDenuvoCatalogAppids,
 } from "@/lib/db/denuvo-catalog"
 import { eq } from "drizzle-orm"
-import { getProfileGamesForEnrichment } from "@/lib/db/profile-appids"
 import { getDb } from "@/lib/db/client"
 import { formatDbError } from "@/lib/db/catalog-table-error"
 import { anticheatEntries } from "@/lib/db/schema"
 import { ANTICHEAT_TTL_HOURS } from "@/lib/enrichment/resolve-enrichment-appids"
 import { isCacheFresh } from "@/lib/utils/cache"
-import { finishRefreshLog, startRefreshLog } from "@/lib/db/refresh-log"
 import { awacyGameUrl } from "@/lib/anticheat/anticheatClient"
 import {
   detectDenuvoAntiCheatFromNames,
@@ -24,7 +22,6 @@ import {
   isMeaningfulAntiCheatLookup,
   matchAntiCheatFromIndexes,
 } from "@/lib/anticheat/match-from-indexes"
-import { buildAnticheatRefreshMessage } from "@/lib/anticheat/refresh-message"
 import { syncAnticheatCatalogs } from "@/lib/anticheat/sync-catalogs"
 import { LEVVVEL_KERNEL_URL } from "@/lib/anticheat/anticheatTypes"
 import { checkSteamDenuvo } from "@/lib/steam/denuvo"
@@ -373,105 +370,4 @@ export const enrichSingleAnticheat = async (
     }
     return { checked: 1, updated: 0, failed: 1 }
   }
-}
-
-export const enrichAntiCheat = async (
-  steamid: string,
-  force = false
-): Promise<{
-  checked: number
-  updated: number
-  failed: number
-  skipped: number
-  schemaError?: string
-  catalogError?: string
-}> => {
-  const catalog = await ensureAnticheatCatalogsReady(steamid)
-  if (!catalog.ready) {
-    return {
-      checked: 0,
-      updated: 0,
-      failed: 0,
-      skipped: 0,
-      catalogError: catalog.catalogError,
-    }
-  }
-
-  const logId = await startRefreshLog(steamid, "anticheat")
-
-  let context: AnticheatEnrichContext
-  try {
-    context = await loadAnticheatEnrichContext()
-  } catch (error) {
-    const message =
-      error instanceof Error
-        ? error.message
-        : "Failed to load anti-cheat catalogs from database"
-    await finishRefreshLog(logId, "failed", message)
-    throw error
-  }
-
-  let rows: { appid: number; name: string }[]
-  try {
-    rows = await getProfileGamesForEnrichment(steamid)
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to load games"
-    await finishRefreshLog(logId, "failed", message)
-    throw error
-  }
-
-  let checked = 0
-  let updated = 0
-  let failed = 0
-  const skipped = 0
-  let schemaError: string | undefined
-  let storePageFetchPending = false
-
-  for (const row of rows) {
-    const result = await enrichSingleAnticheat(row, {
-      force,
-      context,
-      delayBeforeStoreFetch: false,
-      phase: "catalog",
-    })
-    checked += result.checked
-    updated += result.updated
-    failed += result.failed
-    if (result.schemaError) {
-      schemaError = result.schemaError
-      break
-    }
-  }
-
-  if (!schemaError) {
-    for (const row of rows) {
-      const result = await enrichSingleAnticheat(row, {
-        force,
-        context,
-        delayBeforeStoreFetch: storePageFetchPending,
-        phase: "denuvo",
-      })
-      checked += result.checked
-      updated += result.updated
-      failed += result.failed
-      if (result.schemaError) {
-        schemaError = result.schemaError
-        break
-      }
-      storePageFetchPending = true
-    }
-  }
-
-  await finishRefreshLog(
-    logId,
-    failed > 0 || schemaError ? "partial" : "success",
-    buildAnticheatRefreshMessage({
-      checked,
-      updated,
-      failed,
-      skipped,
-      schemaError,
-    })
-  )
-  return { checked, updated, failed, skipped, schemaError }
 }

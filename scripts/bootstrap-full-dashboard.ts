@@ -4,7 +4,7 @@
  */
 import { and, inArray, isNotNull, isNull } from "drizzle-orm"
 import { syncAnticheatCatalogs } from "@/lib/anticheat/sync-catalogs"
-import { enrichAntiCheat } from "@/lib/enrichment/anticheat"
+import { runEnrichmentToCompletion } from "@/lib/jobs/run-enrichment-to-completion"
 import { enrichSingleAppDetails } from "@/lib/enrichment/app-details-core"
 import { resolveAppidsForSource } from "@/lib/enrichment/resolve-enrichment-appids"
 import { getDb } from "@/lib/db/client"
@@ -100,12 +100,14 @@ const run = async () => {
   )
 
   console.log("4/4 Anti-cheat profile link (refresh stale only)…")
-  const ac = await enrichAntiCheat(steamid, false)
+  const ac = await runEnrichmentToCompletion(steamid, "anticheat", {
+    force: false,
+  })
   console.log(
-    `   checked=${ac.checked} updated=${ac.updated} failed=${ac.failed} skipped=${ac.skipped}`
+    `   checked=${ac.progress.checked ?? 0} updated=${ac.progress.updated ?? 0} failed=${ac.progress.failed ?? 0}`
   )
-  if (ac.schemaError) console.log(`   schema: ${ac.schemaError}`)
-  if (ac.catalogError) console.log(`   catalog: ${ac.catalogError}`)
+  if (ac.error) console.log(`   error: ${ac.error}`)
+  if (ac.progress.message) console.log(`   message: ${ac.progress.message}`)
 
   const payload = await fetchDashboardPayload(steamid)
   const games = payload?.games ?? []

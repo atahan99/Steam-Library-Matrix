@@ -2,8 +2,6 @@
  * HowLongToBeat is an unofficial enrichment source.
  * The lookup API may break without notice — failures must not block the dashboard.
  */
-import { inArray } from "drizzle-orm"
-import { getProfileGamesForEnrichment } from "@/lib/db/profile-appids"
 import { getDb } from "@/lib/db/client"
 import { howlongtobeatEntries } from "@/lib/db/schema"
 import {
@@ -18,14 +16,7 @@ import {
   pickBestHltbHit,
   resolveHltbSearchQueries,
 } from "@/lib/enrichment/hltb-match"
-import { isCacheFresh } from "@/lib/utils/cache"
-import { finishRefreshLog, startRefreshLog } from "@/lib/db/refresh-log"
-
-const TTL_HOURS = 720
-const CONCURRENCY = 4
 const DELAY_MS = 400
-
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
 
 type HltbUpsertRow = {
   appid: number
@@ -123,13 +114,6 @@ const upsertHltbNegativeCache = async (
     })
 }
 
-type EnrichResult = {
-  checked: number
-  updated: number
-  failed: number
-  skippedLowConfidence: number
-}
-
 const enrichOneGame = async (
   appid: number,
   gameName: string
@@ -221,155 +205,6 @@ const enrichOneGame = async (
       updatedAt: now,
     },
   }
-}
-
-export const enrichHowLongToBeat = async (
-  steamid: string,
-  force = false,
-  missingOnly = false
-): Promise<EnrichResult> => {
-  const logId = await startRefreshLog(steamid, "howlongtobeat")
-  const db = getDb()
-
-  let rows: { appid: number; name: string }[]
-  try {
-    rows = await getProfileGamesForEnrichment(steamid)
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to load games"
-    await finishRefreshLog(logId, "failed", message)
-    throw error
-  }
-
-  if (missingOnly && rows.length > 0) {
-    const appids = rows.map((row) => row.appid)
-    const existing = await db
-      .select({
-        appid: howlongtobeatEntries.appid,
-        mainStoryMinutes: howlongtobeatEntries.mainStoryMinutes,
-      })
-      .from(howlongtobeatEntries)
-      .where(inArray(howlongtobeatEntries.appid, appids))
-
-    const enriched = new Set(
-      existing
-        .filter((entry) => entry.mainStoryMinutes)
-        .map((entry) => entry.appid)
-    )
-    rows = rows.filter((row) => !enriched.has(row.appid))
-  }
-
-  const shouldForce = force
-
-  if (!shouldForce && rows.length > 0) {
-    const appids = rows.map((row) => row.appid)
-    const existingFresh = await db
-      .select({
-        appid: howlongtobeatEntries.appid,
-        lastCheckedAt: howlongtobeatEntries.lastCheckedAt,
-      })
-      .from(howlongtobeatEntries)
-      .where(inArray(howlongtobeatEntries.appid, appids))
-
-    const freshAppids = new Set(
-      existingFresh
-        .filter((entry) =>
-          isCacheFresh(entry.lastCheckedAt?.toISOString(), TTL_HOURS)
-        )
-        .map((entry) => entry.appid)
-    )
-    rows = rows.filter((row) => !freshAppids.has(row.appid))
-  }
-
-  type RowStats = {
-    checked: number
-    updated: number
-    failed: number
-    skippedLowConfidence: number
-  }
-
-  const emptyStats = (): RowStats => ({
-    checked: 0,
-    updated: 0,
-    failed: 0,
-    skippedLowConfidence: 0,
-  })
-
-  const queue = [...rows]
-
-  const processRow = async (row: { appid: number; name: string }): Promise<RowStats> => {
-    const stats = emptyStats()
-    const appid = row.appid
-    const gameName = row.name
-
-    stats.checked = 1
-
-    const result = await enrichOneGame(appid, gameName)
-
-    if (result.status === "updated") {
-      try {
-        await upsertHltbSuccessRow(result.row)
-        stats.updated = 1
-      } catch (upsertError) {
-        stats.failed = 1
-        const message =
-          upsertError instanceof Error ? upsertError.message : "upsert failed"
-        console.warn(`[hltb] upsert failed appid=${appid}`, message)
-      }
-    } else if (result.status === "skipped") {
-      stats.skippedLowConfidence = 1
-      console.warn(`[hltb] skipped appid=${appid} (${gameName}): ${result.reason}`)
-      try {
-        await upsertHltbNegativeCache(appid, `skipped: ${result.reason}`)
-      } catch (cacheError) {
-        const message =
-          cacheError instanceof Error ? cacheError.message : "negative cache upsert failed"
-        console.warn(`[hltb] negative cache failed appid=${appid}`, message)
-      }
-    } else {
-      stats.failed = 1
-      console.warn(`[hltb] failed appid=${appid} (${gameName}): ${result.reason}`)
-      try {
-        await upsertHltbNegativeCache(appid, `failed: ${result.reason}`)
-      } catch (cacheError) {
-        const message =
-          cacheError instanceof Error ? cacheError.message : "negative cache upsert failed"
-        console.warn(`[hltb] negative cache failed appid=${appid}`, message)
-      }
-    }
-
-    await sleep(DELAY_MS)
-    return stats
-  }
-
-  const mergeStats = (a: RowStats, b: RowStats): RowStats => ({
-    checked: a.checked + b.checked,
-    updated: a.updated + b.updated,
-    failed: a.failed + b.failed,
-    skippedLowConfidence: a.skippedLowConfidence + b.skippedLowConfidence,
-  })
-
-  const workers = Array.from({ length: CONCURRENCY }, async () => {
-    let workerStats = emptyStats()
-    while (queue.length > 0) {
-      const row = queue.shift()
-      if (!row) break
-      workerStats = mergeStats(workerStats, await processRow(row))
-    }
-    return workerStats
-  })
-
-  const workerResults = await Promise.all(workers)
-  const totals = workerResults.reduce(mergeStats, emptyStats())
-  const { checked, updated, failed, skippedLowConfidence } = totals
-
-  const summary = `checked=${checked} updated=${updated} failed=${failed} skippedLowConfidence=${skippedLowConfidence}`
-  await finishRefreshLog(
-    logId,
-    failed > 0 || skippedLowConfidence > 0 ? "partial" : "success",
-    summary
-  )
-
-  return { checked, updated, failed, skippedLowConfidence }
 }
 
 const sleepBetween = (ms: number) => new Promise((r) => setTimeout(r, ms))

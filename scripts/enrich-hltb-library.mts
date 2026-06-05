@@ -1,4 +1,4 @@
-import { enrichHowLongToBeat } from "../src/lib/enrichment/howlongtobeat.ts"
+import { runEnrichmentToCompletion } from "../src/lib/jobs/run-enrichment-to-completion.ts"
 
 const steamid = process.argv[2]
 if (!steamid) {
@@ -15,6 +15,9 @@ console.log(
   `[hltb] enriching library for ${steamid} (force=${force}, missingOnly=${missingOnly})`
 )
 
-const result = await enrichHowLongToBeat(steamid, force, missingOnly)
+const result = await runEnrichmentToCompletion(steamid, "hltb", {
+  force,
+  missingOnly,
+})
 
-console.log("[hltb] done:", JSON.stringify(result, null, 2))
+console.log("[hltb] done:", JSON.stringify(result.progress, null, 2))

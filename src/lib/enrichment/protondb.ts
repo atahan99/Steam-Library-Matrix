@@ -1,12 +1,10 @@
 import { eq } from "drizzle-orm"
-import { getProfileAppids } from "@/lib/db/profile-appids"
 import { getDb } from "@/lib/db/client"
 import { nextFetchInit, prepareServerEnv } from "@/lib/env/runtime-env"
 import { fetchWithTimeout } from "@/lib/utils/fetch-with-timeout"
 import { protondbEntries, steamAppDetails } from "@/lib/db/schema"
 import { PROTONDB_TTL_HOURS } from "@/lib/enrichment/resolve-enrichment-appids"
 import { isCacheFresh } from "@/lib/utils/cache"
-import { finishRefreshLog, startRefreshLog } from "@/lib/db/refresh-log"
 import { parseReleaseDate, isUnreleasedGame } from "@/lib/utils/parse-release-date"
 import type { ProtonDbTier } from "@/types/dashboard"
 
@@ -162,38 +160,4 @@ export const enrichSingleProtonDb = async (
   } catch {
     return { checked: 1, updated: 0, failed: 1, skipped: 0 }
   }
-}
-
-export const enrichProtonDb = async (
-  steamid: string,
-  force = false
-): Promise<{ checked: number; updated: number; failed: number }> => {
-  const logId = await startRefreshLog(steamid, "protondb")
-
-  let appids: number[]
-  try {
-    appids = await getProfileAppids(steamid)
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to load appids"
-    await finishRefreshLog(logId, "failed", message)
-    throw error
-  }
-
-  let checked = 0
-  let updated = 0
-  let failed = 0
-
-  for (const appid of appids) {
-    const result = await enrichSingleProtonDb(appid, force)
-    checked += result.checked
-    updated += result.updated
-    failed += result.failed
-  }
-
-  await finishRefreshLog(
-    logId,
-    failed > 0 ? "partial" : "success",
-    `checked=${checked} updated=${updated} failed=${failed}`
-  )
-  return { checked, updated, failed }
 }

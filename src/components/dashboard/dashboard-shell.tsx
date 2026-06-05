@@ -45,12 +45,10 @@ const DashboardUrlFeatures = ({ children }: { children: React.ReactNode }) => {
 export const DashboardShell = ({
   steamid,
   data,
-  useServerRefreshActions = false,
   children,
 }: {
   steamid: string
   data: DashboardPayload
-  useServerRefreshActions?: boolean
   children: React.ReactNode
 }) => {
   useEffect(() => {
@@ -58,10 +56,7 @@ export const DashboardShell = ({
   }, [steamid])
 
   return (
-    <DashboardProvider
-      value={data}
-      useServerRefreshActions={useServerRefreshActions}
-    >
+    <DashboardProvider value={data}>
       <SidebarProvider
         style={
           {

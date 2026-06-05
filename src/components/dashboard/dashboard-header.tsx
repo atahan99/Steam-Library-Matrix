@@ -8,12 +8,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { toast } from "sonner"
-import { refreshAllDashboardData } from "@/app/actions/full-sync"
 import {
   notifyRefreshError,
   useDashboard,
   useGameSearch,
-  useServerRefreshActions,
 } from "@/components/dashboard/dashboard-context"
 import { DashboardStatusButton } from "@/components/dashboard/sync-status-indicator"
 import { APP_NAME } from "@/lib/brand"
@@ -22,25 +20,19 @@ import { formatDateTimeDisplay } from "@/lib/utils/format-datetime"
 export const DashboardHeader = () => {
   const { profile, refreshDashboard } = useDashboard()
   const { setOpen: setGameSearchOpen } = useGameSearch()
-  const serverRefresh = useServerRefreshActions()
   const [refreshing, setRefreshing] = useState(false)
   const [syncPollKey, setSyncPollKey] = useState(0)
 
   const handleRefresh = async () => {
     setRefreshing(true)
     try {
-      if (serverRefresh) {
-        await refreshAllDashboardData(profile.steamid)
-      } else {
-        const res = await fetch(
-          `/api/dashboard/${profile.steamid}/full-sync`,
-          { method: "POST" }
-        )
-        if (!res.ok) {
-          const json = (await res.json().catch(() => ({}))) as { error?: string }
-          notifyRefreshError(json.error ?? "Full sync failed")
-          return
-        }
+      const res = await fetch(`/api/dashboard/${profile.steamid}/full-sync`, {
+        method: "POST",
+      })
+      if (!res.ok) {
+        const json = (await res.json().catch(() => ({}))) as { error?: string }
+        notifyRefreshError(json.error ?? "Full sync failed")
+        return
       }
 
       await refreshDashboard()

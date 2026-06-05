@@ -5,14 +5,7 @@ import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import {
-  useDashboard,
-  useServerRefreshActions,
-} from "@/components/dashboard/dashboard-context"
-import {
-  isServerActionEndpoint,
-  runDataRefreshServerAction,
-} from "@/lib/dashboard/run-data-refresh"
+import { useDashboard } from "@/components/dashboard/dashboard-context"
 import { formatDateTimeDisplay } from "@/lib/utils/format-datetime"
 import { isCacheFresh } from "@/lib/utils/cache"
 import { jobKindForEndpoint } from "@/lib/jobs/endpoint-map"
@@ -107,7 +100,6 @@ export const SourceStatusCard = ({
   showMissingOnlyAction = false,
 }: SourceStatusCardProps) => {
   const { profile } = useDashboard()
-  const serverRefresh = useServerRefreshActions()
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState<string | null>(null)
@@ -222,54 +214,27 @@ export const SourceStatusCard = ({
         return
       }
 
-      let json: Record<string, unknown>
-      if (serverRefresh && isServerActionEndpoint(endpoint)) {
-        json = await runDataRefreshServerAction(endpoint, profile.steamid, {
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          steamid: profile.steamid,
           force: options?.force ?? true,
           missingOnly: options?.missingOnly ?? false,
-        })
+        }),
+      })
+      const json = (await res.json()) as Record<string, unknown>
+      if (!res.ok) {
+        throw new Error((json.error as string) ?? "Refresh failed")
+      }
+      if (json.skipped) {
+        setMessage("Library up to date")
+      } else if (json.gameCount !== undefined) {
+        setMessage(`Synced ${String(json.gameCount)} games`)
       } else {
-        const res = await fetch(endpoint, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            steamid: profile.steamid,
-            force: options?.force ?? true,
-            missingOnly: options?.missingOnly ?? false,
-          }),
-        })
-        json = (await res.json()) as Record<string, unknown>
-        if (!res.ok) {
-          throw new Error(
-            (json.error as string) ?? (json.wishlistError as string) ?? "Refresh failed"
-          )
-        }
+        setMessage("Refresh completed")
       }
-      if (json.wishlistError) {
-        throw new Error(String(json.wishlistError))
-      }
-      if (json.wishlistCount !== undefined) {
-        setMessage(`Synced ${json.wishlistCount} wishlist games`)
-        router.refresh()
-      } else {
-        const parts = [
-          `Updated ${json.updated ?? 0} · failed ${json.failed ?? 0}`,
-        ]
-        if (json.skipped !== undefined) {
-          parts.push(`skipped ${String(json.skipped)}`)
-        }
-        if (json.skippedLowConfidence !== undefined) {
-          parts.push(`low confidence ${String(json.skippedLowConfidence)}`)
-        }
-        if (json.catalogError) {
-          parts.push(String(json.catalogError))
-        }
-        if (json.schemaError) {
-          parts.push(String(json.schemaError))
-        }
-        setMessage(parts.join(" · "))
-        router.refresh()
-      }
+      router.refresh()
     } catch (err) {
       setMessage(err instanceof Error ? err.message : "Refresh failed")
     } finally {
