@@ -28,6 +28,7 @@
     "backfill:denuvo": "tsx --env-file=.env scripts/backfill-denuvo-from-catalog.ts",
     "seed:fetch-top-appids": "tsx scripts/fetch-steam-top-sellers.ts --verbose",
     "seed:generate": "tsx --env-file=.env scripts/generate-seed-metadata.ts --verbose",
+    "seed:prefetch-appdetails": "tsx --env-file=.env scripts/prefetch-appdetails-only.ts",
     "seed:hydrate": "tsx --env-file=.env scripts/hydrate-seed-data.ts",
     "seed:verify": "tsx --env-file=.env scripts/verify-seed-data.ts",
     "seed:diagnose": "tsx --env-file=.env scripts/diagnose-seed-coverage.ts",
@@ -37,6 +38,8 @@
     "db:migrate": "tsx --env-file=.env scripts/db-migrate.ts",
     "db:verify": "tsx --env-file=.env scripts/db-verify.ts",
     "db:studio": "drizzle-kit studio",
+    "store:throttle": "tsx --env-file=.env scripts/reset-steam-store-throttle.ts",
+    "store:reset-throttle": "tsx --env-file=.env scripts/reset-steam-store-throttle.ts --reset",
     "test:wishlist": "vitest run src/lib/steam/fetch-wishlist.test.ts"
   },
   "dependencies": {

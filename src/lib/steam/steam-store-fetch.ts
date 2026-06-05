@@ -9,6 +9,8 @@ import {
 export {
   clearSteamStoreCooldown,
   getSteamStoreCooldownUntil,
+  getSteamStoreThrottleStatus,
+  resetSteamStoreThrottle,
   resetSteamStoreThrottleForTests,
   SteamStoreCooldownError,
   tripSteamStoreCooldown,
@@ -117,7 +119,9 @@ export const classifySteamStoreResponse = (
   if (res.status === 429) {
     if (attempt < maxAttempts) {
       const retryAfterMs = parseRetryAfterMs(res)
-      const fallbackMs = 500 * attempt * attempt
+      const quadraticFallback = 500 * attempt * attempt
+      const gapFallback = getSteamStoreRequestGapMs() * 5
+      const fallbackMs = Math.max(quadraticFallback, gapFallback, 60_000)
       return { kind: "retry", waitMs: retryAfterMs ?? fallbackMs }
     }
     tripSteamStoreCooldown("429", 429)

@@ -11,6 +11,18 @@ Server-side data uses public APIs, `fetch`, and HTML parsing where needed. **No 
 
 Attaching `STEAM_API_KEY` to storefront URLs does nothing. Storefront calls share a **SQLite-backed rate gate** (`steam_store_throttle`) so every process (dev server, `dev:jobs`, `seed:generate`) coordinates on one gap and one circuit breaker. Tune gap with `SLM_STEAM_STORE_GAP_MS` (default ~2000ms). A 403 or exhausted 429 trips a persistent cooldown (30m → 60m → 120m); all storefront work stops until it expires.
 
+### Switching IP (hotspot / new network)
+
+Steam bans are **per public IP**. The app cooldown is **local SQLite** — it stays active even after you change networks. Before resuming storefront scans on a fresh IP:
+
+```bash
+pnpm store:throttle          # inspect cooldown_until / consecutive_blocks
+pnpm store:reset-throttle    # clear local gate (does not touch enrichment cache)
+SLM_STEAM_STORE_GAP_MS=2500 pnpm seed:generate --verbose
+```
+
+Stop dev server / `dev:jobs` while bulk-generating so only one process hits the store. Keyed Web API calls (`GetAppList`, owned games) are unaffected by storefront cooldown.
+
 ## What we fetch
 
 | Data | How it is loaded |

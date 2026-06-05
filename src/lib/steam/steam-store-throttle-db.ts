@@ -151,8 +151,34 @@ export const getSteamStoreCooldownUntil = (
   return row.cooldown_until > Date.now() ? row.cooldown_until : null
 }
 
-/** Reset throttle row (tests only). */
-export const resetSteamStoreThrottleForTests = (
+export type SteamStoreThrottleStatus = {
+  lastRequestAt: number
+  cooldownUntil: number | null
+  consecutiveBlocks: number
+  isCooldownActive: boolean
+}
+
+export const getSteamStoreThrottleStatus = (
+  sqlite: Database.Database = getRawSqlite()
+): SteamStoreThrottleStatus => {
+  const row = readThrottleRow(sqlite)
+  const now = Date.now()
+  const isCooldownActive =
+    row.cooldown_until != null && now < row.cooldown_until
+
+  return {
+    lastRequestAt: row.last_request_at,
+    cooldownUntil: row.cooldown_until,
+    consecutiveBlocks: row.consecutive_blocks,
+    isCooldownActive,
+  }
+}
+
+/**
+ * Clear cooldown + rate state after switching network IP (e.g. phone hotspot).
+ * Does not affect enrichment cache tables — only steam_store_throttle.
+ */
+export const resetSteamStoreThrottle = (
   sqlite: Database.Database = getRawSqlite()
 ): void => {
   const now = Date.now()
@@ -167,3 +193,6 @@ export const resetSteamStoreThrottleForTests = (
     )
     .run(now, STEAM_STORE_THROTTLE_ROW_ID)
 }
+
+/** Reset throttle row (tests — same as resetSteamStoreThrottle). */
+export const resetSteamStoreThrottleForTests = resetSteamStoreThrottle
