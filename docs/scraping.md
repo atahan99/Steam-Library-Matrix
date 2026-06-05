@@ -2,6 +2,15 @@
 
 Server-side data uses public APIs, `fetch`, and HTML parsing where needed. **No browser automation** in the app.
 
+## Two Steam APIs (do not confuse them)
+
+| API | Host | Auth | Limits | Used for |
+| --- | --- | --- | --- | --- |
+| **Steam Web API** | `api.steampowered.com` | Keyed (`STEAM_API_KEY`) | ~100k calls/day per key | Owned games, profiles, achievements, wishlist, **GetAppList** name lookup |
+| **Steam storefront** | `store.steampowered.com` | **Unkeyed** (no `key=` param) | ~200 req / 5 min **per IP**; 403 = ban | `appdetails`, Deck compat AJAX, store HTML (Denuvo) |
+
+Attaching `STEAM_API_KEY` to storefront URLs does nothing. Storefront calls share a **SQLite-backed rate gate** (`steam_store_throttle`) so every process (dev server, `dev:jobs`, `seed:generate`) coordinates on one gap and one circuit breaker. Tune gap with `SLM_STEAM_STORE_GAP_MS` (default ~2000ms). A 403 or exhausted 429 trips a persistent cooldown (30m → 60m → 120m); all storefront work stops until it expires.
+
 ## What we fetch
 
 | Data | How it is loaded |
@@ -55,6 +64,14 @@ Denuvo catalog: [`fetch-denuvo-curator-catalog.ts`](../src/lib/steam/fetch-denuv
 Flow: migrate → **seed hydrate** → catalog bootstrap → background enrichment for missing/stale/low-confidence rows.
 
 Refresh top sellers: `pnpm seed:fetch-top-appids`. Regenerate (includes live ProtonDB/HLTB prefetch): `pnpm seed:generate`. Export-only: `pnpm seed:generate --skip-prefetch`. Disable: `SLM_SKIP_SEED_HYDRATION=true`.
+
+**Generate seed metadata slowly and resumably.** A full ~2200-appid prefetch takes hours at the storefront rate limit. If Steam trips a cooldown, `seed:generate` stops cleanly, leaves partial rows in SQLite, and you re-run the same command later — TTL skips already-fresh appids. Prefer running bulk generation from a dedicated machine/IP or across several days. Name resolution uses keyed **GetAppList** (not storefront) for most appids; storefront `appdetails` is only a fallback.
+
+### GetItems spike (future bulk appdetails)
+
+Investigation script: `pnpm tsx --env-file=.env scripts/spike-store-getitems.ts` → [`docs/getitems-spike-report.md`](./getitems-spike-report.md).
+
+`IStoreBrowseService/GetItems` on `api.steampowered.com` is batchable and keyed — a possible replacement for per-app storefront `appdetails` during seed generation. **Not migrated yet.** Deck compatibility and Denuvo store-page HTML have **no** keyed equivalent and must stay on the throttled storefront path.
 
 **Denuvo is confidence-based:** absence from the curator list or store DRM section does **not** mean “no Denuvo”. The UI shows detected / possible / unknown / confirmed absent (explicit removal only). High-confidence seed data is treated as fresh for ~30 days before store re-check.
 

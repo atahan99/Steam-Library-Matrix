@@ -16,10 +16,11 @@ import {
 import { PROTONDB_TTL_HOURS, HLTB_TTL_HOURS } from "@/lib/enrichment/enrichment-ttl"
 import { isCacheFresh } from "@/lib/utils/cache"
 import { isPlaceholderGameName } from "@/lib/seed/upsert-rules"
+import { getAllSteamAppNames } from "@/lib/steam/steam-api"
 import { fetchSteamAppDetails } from "@/lib/steam/steam-store"
+import { SteamStoreCooldownError } from "@/lib/steam/steam-store-fetch"
 
 const PROGRESS_EVERY = 50
-const APP_DETAILS_DELAY_MS = 250
 
 export type PrefetchStats = {
   appDetailsUpdated: number
@@ -32,9 +33,10 @@ export type PrefetchStats = {
   hltbSkipped: number
   hltbFailed: number
   namesFetched: number
+  stoppedEarly?: boolean
+  cooldownUntil?: number
+  remainingAppids?: number
 }
-
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 const runWithConcurrency = async <T>(
   items: T[],
@@ -59,6 +61,13 @@ const ensureSteamGameNames = async (
 ): Promise<number> => {
   const db = getDb()
   let fetched = 0
+  let appListNames: Map<number, string> | null = null
+
+  const loadAppListNames = async (): Promise<Map<number, string>> => {
+    if (appListNames) return appListNames
+    appListNames = await getAllSteamAppNames()
+    return appListNames
+  }
 
   for (const appid of appids) {
     const existing = await db
@@ -72,17 +81,17 @@ const ensureSteamGameNames = async (
 
     if (row && !isPlaceholderGameName(row.name)) continue
 
-    const name = hint?.trim()
-    if (name) {
+    const hintName = hint?.trim()
+    if (hintName) {
       if (row) {
         await db
           .update(steamGames)
-          .set({ name, updatedAt: new Date() })
+          .set({ name: hintName, updatedAt: new Date() })
           .where(eq(steamGames.appid, appid))
       } else {
         await db.insert(steamGames).values({
           appid,
-          name,
+          name: hintName,
           storeUrl: `https://store.steampowered.com/app/${appid}`,
           updatedAt: new Date(),
         })
@@ -91,25 +100,46 @@ const ensureSteamGameNames = async (
       continue
     }
 
-    const details = await fetchSteamAppDetails(appid).catch(() => null)
-    await sleep(APP_DETAILS_DELAY_MS)
-
-    if (!details?.name?.trim()) continue
-
-    if (row) {
-      await db
-        .update(steamGames)
-        .set({ name: details.name, updatedAt: new Date() })
-        .where(eq(steamGames.appid, appid))
-    } else {
-      await db.insert(steamGames).values({
-        appid,
-        name: details.name,
-        storeUrl: `https://store.steampowered.com/app/${appid}`,
-        updatedAt: new Date(),
-      })
+    const fromAppList = (await loadAppListNames()).get(appid)
+    if (fromAppList) {
+      if (row) {
+        await db
+          .update(steamGames)
+          .set({ name: fromAppList, updatedAt: new Date() })
+          .where(eq(steamGames.appid, appid))
+      } else {
+        await db.insert(steamGames).values({
+          appid,
+          name: fromAppList,
+          storeUrl: `https://store.steampowered.com/app/${appid}`,
+          updatedAt: new Date(),
+        })
+      }
+      fetched += 1
+      continue
     }
-    fetched += 1
+
+    try {
+      const details = await fetchSteamAppDetails(appid)
+      if (!details?.name?.trim()) continue
+
+      if (row) {
+        await db
+          .update(steamGames)
+          .set({ name: details.name, updatedAt: new Date() })
+          .where(eq(steamGames.appid, appid))
+      } else {
+        await db.insert(steamGames).values({
+          appid,
+          name: details.name,
+          storeUrl: `https://store.steampowered.com/app/${appid}`,
+          updatedAt: new Date(),
+        })
+      }
+      fetched += 1
+    } catch (error) {
+      if (error instanceof SteamStoreCooldownError) throw error
+    }
 
     if (verbose && fetched % PROGRESS_EVERY === 0) {
       console.log(`[seed:prefetch] names ensured: ${fetched}`)
@@ -183,30 +213,62 @@ export const prefetchSeedEnrichment = async (options: {
 
   if (appids.length === 0) return stats
 
-  stats.namesFetched = await ensureSteamGameNames(appids, nameHints, verbose)
-  if (verbose) {
-    console.log(`[seed:prefetch] ensured ${stats.namesFetched} game names`)
+  try {
+    stats.namesFetched = await ensureSteamGameNames(appids, nameHints, verbose)
+    if (verbose) {
+      console.log(`[seed:prefetch] ensured ${stats.namesFetched} game names`)
+    }
+  } catch (error) {
+    if (error instanceof SteamStoreCooldownError) {
+      stats.stoppedEarly = true
+      stats.cooldownUntil = error.cooldownUntil
+      stats.remainingAppids = appids.length
+      console.warn(
+        `[seed:prefetch] Steam store cooldown during name resolution — until ${new Date(error.cooldownUntil).toISOString()}, ${appids.length} appids remaining. Re-run later to resume.`
+      )
+      return stats
+    }
+    throw error
   }
 
   if (!skipAppDetails) {
     let appDetailsProcessed = 0
-    await runWithConcurrency(appids, getSeedAppDetailsConcurrency(), async (appid) => {
-      const result = await enrichSingleAppDetails(appid, force)
-      stats.appDetailsUpdated += result.updated
-      stats.appDetailsSkipped += result.skipped
-      stats.appDetailsFailed += result.failed
+    try {
+      await runWithConcurrency(
+        appids,
+        getSeedAppDetailsConcurrency(),
+        async (appid) => {
+          const result = await enrichSingleAppDetails(appid, force, {
+            skipDeck: true,
+          })
+          stats.appDetailsUpdated += result.updated
+          stats.appDetailsSkipped += result.skipped
+          stats.appDetailsFailed += result.failed
 
-      appDetailsProcessed += 1
-      if (
-        verbose &&
-        (appDetailsProcessed % PROGRESS_EVERY === 0 ||
-          appDetailsProcessed === appids.length)
-      ) {
-        console.log(
-          `[seed:prefetch] app-details ${appDetailsProcessed}/${appids.length} — updated=${stats.appDetailsUpdated} skipped=${stats.appDetailsSkipped} failed=${stats.appDetailsFailed}`
+          appDetailsProcessed += 1
+          if (
+            verbose &&
+            (appDetailsProcessed % PROGRESS_EVERY === 0 ||
+              appDetailsProcessed === appids.length)
+          ) {
+            console.log(
+              `[seed:prefetch] app-details ${appDetailsProcessed}/${appids.length} — updated=${stats.appDetailsUpdated} skipped=${stats.appDetailsSkipped} failed=${stats.appDetailsFailed}`
+            )
+          }
+        }
+      )
+    } catch (error) {
+      if (error instanceof SteamStoreCooldownError) {
+        stats.stoppedEarly = true
+        stats.cooldownUntil = error.cooldownUntil
+        stats.remainingAppids = appids.length - appDetailsProcessed
+        console.warn(
+          `[seed:prefetch] Steam store cooldown during app-details — until ${new Date(error.cooldownUntil).toISOString()}, ~${stats.remainingAppids} appids remaining. Re-run to resume (TTL skips fresh rows).`
         )
+        return stats
       }
-    })
+      throw error
+    }
   }
 
   if (!skipProtondb) {

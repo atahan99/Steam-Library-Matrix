@@ -216,6 +216,42 @@ export const getPlayerSummary = async (steamid: string): Promise<SteamProfile> =
   }
 }
 
+type GetAppListResponse = {
+  response?: {
+    apps?: Array<{ appid: number; name: string }>
+  }
+}
+
+let cachedSteamAppNames: Map<number, string> | null = null
+
+/** Keyed Web API appid → name map (~all Steam apps). Cached per process. */
+export const getAllSteamAppNames = async (): Promise<Map<number, string>> => {
+  if (cachedSteamAppNames) return cachedSteamAppNames
+
+  const data = await steamFetch<GetAppListResponse>(
+    "/IStoreService/GetAppList/v1/",
+    {}
+  )
+
+  const apps = data.response?.apps ?? []
+  const map = new Map<number, string>()
+
+  for (const entry of apps) {
+    const appid = Number(entry.appid)
+    const name = entry.name?.trim()
+    if (!Number.isFinite(appid) || appid <= 0 || !name) continue
+    map.set(appid, name)
+  }
+
+  cachedSteamAppNames = map
+  return map
+}
+
+/** Reset in-memory GetAppList cache (tests only). */
+export const resetSteamAppNamesCacheForTests = (): void => {
+  cachedSteamAppNames = null
+}
+
 export const PRIVATE_LIBRARY_MESSAGE =
   "This Steam profile's game details are private or unavailable. Please make game details public in Steam privacy settings and try again."
 

@@ -6,6 +6,7 @@ import { APP_DETAILS_TTL_HOURS } from "@/lib/enrichment/resolve-enrichment-appid
 import { fetchSteamDeckCompatibility } from "@/lib/steam/fetch-steam-deck-compatibility"
 import { hasStoredSteamPlatforms } from "@/lib/steam/parse-steam-platforms"
 import { fetchSteamAppDetails } from "@/lib/steam/steam-store"
+import { SteamStoreCooldownError } from "@/lib/steam/steam-store-fetch"
 import { isCacheFresh } from "@/lib/utils/cache"
 import { isPlaceholderGameName } from "@/lib/utils/placeholder-game-name"
 
@@ -18,11 +19,18 @@ export type AppDetailsEnrichResult = {
   skipped: number
 }
 
+export type EnrichAppDetailsOptions = {
+  /** Skip Deck compat storefront call (seed bulk pass). */
+  skipDeck?: boolean
+}
+
 /** Single-app Steam store details + Deck compat for job steps and full refresh. */
 export const enrichSingleAppDetails = async (
   appid: number,
-  force = false
+  force = false,
+  options: EnrichAppDetailsOptions = {}
 ): Promise<AppDetailsEnrichResult> => {
+  const { skipDeck = false } = options
   const db = getDb()
 
   if (!force) {
@@ -37,7 +45,8 @@ export const enrichSingleAppDetails = async (
       .limit(1)
     const existing = existingRows[0]
     const deckStored = existing?.steamDeckCompatibility
-    const needsDeckRefresh = !deckStored || deckStored === "unknown"
+    const needsDeckRefresh =
+      !skipDeck && (!deckStored || deckStored === "unknown")
     const needsPlatformRefresh = !hasStoredSteamPlatforms(existing?.platforms)
     const cacheFresh = isCacheFresh(
       existing?.lastCheckedAt?.toISOString(),
@@ -60,7 +69,8 @@ export const enrichSingleAppDetails = async (
           .where(eq(steamAppDetails.appid, appid))
         await new Promise((r) => setTimeout(r, APP_DETAILS_DELAY_MS))
         return { checked: 1, updated: 1, failed: 0, skipped: 0 }
-      } catch {
+      } catch (error) {
+        if (error instanceof SteamStoreCooldownError) throw error
         return { checked: 1, updated: 0, failed: 1, skipped: 0 }
       }
     }
@@ -71,8 +81,12 @@ export const enrichSingleAppDetails = async (
     if (!details) {
       return { checked: 1, updated: 0, failed: 1, skipped: 0 }
     }
-    const steamDeckCompatibility = await fetchSteamDeckCompatibility(appid)
-    details.steamDeckCompatibility = steamDeckCompatibility
+
+    if (!skipDeck) {
+      const steamDeckCompatibility = await fetchSteamDeckCompatibility(appid)
+      details.steamDeckCompatibility = steamDeckCompatibility
+    }
+
     const now = new Date()
     await upsertSteamAppDetailsRow(details)
 
@@ -114,7 +128,8 @@ export const enrichSingleAppDetails = async (
 
     await new Promise((r) => setTimeout(r, APP_DETAILS_DELAY_MS))
     return { checked: 1, updated: 1, failed: 0, skipped: 0 }
-  } catch {
+  } catch (error) {
+    if (error instanceof SteamStoreCooldownError) throw error
     return { checked: 1, updated: 0, failed: 1, skipped: 0 }
   }
 }

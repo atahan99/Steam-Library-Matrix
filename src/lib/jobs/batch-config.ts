@@ -29,9 +29,9 @@ export const getWorkerMaxParallelTicks = (): number =>
 export const getAppDetailsBatch = (): number =>
   readEnvInt("SLM_APP_DETAILS_BATCH", 30)
 
-/** Max concurrent app-detail fetches during seed prefetch (lower than job worker). */
+/** Max concurrent app-detail fetches during seed prefetch (store gate serializes globally). */
 export const getSeedAppDetailsConcurrency = (): number =>
-  readEnvInt("SLM_SEED_APP_DETAILS_CONCURRENCY", 2)
+  readEnvInt("SLM_SEED_APP_DETAILS_CONCURRENCY", 1)
 
 /** Max concurrent Steam Store app-detail fetches per step. */
 export const getAppDetailsConcurrency = (): number =>

@@ -239,6 +239,14 @@ export const denuvoAntiTamperCatalog = sqliteTable("denuvo_anti_tamper_catalog",
     .default(sql`(cast(unixepoch('subsec') * 1000 as integer))`),
 })
 
+export const steamStoreThrottle = sqliteTable("steam_store_throttle", {
+  id: text("id").primaryKey().default("default"),
+  lastRequestAt: integer("last_request_at").notNull().default(0),
+  cooldownUntil: integer("cooldown_until"),
+  consecutiveBlocks: integer("consecutive_blocks").notNull().default(0),
+  updatedAt: timestampMs("updated_at").default(sql`(cast(unixepoch('subsec') * 1000 as integer))`),
+})
+
 export const seedHydrationMeta = sqliteTable("seed_hydration_meta", {
   id: text("id").primaryKey().default("default"),
   manifestVersion: integer("manifest_version").notNull(),
@@ -291,6 +299,7 @@ export const schema = {
   anticheatCatalogMeta,
   denuvoAntiTamperCatalog,
   seedHydrationMeta,
+  steamStoreThrottle,
   profileGameAchievements,
 }
 

@@ -137,9 +137,18 @@ const main = async () => {
       skipHltb,
       verbose,
     })
-    console.log(
-      `[seed:generate] prefetch done — appDetails updated=${prefetchStats.appDetailsUpdated} proton updated=${prefetchStats.protonUpdated} hltb updated=${prefetchStats.hltbUpdated} names=${prefetchStats.namesFetched}`
-    )
+    if (prefetchStats.stoppedEarly) {
+      const until = prefetchStats.cooldownUntil
+        ? new Date(prefetchStats.cooldownUntil).toISOString()
+        : "unknown"
+      console.warn(
+        `[seed:generate] prefetch stopped early (Steam store cooldown until ${until}, ~${prefetchStats.remainingAppids ?? "?"} appids remaining). Partial results saved in SQLite — re-run the same command later to resume.`
+      )
+    } else {
+      console.log(
+        `[seed:generate] prefetch done — appDetails updated=${prefetchStats.appDetailsUpdated} proton updated=${prefetchStats.protonUpdated} hltb updated=${prefetchStats.hltbUpdated} names=${prefetchStats.namesFetched}`
+      )
+    }
   } else {
     log(verbose, "skipping live prefetch (--skip-prefetch)")
   }

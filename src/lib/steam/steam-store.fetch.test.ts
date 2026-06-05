@@ -1,12 +1,32 @@
 import { describe, expect, it, vi, afterEach, beforeEach } from "vitest"
+import { createSteamStoreThrottleTestDb } from "@/lib/steam/steam-store-throttle-test-db"
+import type Database from "better-sqlite3"
+
+vi.mock("@/lib/db/client", () => ({
+  getRawSqlite: vi.fn(),
+}))
+
+vi.mock("@/lib/env/runtime-env", () => ({
+  getRuntimeEnv: (name: string) => process.env[name],
+  nextFetchInit: () => ({}),
+  prepareServerEnv: async () => {},
+}))
+
+import { getRawSqlite } from "@/lib/db/client"
 import { fetchSteamAppDetails } from "@/lib/steam/steam-store"
 import {
   resetSteamStoreRequestThrottleForTests,
   STEAM_STORE_USER_AGENT,
 } from "@/lib/steam/steam-store-fetch"
 
+const mockedGetRawSqlite = vi.mocked(getRawSqlite)
+
 describe("fetchSteamAppDetails", () => {
+  let sqlite: Database.Database
+
   beforeEach(() => {
+    sqlite = createSteamStoreThrottleTestDb()
+    mockedGetRawSqlite.mockReturnValue(sqlite)
     vi.stubEnv("SLM_CLI", "1")
     vi.stubEnv("SLM_STEAM_STORE_GAP_MS", "0")
     resetSteamStoreRequestThrottleForTests()
@@ -15,6 +35,7 @@ describe("fetchSteamAppDetails", () => {
   afterEach(() => {
     vi.unstubAllGlobals()
     vi.unstubAllEnvs()
+    sqlite.close()
   })
 
   it("sends browser User-Agent and cc=us on store API requests", async () => {
@@ -46,7 +67,12 @@ describe("fetchSteamAppDetails", () => {
   it("retries on HTTP 429 then succeeds", async () => {
     const fetchMock = vi
       .fn()
-      .mockResolvedValueOnce(new Response("rate limited", { status: 429 }))
+      .mockResolvedValueOnce(
+        new Response("rate limited", {
+          status: 429,
+          headers: { "Retry-After": "0" },
+        })
+      )
       .mockResolvedValueOnce(
         new Response(
           JSON.stringify({
@@ -61,6 +87,16 @@ describe("fetchSteamAppDetails", () => {
 
     expect(result?.name).toBe("Counter-Strike 2")
     expect(fetchMock).toHaveBeenCalledTimes(2)
+  })
+
+  it("returns null immediately on HTTP 403 without retry", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(new Response("forbidden", { status: 403 }))
+    vi.stubGlobal("fetch", fetchMock)
+
+    expect(await fetchSteamAppDetails(730)).toBeNull()
+    expect(fetchMock).toHaveBeenCalledTimes(1)
   })
 
   it("returns null when Steam reports success:false", async () => {
