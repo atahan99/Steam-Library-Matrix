@@ -1,10 +1,35 @@
 # Steam Library Matrix
 
-**Your library, decoded.** Import a public Steam profile, enrich titles from community sources, and explore everything in one dashboard — Proton/Linux compatibility, anti-cheat status, completion times, platform support, and more.
+**Your library, decoded.** Import a public Steam profile and explore it in one dashboard — Proton/Linux compatibility, anti-cheat & Denuvo status, how-long-to-beat, Steam Deck rating, Mac/VR support, achievements, and more.
 
-**Self-hosted only** — no cloud database or hosted backend.
+**Self-hosted only** — no cloud database or hosted backend. The whole app is one Next.js process plus a single SQLite file.
 
-> **New here?** [docs/architecture.md](docs/architecture.md) explains how the whole thing works end to end — import, the background enrichment queue, cross-source matching, and the bundled seed.
+> **New here?** [docs/architecture.md](docs/architecture.md) explains how it works end to end — import, the background enrichment queue, cross-source matching, and the bundled seed.
+
+## Screenshots
+
+| Landing | Overview |
+| :---: | :---: |
+| ![Steam Library Matrix landing page — import form and source orbit](docs/images/landing.png) | ![Dashboard overview — playtime, completion, and top-played charts](docs/images/overview.png) |
+| Paste a public profile URL, vanity name, or SteamID64 | Profile stats, quick metrics, and playtime distribution |
+
+**ProtonDB compatibility**
+
+![ProtonDB page — tier distribution, filters, and compatibility table](docs/images/protondb.png)
+
+## Features
+
+- **Overview** — playtime, completion, and top-played / recently-played charts (plus an external SteamDB calculator link)
+- **Library** — every owned game with OS-support icons, lifetime & recent playtime, search, filters (genre / OS / played), sort, pagination, and CSV export
+- **ProtonDB** — Linux & Steam Deck compatibility tiers with a clickable distribution chart
+- **HowLongToBeat** — main / main+extras / completionist times, with match confidence
+- **Anti-Cheat** — Linux anti-cheat status (AWACY), kernel-level anti-cheat (Levvvel), and Denuvo signals
+- **Mac & VR** — native macOS support and VR support / VR-only
+- **Compare** — line up multiple profiles (intersection of libraries)
+- **Random Picker** — pull something out of your backlog
+- **Global search** (⌘K / Ctrl+K), theme selector, and an About page with data sources & attribution
+
+Enrichment fills in over time via a background worker; **Data Status** shows per-source progress and health.
 
 ## Tech stack
 
@@ -138,13 +163,11 @@ docker cp "$(docker compose -f docker/compose.yml ps -q app)":/tmp/matrix-backup
 
 Wishlist import needs a wishlist visible to the Steam Web API.
 
-## Features
+## Status & expectations
 
-- Overview — playtime, enrichment summary, SteamDB calculator link (external)
-- Library — search, filters, sort, pagination, CSV export
-- Compare profiles, ProtonDB, HowLongToBeat, anti-cheat, Mac, VR
-- Random Game Picker, global game search (⌘K / Ctrl+K), theme selector
-- About page — data sources, privacy, attribution
+- Built for **single-user, self-hosted** use on a home machine or LAN — not designed for public multi-user deployment ([docs/scaling.md](docs/scaling.md)). If you expose it beyond localhost, put it behind a reverse proxy with TLS + auth ([docs/security.md](docs/security.md)).
+- Enrichment data is **best-effort**: it's aggregated from community sources via fuzzy name matching, so the occasional value will be missing or wrong. Confidence is shown where it matters (e.g. HowLongToBeat matches, Denuvo signals).
+- Community sources can change without notice. When one breaks, the **Data Status** page surfaces it; a parser fix follows. Expect light, ongoing maintenance.
 
 ## Security
 

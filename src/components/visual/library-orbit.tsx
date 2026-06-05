@@ -53,7 +53,7 @@ const IconGrid = () => {
     id: node.id,
     label: node.label,
     url: node.url,
-    component: <LibraryOrbitIcon icon={node.icon} className="size-10" />,
+    component: <LibraryOrbitIcon icon={node.icon} className="size-12" />,
   }))
 
   const radius = 160
@@ -127,7 +127,7 @@ const IconGrid = () => {
             >
               <LibraryOrbitIcon
                 icon={libraryOrbitCenter.icon}
-                className="size-12"
+                className="size-14"
               />
             </IconWrapper>
           </Link>

@@ -8,7 +8,7 @@ import {
 } from "@/lib/sources/source-icon-config"
 import { cn } from "@/lib/utils"
 
-const SOURCE_ICON_BOX_CLASS = "inline-flex size-3.5 shrink-0 items-center justify-center"
+const DEFAULT_ICON_CLASS = "size-3.5 shrink-0"
 
 type SourceIconProps = {
   source: SourceSlug
@@ -22,28 +22,21 @@ export const SourceIconFromConfig = ({
   icon: SourceIconConfig
   className?: string
 }) => {
+  const iconClass = cn(DEFAULT_ICON_CLASS, className)
+
   if (icon.type === "steam") {
-    return (
-      <span className={cn(SOURCE_ICON_BOX_CLASS, className)}>
-        <SteamIcon className="size-3.5" />
-      </span>
-    )
+    return <SteamIcon className={iconClass} />
   }
 
   if (icon.type === "brand") {
-    return (
-      <span className={cn(SOURCE_ICON_BOX_CLASS, className)}>
-        <BrandIcon brand={icon.brand} className="size-3.5" />
-      </span>
-    )
+    return <BrandIcon brand={icon.brand} className={iconClass} />
   }
 
   return (
     <span
       className={cn(
-        SOURCE_ICON_BOX_CLASS,
-        "overflow-hidden rounded-[3px]",
-        className
+        "inline-flex shrink-0 items-center justify-center overflow-hidden rounded-md",
+        iconClass
       )}
     >
       {/* eslint-disable-next-line @next/next/no-img-element -- external source favicon; avoids next.config remotePatterns */}

@@ -270,9 +270,6 @@ export const ProtonDbTable = ({
           deck.charAt(0).toUpperCase() + deck.slice(1),
           g.protondb?.confidence ?? "",
           g.protondb?.totalReports ?? "",
-          g.protondb?.latestReportedAt
-            ? new Date(g.protondb.latestReportedAt).toLocaleDateString()
-            : "",
           g.protondb?.lastCheckedAt
             ? new Date(g.protondb.lastCheckedAt).toLocaleDateString()
             : "",
@@ -323,7 +320,6 @@ export const ProtonDbTable = ({
                   "Steam Deck",
                   "Confidence",
                   "Reports",
-                  "Latest report",
                   "Checked",
                 ]}
                 rows={exportRows}
@@ -419,14 +415,13 @@ export const ProtonDbTable = ({
               </TableHead>
               <TableHead>Confidence</TableHead>
               <TableHead>Reports</TableHead>
-              <TableHead>Latest report</TableHead>
               <TableHead>Checked</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {paged.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} className="text-center text-muted-foreground">
+                <TableCell colSpan={7} className="text-center text-muted-foreground">
                   No games match the current filters
                 </TableCell>
               </TableRow>
@@ -463,11 +458,6 @@ export const ProtonDbTable = ({
                   </TableCell>
                   <TableCell>{g.protondb?.confidence ?? "—"}</TableCell>
                   <TableCell>{g.protondb?.totalReports ?? "—"}</TableCell>
-                  <TableCell>
-                    {g.protondb?.latestReportedAt
-                      ? new Date(g.protondb.latestReportedAt).toLocaleDateString()
-                      : "—"}
-                  </TableCell>
                   <TableCell className="text-xs text-muted-foreground">
                     {g.protondb?.lastCheckedAt
                       ? new Date(g.protondb.lastCheckedAt).toLocaleDateString()
