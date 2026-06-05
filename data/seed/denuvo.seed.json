@@ -1,6 +1,6 @@
 {
   "version": 4,
-  "generatedAt": "2026-06-05T05:56:16.347Z",
+  "generatedAt": "2026-06-05T17:58:50.404Z",
   "items": {
     "240": {
       "appid": 240,
@@ -905,6 +905,14 @@
       "source": "seed",
       "checkedAt": "2026-06-05T02:19:04.829Z"
     },
+    "221680": {
+      "appid": 221680,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "curator",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T17:58:50.404Z"
+    },
     "225540": {
       "appid": 225540,
       "hasDenuvoAntiTamper": true,
@@ -913,12 +921,28 @@
       "evidence": "Listed on Denuvo Watch curator",
       "checkedAt": "2026-06-05T02:19:04.829Z"
     },
+    "234140": {
+      "appid": 234140,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "curator",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T17:58:50.404Z"
+    },
     "236390": {
       "appid": 236390,
       "hasDenuvoAntiTamper": false,
       "confidence": "none",
       "source": "seed",
       "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "265300": {
+      "appid": 265300,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "curator",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T17:58:50.404Z"
     },
     "269210": {
       "appid": 269210,
@@ -934,6 +958,14 @@
       "source": "seed",
       "evidence": "Listed on Denuvo Watch curator",
       "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "287700": {
+      "appid": 287700,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "curator",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T17:58:50.404Z"
     },
     "304390": {
       "appid": 304390,
@@ -957,6 +989,22 @@
       "confidence": "none",
       "source": "seed",
       "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "312660": {
+      "appid": 312660,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "curator",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T17:58:50.404Z"
+    },
+    "312670": {
+      "appid": 312670,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "curator",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T17:58:50.404Z"
     },
     "319630": {
       "appid": 319630,
@@ -1081,6 +1129,14 @@
       "source": "seed",
       "checkedAt": "2026-06-05T02:19:04.829Z"
     },
+    "375910": {
+      "appid": 375910,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "curator",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T17:58:50.404Z"
+    },
     "389730": {
       "appid": 389730,
       "hasDenuvoAntiTamper": false,
@@ -1116,6 +1172,22 @@
       "confidence": "none",
       "source": "seed",
       "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "397540": {
+      "appid": 397540,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "curator",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T17:58:50.404Z"
+    },
+    "403640": {
+      "appid": 403640,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "curator",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T17:58:50.404Z"
     },
     "412020": {
       "appid": 412020,
@@ -1168,12 +1240,36 @@
       "evidence": "Listed on Denuvo Watch curator",
       "checkedAt": "2026-06-05T02:19:04.829Z"
     },
+    "447040": {
+      "appid": 447040,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "curator",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T17:58:50.404Z"
+    },
     "457140": {
       "appid": 457140,
       "hasDenuvoAntiTamper": false,
       "confidence": "none",
       "source": "seed",
       "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "458770": {
+      "appid": 458770,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "curator",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T17:58:50.404Z"
+    },
+    "464340": {
+      "appid": 464340,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "curator",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T17:58:50.404Z"
     },
     "477160": {
       "appid": 477160,
@@ -1196,6 +1292,14 @@
       "source": "seed",
       "evidence": "Listed on Denuvo Watch curator",
       "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "493340": {
+      "appid": 493340,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "curator",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T17:58:50.404Z"
     },
     "493520": {
       "appid": 493520,
@@ -1342,12 +1446,28 @@
       "source": "seed",
       "checkedAt": "2026-06-05T02:19:04.829Z"
     },
+    "601150": {
+      "appid": 601150,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "curator",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T17:58:50.404Z"
+    },
     "613100": {
       "appid": 613100,
       "hasDenuvoAntiTamper": false,
       "confidence": "none",
       "source": "seed",
       "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "614570": {
+      "appid": 614570,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "curator",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T17:58:50.404Z"
     },
     "617670": {
       "appid": 617670,
@@ -1363,6 +1483,14 @@
       "source": "seed",
       "checkedAt": "2026-06-05T02:19:04.829Z"
     },
+    "621830": {
+      "appid": 621830,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "curator",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T17:58:50.404Z"
+    },
     "626690": {
       "appid": 626690,
       "hasDenuvoAntiTamper": true,
@@ -1371,6 +1499,22 @@
       "evidence": "Listed on Denuvo Watch curator",
       "checkedAt": "2026-06-05T02:19:04.829Z"
     },
+    "627270": {
+      "appid": 627270,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "curator",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T17:58:50.404Z"
+    },
+    "629820": {
+      "appid": 629820,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "curator",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T17:58:50.404Z"
+    },
     "633230": {
       "appid": 633230,
       "hasDenuvoAntiTamper": true,
@@ -1378,6 +1522,14 @@
       "source": "seed",
       "evidence": "Listed on Denuvo Watch curator",
       "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "637650": {
+      "appid": 637650,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "curator",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T17:58:50.404Z"
     },
     "648800": {
       "appid": 648800,
@@ -1425,6 +1577,14 @@
       "evidence": "Listed on Denuvo Watch curator",
       "checkedAt": "2026-06-05T02:19:04.829Z"
     },
+    "712100": {
+      "appid": 712100,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "curator",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T17:58:50.404Z"
+    },
     "739630": {
       "appid": 739630,
       "hasDenuvoAntiTamper": false,
@@ -1448,6 +1608,14 @@
       "evidence": "Listed on Denuvo Watch curator",
       "checkedAt": "2026-06-05T02:19:04.829Z"
     },
+    "779340": {
+      "appid": 779340,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "curator",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T17:58:50.404Z"
+    },
     "782330": {
       "appid": 782330,
       "hasDenuvoAntiTamper": true,
@@ -1462,6 +1630,14 @@
       "confidence": "medium",
       "source": "seed",
       "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "812140": {
+      "appid": 812140,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "curator",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T17:58:50.404Z"
     },
     "837470": {
       "appid": 837470,
@@ -1485,6 +1661,14 @@
       "evidence": "Listed on Denuvo Watch curator",
       "checkedAt": "2026-06-05T02:19:04.829Z"
     },
+    "916440": {
+      "appid": 916440,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "curator",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T17:58:50.404Z"
+    },
     "934700": {
       "appid": 934700,
       "hasDenuvoAntiTamper": true,
@@ -1501,6 +1685,14 @@
       "evidence": "Listed on Denuvo Watch curator",
       "checkedAt": "2026-06-05T02:19:04.829Z"
     },
+    "960990": {
+      "appid": 960990,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "curator",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T17:58:50.404Z"
+    },
     "976310": {
       "appid": 976310,
       "hasDenuvoAntiTamper": true,
@@ -1508,6 +1700,14 @@
       "source": "seed",
       "evidence": "Listed on Denuvo Watch curator",
       "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "989690": {
+      "appid": 989690,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "curator",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T17:58:50.404Z"
     },
     "990080": {
       "appid": 990080,
@@ -1525,6 +1725,14 @@
       "evidence": "Listed on Denuvo Watch curator",
       "checkedAt": "2026-06-05T02:19:04.829Z"
     },
+    "1038250": {
+      "appid": 1038250,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "curator",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T17:58:50.404Z"
+    },
     "1088850": {
       "appid": 1088850,
       "hasDenuvoAntiTamper": true,
@@ -1532,6 +1740,14 @@
       "source": "seed",
       "evidence": "Listed on Denuvo Watch curator",
       "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1099410": {
+      "appid": 1099410,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "curator",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T17:58:50.404Z"
     },
     "1128810": {
       "appid": 1128810,
@@ -1554,6 +1770,14 @@
       "confidence": "none",
       "source": "seed",
       "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1172380": {
+      "appid": 1172380,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "curator",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T17:58:50.404Z"
     },
     "1172470": {
       "appid": 1172470,
@@ -1584,6 +1808,22 @@
       "evidence": "Listed on Denuvo Watch curator",
       "checkedAt": "2026-06-05T02:19:04.829Z"
     },
+    "1222140": {
+      "appid": 1222140,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "curator",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T17:58:50.404Z"
+    },
+    "1222680": {
+      "appid": 1222680,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "curator",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T17:58:50.404Z"
+    },
     "1222700": {
       "appid": 1222700,
       "hasDenuvoAntiTamper": true,
@@ -1599,6 +1839,14 @@
       "source": "seed",
       "evidence": "Listed on Denuvo Watch curator",
       "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1225590": {
+      "appid": 1225590,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "curator",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T17:58:50.404Z"
     },
     "1235140": {
       "appid": 1235140,
@@ -1637,6 +1885,14 @@
       "confidence": "none",
       "source": "seed",
       "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1262540": {
+      "appid": 1262540,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "curator",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T17:58:50.404Z"
     },
     "1262580": {
       "appid": 1262580,
@@ -1683,12 +1939,28 @@
       "evidence": "Listed on Denuvo Watch curator",
       "checkedAt": "2026-06-05T02:19:04.829Z"
     },
+    "1295660": {
+      "appid": 1295660,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "curator",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T17:58:50.404Z"
+    },
     "1304930": {
       "appid": 1304930,
       "hasDenuvoAntiTamper": false,
       "confidence": "none",
       "source": "seed",
       "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1307710": {
+      "appid": 1307710,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "curator",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T17:58:50.404Z"
     },
     "1313140": {
       "appid": 1313140,
@@ -1703,6 +1975,14 @@
       "confidence": "none",
       "source": "seed",
       "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1328670": {
+      "appid": 1328670,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "curator",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T17:58:50.404Z"
     },
     "1331550": {
       "appid": 1331550,
@@ -1768,6 +2048,14 @@
       "evidence": "Listed on Denuvo Watch curator",
       "checkedAt": "2026-06-05T02:19:04.829Z"
     },
+    "1454970": {
+      "appid": 1454970,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "curator",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T17:58:50.404Z"
+    },
     "1458140": {
       "appid": 1458140,
       "hasDenuvoAntiTamper": false,
@@ -1802,6 +2090,14 @@
       "confidence": "none",
       "source": "seed",
       "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1496790": {
+      "appid": 1496790,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "curator",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T17:58:50.404Z"
     },
     "1517290": {
       "appid": 1517290,
@@ -1852,6 +2148,14 @@
       "confidence": "none",
       "source": "seed",
       "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1570010": {
+      "appid": 1570010,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "curator",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T17:58:50.404Z"
     },
     "1577120": {
       "appid": 1577120,
@@ -2004,6 +2308,14 @@
       "source": "seed",
       "checkedAt": "2026-06-05T02:19:04.829Z"
     },
+    "1774580": {
+      "appid": 1774580,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "curator",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T17:58:50.404Z"
+    },
     "1778820": {
       "appid": 1778820,
       "hasDenuvoAntiTamper": false,
@@ -2068,6 +2380,14 @@
       "confidence": "none",
       "source": "seed",
       "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1846380": {
+      "appid": 1846380,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "curator",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T17:58:50.404Z"
     },
     "1850510": {
       "appid": 1850510,
@@ -2147,6 +2467,14 @@
       "confidence": "none",
       "source": "seed",
       "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "1944790": {
+      "appid": 1944790,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "curator",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T17:58:50.404Z"
     },
     "1953520": {
       "appid": 1953520,
@@ -2303,6 +2631,14 @@
       "source": "seed",
       "checkedAt": "2026-06-05T02:19:04.829Z"
     },
+    "2208920": {
+      "appid": 2208920,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "curator",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T17:58:50.404Z"
+    },
     "2215200": {
       "appid": 2215200,
       "hasDenuvoAntiTamper": true,
@@ -2324,6 +2660,14 @@
       "source": "seed",
       "evidence": "Listed on Denuvo Watch curator",
       "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2239550": {
+      "appid": 2239550,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "curator",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T17:58:50.404Z"
     },
     "2246340": {
       "appid": 2246340,
@@ -2579,6 +2923,14 @@
       "source": "seed",
       "checkedAt": "2026-06-05T02:19:04.829Z"
     },
+    "2751000": {
+      "appid": 2751000,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "curator",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T17:58:50.404Z"
+    },
     "2780810": {
       "appid": 2780810,
       "hasDenuvoAntiTamper": false,
@@ -2592,6 +2944,14 @@
       "confidence": "none",
       "source": "seed",
       "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "2840770": {
+      "appid": 2840770,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "curator",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T17:58:50.404Z"
     },
     "2849080": {
       "appid": 2849080,
@@ -2733,6 +3093,14 @@
       "confidence": "none",
       "source": "seed",
       "checkedAt": "2026-06-05T02:19:04.829Z"
+    },
+    "3274580": {
+      "appid": 3274580,
+      "hasDenuvoAntiTamper": true,
+      "confidence": "medium",
+      "source": "curator",
+      "evidence": "Listed on Denuvo Watch curator",
+      "checkedAt": "2026-06-05T17:58:50.404Z"
     },
     "3280350": {
       "appid": 3280350,

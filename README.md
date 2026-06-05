@@ -45,7 +45,7 @@ Enrichment fills in over time via a background worker; **Data Status** shows per
 
 ## Choose how to run
 
-| | Option 1 — Local Next.js | Option 2 — Docker Compose |
+| | Option 1 — Local Next.js | Option 2 — Docker Compose (recommended) |
 | --- | --- | --- |
 | **For** | Development, hot reload | Self-host on a server or LAN |
 | **Requires** | Node 22, pnpm | Docker and Docker Compose only |

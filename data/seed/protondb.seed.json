@@ -1,6 +1,6 @@
 {
   "version": 4,
-  "generatedAt": "2026-06-05T05:56:16.347Z",
+  "generatedAt": "2026-06-05T17:58:50.404Z",
   "items": {
     "10": {
       "appid": 10,
@@ -11243,6 +11243,15 @@
       "sourceUrl": "https://www.protondb.com/app/1631270",
       "checkedAt": "2026-06-05T02:37:52.628Z"
     },
+    "1636440": {
+      "appid": 1636440,
+      "tier": null,
+      "confidence": null,
+      "totalReports": null,
+      "latestReportedAt": null,
+      "sourceUrl": null,
+      "checkedAt": "2026-06-05T18:57:40.750Z"
+    },
     "1637320": {
       "appid": 1637320,
       "tier": "platinum",
@@ -12359,6 +12368,15 @@
       "sourceUrl": "https://www.protondb.com/app/2001120",
       "checkedAt": "2026-06-05T02:37:40.689Z"
     },
+    "2001760": {
+      "appid": 2001760,
+      "tier": null,
+      "confidence": null,
+      "totalReports": null,
+      "latestReportedAt": null,
+      "sourceUrl": null,
+      "checkedAt": "2026-06-05T18:57:41.300Z"
+    },
     "2004080": {
       "appid": 2004080,
       "tier": "platinum",
@@ -13286,6 +13304,15 @@
       "sourceUrl": "https://www.protondb.com/app/2264340",
       "checkedAt": "2026-06-05T02:38:17.866Z"
     },
+    "2272360": {
+      "appid": 2272360,
+      "tier": null,
+      "confidence": null,
+      "totalReports": null,
+      "latestReportedAt": null,
+      "sourceUrl": null,
+      "checkedAt": "2026-06-05T18:57:41.944Z"
+    },
     "2272400": {
       "appid": 2272400,
       "tier": "platinum",
@@ -13366,6 +13393,15 @@
       "latestReportedAt": null,
       "sourceUrl": "https://www.protondb.com/app/2287520",
       "checkedAt": "2026-06-05T02:38:07.159Z"
+    },
+    "2288340": {
+      "appid": 2288340,
+      "tier": null,
+      "confidence": null,
+      "totalReports": null,
+      "latestReportedAt": null,
+      "sourceUrl": null,
+      "checkedAt": "2026-06-05T18:57:41.945Z"
     },
     "2289650": {
       "appid": 2289650,
@@ -13789,6 +13825,15 @@
       "latestReportedAt": null,
       "sourceUrl": "https://www.protondb.com/app/2420110",
       "checkedAt": "2026-06-05T02:37:56.344Z"
+    },
+    "2424420": {
+      "appid": 2424420,
+      "tier": null,
+      "confidence": null,
+      "totalReports": null,
+      "latestReportedAt": null,
+      "sourceUrl": null,
+      "checkedAt": "2026-06-05T18:57:42.115Z"
     },
     "2426530": {
       "appid": 2426530,
@@ -15473,6 +15518,15 @@
       "sourceUrl": "https://www.protondb.com/app/3217240",
       "checkedAt": "2026-06-05T02:38:18.320Z"
     },
+    "3219030": {
+      "appid": 3219030,
+      "tier": null,
+      "confidence": null,
+      "totalReports": null,
+      "latestReportedAt": null,
+      "sourceUrl": null,
+      "checkedAt": "2026-06-05T18:57:43.215Z"
+    },
     "3224770": {
       "appid": 3224770,
       "tier": "platinum",
@@ -16202,6 +16256,15 @@
       "sourceUrl": "https://www.protondb.com/app/3751210",
       "checkedAt": "2026-06-05T02:38:23.209Z"
     },
+    "3751260": {
+      "appid": 3751260,
+      "tier": null,
+      "confidence": null,
+      "totalReports": null,
+      "latestReportedAt": null,
+      "sourceUrl": null,
+      "checkedAt": "2026-06-05T18:57:44.126Z"
+    },
     "3751950": {
       "appid": 3751950,
       "tier": null,
@@ -16273,6 +16336,15 @@
       "latestReportedAt": null,
       "sourceUrl": "https://www.protondb.com/app/3834090",
       "checkedAt": "2026-06-05T02:37:52.149Z"
+    },
+    "3859630": {
+      "appid": 3859630,
+      "tier": null,
+      "confidence": null,
+      "totalReports": null,
+      "latestReportedAt": null,
+      "sourceUrl": null,
+      "checkedAt": "2026-06-05T18:57:44.245Z"
     },
     "3892270": {
       "appid": 3892270,
@@ -16471,6 +16543,15 @@
       "latestReportedAt": null,
       "sourceUrl": "https://www.protondb.com/app/4082750",
       "checkedAt": "2026-06-05T02:37:53.523Z"
+    },
+    "4084710": {
+      "appid": 4084710,
+      "tier": null,
+      "confidence": null,
+      "totalReports": null,
+      "latestReportedAt": null,
+      "sourceUrl": null,
+      "checkedAt": "2026-06-05T18:57:44.664Z"
     },
     "4119420": {
       "appid": 4119420,
