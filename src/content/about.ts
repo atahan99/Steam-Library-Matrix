@@ -168,7 +168,7 @@ export const aboutDataSources: AboutDataSource[] = [
     provides: "Owned games, playtime, wishlist",
     usedIn: "Import, all sections",
     fetchMethod:
-      "POST /api/steam/import, /api/steam/refresh, /api/steam/wishlist-sync",
+      "POST /api/steam/import, POST /api/steam/refresh; wishlist via POST /api/jobs (kind: wishlist)",
     refreshCadence: "On import or manual refresh",
   },
   {
@@ -179,7 +179,7 @@ export const aboutDataSources: AboutDataSource[] = [
     usedIn:
       "Library OS column, Mac Support, VR, ProtonDB Deck column (Steam Deck compatibility API), wishlist name resolution",
     fetchMethod:
-      "POST /api/enrich/app-details (store appdetails + Deck compatibility report)",
+      "POST /api/jobs (kind: app_details) — store appdetails + Deck compatibility report",
     refreshCadence: "7-day TTL per game unless forced",
     matchingMethod: "Steam app ID",
   },
@@ -189,7 +189,7 @@ export const aboutDataSources: AboutDataSource[] = [
     provides:
       "Linux/Proton compatibility tier, confidence, report count",
     usedIn: "ProtonDB section",
-    fetchMethod: "POST /api/enrich/protondb",
+    fetchMethod: "POST /api/jobs (kind: protondb)",
     refreshCadence: "7-day TTL per game unless forced",
     matchingMethod: "Steam app ID",
     limitations:
@@ -202,7 +202,7 @@ export const aboutDataSources: AboutDataSource[] = [
       "Linux anti-cheat status, software names, native Linux flag",
     usedIn: "Anti-Cheat section (Linux anti-cheat status column)",
     fetchMethod:
-      "POST /api/anticheat/catalog-sync (global AWACY JSON) + POST /api/enrich/anticheat (profile link)",
+      "POST /api/jobs (kind: anticheat_catalog for global AWACY JSON; kind: anticheat for profile link)",
     refreshCadence: "Catalog: 7-day TTL; profile link: 7-day TTL per game unless forced",
     matchingMethod: "Steam app ID first, then fuzzy title match",
     limitations:
@@ -214,7 +214,7 @@ export const aboutDataSources: AboutDataSource[] = [
     provides: "Kernel-level anti-cheat list",
     usedIn: "Anti-Cheat section (kernel column)",
     fetchMethod:
-      "POST /api/anticheat/catalog-sync (HTML + AJAX scrape, stored globally)",
+      "POST /api/jobs (kind: anticheat_catalog) — HTML + AJAX scrape, stored globally",
     refreshCadence: "Catalog: 7-day TTL unless forced from Data Status",
     limitations:
       "HTML scrape — partial fetches are tracked on the catalog card; kernel=no is only set when the catalog is complete.",
@@ -225,7 +225,7 @@ export const aboutDataSources: AboutDataSource[] = [
     provides: "Denuvo Anti-Tamper game list (app IDs)",
     usedIn: "Anti-Cheat section (software filter and Anti-cheat software column)",
     fetchMethod:
-      "POST /api/anticheat/catalog-sync (AWACY JSON + Levvvel fetch; Denuvo via Steam API)",
+      "POST /api/jobs (kind: anticheat_catalog, denuvo_catalog) — Denuvo via Steam curator API",
     refreshCadence: "7-day TTL unless forced from Data Status",
     matchingMethod: "Steam app ID",
     limitations:
@@ -237,7 +237,7 @@ export const aboutDataSources: AboutDataSource[] = [
     provides: "Completion time estimates",
     usedIn: "HowLongToBeat section",
     fetchMethod:
-      "POST /api/enrich/howlongtobeat (optional missingOnly; parallel batches)",
+      "POST /api/jobs (kind: hltb; optional missingOnly; parallel batches)",
     refreshCadence:
       "30-day TTL per game unless forced; failed/skipped lookups cached to avoid repeat scrapes",
     matchingMethod: "Fuzzy title match against HLTB search",

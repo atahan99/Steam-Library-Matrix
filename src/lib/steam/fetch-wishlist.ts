@@ -1,4 +1,4 @@
-import { nextFetchInit, prepareServerEnv } from "@/lib/env/runtime-env"
+import { nextFetchInit, getRuntimeEnv, prepareServerEnv } from "@/lib/env/runtime-env"
 import { fetchWithTimeout } from "@/lib/utils/fetch-with-timeout"
 import {
   extractWishlistRawItems,
@@ -19,7 +19,7 @@ type WishlistDataEntry = {
 }
 
 const isLegacyFallbackEnabled = (): boolean =>
-  process.env.STEAM_WISHLIST_LEGACY_FALLBACK === "true"
+  getRuntimeEnv("STEAM_WISHLIST_LEGACY_FALLBACK") === "true"
 
 export const mapWishlistRawToItems = (
   rawItems: SteamWishlistRawItem[]

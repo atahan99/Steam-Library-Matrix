@@ -7,6 +7,7 @@ import { AnticheatCatalogBrowseCard } from "@/components/dashboard/anticheat-cat
 import { AnticheatCatalogStatusCard } from "@/components/dashboard/anticheat-catalog-status-card"
 import { DataStatusSection } from "@/components/dashboard/data-status/data-status-section"
 import { DataStatusSummary } from "@/components/dashboard/data-status/data-status-summary"
+import { DataSourceHealthPanel } from "@/components/dashboard/data-status/data-source-health-panel"
 import { useDashboard } from "@/components/dashboard/dashboard-context"
 import { hasMeaningfulAntiCheatData } from "@/lib/anticheat/stats"
 import {
@@ -39,7 +40,7 @@ const uniqueEnrichGames = (games: DashboardGame[], wishlistGames: DashboardGame[
 }
 
 export default function DataStatusPage() {
-  const { profile, games, wishlistGames } = useDashboard()
+  const { profile, games, wishlistGames, sourceHealth } = useDashboard()
   const libraryTotal = games.length
   const wishlistTotal = wishlistGames.length
   const enrichGames = uniqueEnrichGames(games, wishlistGames)
@@ -81,6 +82,8 @@ export default function DataStatusPage() {
         lastProfileSync={profile.lastSyncedAt}
       />
 
+      <DataSourceHealthPanel entries={sourceHealth} />
+
       <DataStatusSection
         title="Steam core"
         description="Library, wishlist, and Steam Web API metadata."
@@ -88,7 +91,7 @@ export default function DataStatusPage() {
         <SourceStatusCard
           title="Steam library"
           source="steam"
-          endpoint="/api/steam/refresh?force=true"
+          directEndpoint="/api/steam/refresh?force=true"
           lastChecked={profile.lastSyncedAt}
           totalGames={libraryTotal}
           withData={libraryTotal}
@@ -97,7 +100,7 @@ export default function DataStatusPage() {
         <SourceStatusCard
           title="Steam wishlist"
           source="steam_wishlist"
-          endpoint="/api/steam/wishlist-sync"
+          jobKind="wishlist"
           lastChecked={profile.wishlistLastSyncedAt}
           totalGames={wishlistTotal}
           withData={wishlistTotal}
@@ -106,7 +109,7 @@ export default function DataStatusPage() {
         <SourceStatusCard
           title="Steam app details"
           source="steam_app_details"
-          endpoint="/api/enrich/app-details"
+          jobKind="app_details"
           lastChecked={maxChecked((g) => g.steamDetails?.lastCheckedAt)}
           totalGames={enrichTotal}
           withData={appDetailsWithData}
@@ -115,7 +118,7 @@ export default function DataStatusPage() {
         <SourceStatusCard
           title="Steam achievements"
           source="steam_achievements"
-          endpoint="/api/enrich/achievements"
+          jobKind="achievements"
           lastChecked={maxChecked((g) => g.achievements?.lastCheckedAt)}
           totalGames={libraryTotal}
           withData={achievementsEnriched}
@@ -136,7 +139,7 @@ export default function DataStatusPage() {
         <SourceStatusCard
           title="Steam Deck compatibility"
           source="steam_deck_compatibility"
-          endpoint="/api/enrich/app-details"
+          jobKind="app_details"
           lastChecked={maxChecked((g) => g.steamDetails?.lastCheckedAt)}
           totalGames={enrichTotal}
           withData={enrichGames.filter(hasAuthoritativeSteamDeckStatus).length}
@@ -145,7 +148,7 @@ export default function DataStatusPage() {
         <SourceStatusCard
           title="ProtonDB"
           source="protondb"
-          endpoint="/api/enrich/protondb"
+          jobKind="protondb"
           lastChecked={maxChecked((g) => g.protondb?.lastCheckedAt)}
           totalGames={enrichTotal}
           withData={protonWithData}
@@ -166,7 +169,7 @@ export default function DataStatusPage() {
         <SourceStatusCard
           title="Anti-cheat (profile link)"
           source="anticheat"
-          endpoint="/api/enrich/anticheat"
+          jobKind="anticheat"
           lastChecked={maxChecked((g) => g.antiCheat?.lastCheckedAt)}
           totalGames={enrichTotal}
           withData={anticheatWithData}
@@ -188,7 +191,7 @@ export default function DataStatusPage() {
         <SourceStatusCard
           title="HowLongToBeat"
           source="howlongtobeat"
-          endpoint="/api/enrich/howlongtobeat"
+          jobKind="hltb"
           lastChecked={maxChecked((g) => g.hltb?.lastCheckedAt)}
           totalGames={enrichTotal}
           withData={hltbEnriched}

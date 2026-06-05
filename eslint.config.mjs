@@ -12,6 +12,13 @@ const eslintConfig = [
       // Existing tables/hooks use established patterns; avoid blocking CI on new strict defaults.
       "react-hooks/set-state-in-effect": "off",
       "react-hooks/refs": "off",
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+        },
+      ],
     },
   },
 ]

@@ -112,7 +112,11 @@ export const refreshSteamDeckCompatibilityForAppids = async (
           steamDeckCompatibility ?? "unknown"
         )
         refreshed += 1
-      } catch {
+      } catch (error) {
+        console.warn(
+          `[steam-deck] compatibility refresh failed for appid ${current}`,
+          error
+        )
         failed += 1
       }
 

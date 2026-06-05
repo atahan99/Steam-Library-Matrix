@@ -28,6 +28,7 @@ import {
   profileWishlist,
   steamProfiles,
 } from "@/lib/db/schema"
+import { getLatestRefreshLogBySource } from "@/lib/db/refresh-log"
 import type { DashboardGame, DashboardPayload } from "@/types/dashboard"
 
 export const fetchDashboardPayload = async (
@@ -203,6 +204,8 @@ export const fetchDashboardPayload = async (
     parseAnticheatCatalogErrors(anticheatCatalogLog?.message)
   )
 
+  const sourceHealth = await getLatestRefreshLogBySource(steamid)
+
   return {
     profile: {
       steamid: profile.steamid,
@@ -230,5 +233,6 @@ export const fetchDashboardPayload = async (
     },
     games,
     wishlistGames,
+    sourceHealth,
   }
 }

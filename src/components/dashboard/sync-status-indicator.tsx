@@ -27,30 +27,46 @@ export const DashboardStatusButton = ({
   onRefresh,
   onJobsComplete,
 }: DashboardStatusButtonProps) => {
-  const status = useSyncStatus(steamid)
+  const {
+    refresh,
+    justCompleted,
+    loading,
+    enrichTotal,
+    activeJobCount,
+    isComplete,
+    etaLabel,
+    etaPending,
+    isActive,
+    percent,
+    cacheReadyCount,
+    backgroundRemainingCount,
+    sources,
+    idleIncomplete,
+    incompleteSourceCount,
+  } = useSyncStatus(steamid)
 
   useEffect(() => {
     if (refreshKey > 0) {
-      void status.refresh()
+      void refresh()
     }
-  }, [refreshKey, status.refresh])
+  }, [refreshKey, refresh])
 
   useEffect(() => {
-    if (status.justCompleted) {
+    if (justCompleted) {
       onJobsComplete?.()
     }
-  }, [status.justCompleted, onJobsComplete])
+  }, [justCompleted, onJobsComplete])
 
-  const showProgressBadge = !status.loading && status.enrichTotal > 0
-  const isSyncing = refreshing || status.activeJobCount > 0
+  const showProgressBadge = !loading && enrichTotal > 0
+  const isSyncing = refreshing || activeJobCount > 0
 
-  const etaDisplay = status.isComplete
+  const etaDisplay = isComplete
     ? null
-    : status.etaLabel
-      ? `~${status.etaLabel} remaining`
-      : status.etaPending
+    : etaLabel
+      ? `~${etaLabel} remaining`
+      : etaPending
         ? "Estimating…"
-        : status.isActive
+        : isActive
           ? "Calculating…"
           : null
 
@@ -66,7 +82,7 @@ export const DashboardStatusButton = ({
             disabled={refreshing}
             aria-label={
               showProgressBadge
-                ? `Status — ${status.percent}% synced${status.isComplete ? ", complete" : ""}${etaDisplay ? `, ${etaDisplay}` : ""}`
+                ? `Status — ${percent}% synced${isComplete ? ", complete" : ""}${etaDisplay ? `, ${etaDisplay}` : ""}`
                 : "Status — sync all data sources"
             }
           >
@@ -76,18 +92,18 @@ export const DashboardStatusButton = ({
             />
             {showProgressBadge ? (
               <Badge
-                variant={status.isComplete ? "outline" : "secondary"}
+                variant={isComplete ? "outline" : "secondary"}
                 className={cn(
                   "h-5 min-w-9 justify-center px-1.5 tabular-nums",
-                  status.isComplete &&
+                  isComplete &&
                     "border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
                 )}
                 aria-live="polite"
               >
-                {status.isComplete ? (
+                {isComplete ? (
                   <Check className="size-3" aria-hidden />
                 ) : (
-                  `${status.percent}%`
+                  `${percent}%`
                 )}
               </Badge>
             ) : null}
@@ -105,13 +121,13 @@ export const DashboardStatusButton = ({
           <div className="mt-3 flex flex-col gap-3">
             <div className="flex items-center justify-between gap-3 text-xs">
               <span className="text-muted-foreground">Overall</span>
-              <span className="font-semibold tabular-nums">{status.percent}%</span>
+              <span className="font-semibold tabular-nums">{percent}%</span>
             </div>
 
             <div
               className="h-2 overflow-hidden rounded-full bg-muted"
               role="progressbar"
-              aria-valuenow={status.percent}
+              aria-valuenow={percent}
               aria-valuemin={0}
               aria-valuemax={100}
               aria-label="Overall sync progress"
@@ -119,34 +135,34 @@ export const DashboardStatusButton = ({
               <div
                 className={cn(
                   "h-full rounded-full transition-[width]",
-                  status.isComplete ? "bg-emerald-500" : "bg-primary"
+                  isComplete ? "bg-emerald-500" : "bg-primary"
                 )}
-                style={{ width: `${status.percent}%` }}
+                style={{ width: `${percent}%` }}
               />
             </div>
 
-            {!status.isComplete && status.cacheReadyCount > 0 ? (
+            {!isComplete && cacheReadyCount > 0 ? (
               <p className="text-[11px] text-muted-foreground">
-                ~{status.cacheReadyCount} library titles ready from bundled cache
-                {status.backgroundRemainingCount > 0
-                  ? ` · ${status.backgroundRemainingCount} still fetching`
+                ~{cacheReadyCount} library titles ready from bundled cache
+                {backgroundRemainingCount > 0
+                  ? ` · ${backgroundRemainingCount} still fetching`
                   : ""}
               </p>
             ) : null}
 
-            {!status.isComplete && status.isActive ? (
+            {!isComplete && isActive ? (
               <p className="text-xs">
                 <span className="font-medium">Est. time remaining:</span>{" "}
                 <span className="tabular-nums text-muted-foreground">
-                  {status.etaLabel ??
-                    (status.etaPending ? "Estimating…" : "Calculating…")}
+                  {etaLabel ??
+                    (etaPending ? "Estimating…" : "Calculating…")}
                 </span>
               </p>
             ) : null}
 
             <div className="border-t border-border/60 pt-3">
               <div className="divide-y divide-border/60">
-              {status.sources.map((source) => (
+              {sources.map((source) => (
                 <div
                   key={source.key}
                   className="grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-x-4 py-2 text-xs first:pt-0 last:pb-0"
@@ -166,22 +182,22 @@ export const DashboardStatusButton = ({
               </div>
             </div>
 
-            {status.activeJobCount > 0 ? (
+            {activeJobCount > 0 ? (
               <p className="text-[11px] text-muted-foreground">
-                {status.activeJobCount} background job
-                {status.activeJobCount === 1 ? "" : "s"} running
+                {activeJobCount} background job
+                {activeJobCount === 1 ? "" : "s"} running
               </p>
             ) : null}
 
-            {status.idleIncomplete ? (
+            {idleIncomplete ? (
               <p className="text-[11px] text-amber-700 dark:text-amber-300">
-                Sync idle — {status.incompleteSourceCount ?? 0} source
-                {(status.incompleteSourceCount ?? 0) === 1 ? "" : "s"} incomplete.
+                Sync idle — {incompleteSourceCount ?? 0} source
+                {(incompleteSourceCount ?? 0) === 1 ? "" : "s"} incomplete.
                 Use Data Status to force refresh.
               </p>
             ) : null}
 
-            {status.isComplete ? (
+            {isComplete ? (
               <p className="text-xs text-emerald-600 dark:text-emerald-400">
                 All sources synced
               </p>

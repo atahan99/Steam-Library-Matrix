@@ -77,7 +77,8 @@ const upsertUnreleasedSentinel = async (appid: number): Promise<boolean> => {
         },
       })
     return true
-  } catch {
+  } catch (error) {
+    console.error(`[protondb] unreleased sentinel upsert failed for ${appid}`, error)
     return false
   }
 }
@@ -154,10 +155,12 @@ export const enrichSingleProtonDb = async (
         await new Promise((r) => setTimeout(r, PROTON_DELAY_MS))
       }
       return { checked: 1, updated: 1, failed: 0, skipped: 0 }
-    } catch {
+    } catch (error) {
+      console.error(`[protondb] upsert failed for ${appid}`, error)
       return { checked: 1, updated: 0, failed: 1, skipped: 0 }
     }
-  } catch {
+  } catch (error) {
+    console.error(`[protondb] enrich failed for ${appid}`, error)
     return { checked: 1, updated: 0, failed: 1, skipped: 0 }
   }
 }

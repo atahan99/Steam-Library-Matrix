@@ -144,4 +144,13 @@ export type DashboardPayload = {
   profile: DashboardProfile
   games: DashboardGame[]
   wishlistGames: DashboardGame[]
+  sourceHealth: SourceHealthEntry[]
+}
+
+export type SourceHealthEntry = {
+  source: string
+  status: string
+  message: string | null
+  started_at: string | null
+  finished_at: string | null
 }

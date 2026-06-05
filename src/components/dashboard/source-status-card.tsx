@@ -8,12 +8,15 @@ import { Badge } from "@/components/ui/badge"
 import { useDashboard } from "@/components/dashboard/dashboard-context"
 import { formatDateTimeDisplay } from "@/lib/utils/format-datetime"
 import { isCacheFresh } from "@/lib/utils/cache"
-import { jobKindForEndpoint } from "@/lib/jobs/endpoint-map"
+import type { EnrichmentJobKind } from "@/lib/jobs/types"
 
 type SourceStatusCardProps = {
   title: string
   source: string
-  endpoint: string
+  /** Enqueue POST /api/jobs with this kind. */
+  jobKind?: EnrichmentJobKind
+  /** Direct POST when no job queue applies (e.g. Steam library refresh). */
+  directEndpoint?: string
   lastChecked?: string
   totalGames: number
   withData: number
@@ -86,7 +89,8 @@ const resolveStatusChip = (
 export const SourceStatusCard = ({
   title,
   source,
-  endpoint,
+  jobKind,
+  directEndpoint,
   lastChecked,
   totalGames,
   withData,
@@ -191,14 +195,13 @@ export const SourceStatusCard = ({
     setLoading(true)
     setMessage(null)
     try {
-      const kind = jobKindForEndpoint(endpoint)
-      if (kind) {
+      if (jobKind) {
         const res = await fetch("/api/jobs", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             steamid: profile.steamid,
-            kind,
+            kind: jobKind,
             force: options?.force ?? true,
             missingOnly: options?.missingOnly ?? false,
           }),
@@ -214,7 +217,11 @@ export const SourceStatusCard = ({
         return
       }
 
-      const res = await fetch(endpoint, {
+      if (!directEndpoint) {
+        throw new Error("No refresh action configured")
+      }
+
+      const res = await fetch(directEndpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

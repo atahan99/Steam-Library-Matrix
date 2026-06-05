@@ -232,7 +232,8 @@ const fetchLevvvelAjaxPage = async (
     const rows = parseLevvvelAjaxDataRows(json.data)
     const total = json.recordsFiltered ?? json.recordsTotal
     return { rows, total }
-  } catch {
+  } catch (error) {
+    console.warn("[levvvel] AJAX page JSON parse failed", error)
     return { rows: [] }
   }
 }
