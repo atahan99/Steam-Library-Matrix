@@ -6,16 +6,19 @@ Steam Library Matrix runs as **local dev** (`pnpm dev:all`) or **Docker + SQLite
 
 | Doc | Purpose |
 | --- | --- |
+| [architecture.md](./architecture.md) | How the whole system fits together — **start here** |
 | [self-hosting.md](./self-hosting.md) | Deploy on LAN or the public internet |
 | [env.md](./env.md) | Environment variables |
 | [database.md](./database.md) | SQLite, migrations, backups |
-| [scraping.md](./scraping.md) | How server-side data is loaded |
+| [scraping.md](./scraping.md) | Data sources, scraping, and the job pipeline |
 | [security.md](./security.md) | API guard, rate limits, CSP |
+| [scaling.md](./scaling.md) | Single-user design + public-deploy notes |
 
 ## I want to…
 
 | Goal | Read |
 | --- | --- |
+| Understand how it works | [architecture.md](./architecture.md) |
 | Run locally | [README § Option 1](../README.md#option-1-local-nextjs) → [env.md](./env.md) |
 | Deploy Docker | [README § Option 2](../README.md#option-2-docker-compose) · [self-hosting.md](./self-hosting.md) |
 | Understand data sources | [scraping.md](./scraping.md) |
@@ -25,6 +28,6 @@ Steam Library Matrix runs as **local dev** (`pnpm dev:all`) or **Docker + SQLite
 ## Quick start
 
 - **Local:** copy [`.env.example`](../.env.example) → `.env`, then `pnpm db:migrate` and `pnpm dev:all` ([README § Option 1](../README.md#option-1-local-nextjs)).
-- **Docker:** `docker/.env`, `docker/db/matrix.db`, `docker compose -f docker/compose.yml up --build -d` ([README § Option 2](../README.md#option-2-docker-compose)).
+- **Docker:** copy `docker/.env.example` → `docker/.env`, then `docker compose -f docker/compose.yml up --build -d` — the DB is created in the `matrix_db` volume on first run ([README § Option 2](../README.md#option-2-docker-compose)).
 
 **Planned features:** [README § Planned](../README.md#planned).

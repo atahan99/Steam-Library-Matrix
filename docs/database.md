@@ -1,6 +1,6 @@
 # Database setup
 
-**TL;DR:** `pnpm db:migrate` applies schema (local). Docker applies migrations on container start. Local (`./data/matrix.db`) and Docker (`docker/db/matrix.db`) are **separate databases** — do not mix env files.
+**TL;DR:** `pnpm db:migrate` applies schema (local). Docker applies migrations on container start. Local (`./data/matrix.db`) and Docker (the `matrix_db` named volume) are **separate databases** — do not mix env files.
 
 Steam Library Matrix uses **SQLite** ([better-sqlite3](https://github.com/WiseLibs/better-sqlite3)) with [Drizzle ORM](https://orm.drizzle.team/) and SQL migrations in [`db/migrations/`](../db/migrations/).
 
@@ -17,7 +17,7 @@ Required for import, dashboard, and enrichment (`STEAM_API_KEY` is separate). Th
 | Method | Env file | Database location |
 | --- | --- | --- |
 | Local dev | `.env` from [`.env.example`](../.env.example) | `./data/matrix.db` ([data/README.md](../data/README.md)) |
-| Docker Compose | `docker/.env` from [`docker/.env.example`](../docker/.env.example) | Host `docker/db/matrix.db` → `/app/data/matrix.db` (bind mount) |
+| Docker Compose | `docker/.env` from [`docker/.env.example`](../docker/.env.example) | Named volume `matrix_db` → `/app/data/db/matrix.db` |
 
 Not shared unless you point both methods at the same path on purpose.
 
@@ -50,7 +50,7 @@ Browse data (optional): `pnpm db:studio`.
 
 Migration `002_seed_denuvo_provenance.sql` adds Denuvo provenance columns on `anticheat_entries` (`denuvo_confidence`, `denuvo_source`, `denuvo_evidence`, `denuvo_checked_at`) and `seed_hydration_meta` to track bundled seed hydration.
 
-Bundled JSON lives in [`data/seed/`](../data/seed/) (manifest v3: Denuvo, app-details-lite, ProtonDB, HLTB, top-appids). On startup (or Docker entrypoint), the app hydrates seed rows before live catalog sync so the dashboard can show metadata immediately.
+Bundled JSON lives in [`data/seed/`](../data/seed/) (manifest **v4**: Denuvo, app details incl. genres/categories/platforms/Deck rating, ProtonDB, HLTB, plus `top-appids`/`profile-appids` target lists). On startup (or Docker entrypoint), the app hydrates seed rows before live catalog sync so the dashboard can show metadata immediately. Changing seed contents requires bumping `SEED_MANIFEST_VERSION` or existing installs won't re-hydrate.
 
 ```bash
 pnpm seed:fetch-top-appids  # refresh Steam top sellers list
@@ -69,11 +69,11 @@ Disable auto hydration: `SLM_SKIP_SEED_HYDRATION=true`. Details: [scraping.md §
 cp data/matrix.db data/matrix-backup-$(date +%F).db
 ```
 
-**Docker** (stack stopped):
+**Docker** (live DB is in the `matrix_db` volume — copy it out via the container):
 
 ```bash
-docker compose -f docker/compose.yml down
-cp docker/db/matrix.db "docker/db/matrix-backup-$(date +%F).db"
+docker compose -f docker/compose.yml exec app cp /app/data/db/matrix.db /tmp/matrix-backup.db
+docker cp "$(docker compose -f docker/compose.yml ps -q app)":/tmp/matrix-backup.db ./matrix-backup.db
 ```
 
 For a clean restore, stop the app and copy `matrix.db` only (omit `-wal`/`-shm` unless you need a hot backup).

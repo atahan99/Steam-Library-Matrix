@@ -7,7 +7,7 @@ Minimal derived metadata shipped with the repo for first-launch dashboard perfor
 Seed JSON under `data/seed/` is a **portable bundle** checked into git. On startup (local or Docker), the app **hydrates** these files into SQLite global cache tables (`protondb_entries`, `howlongtobeat_entries`, `steam_app_details`, etc.). The dashboard reads SQLite — not JSON directly.
 
 - **Local dev:** `file:./data/matrix.db` + `data/seed/`
-- **Docker:** `docker/db/matrix.db` volume + `/app/data/seed` (image copy, optionally mounted from repo)
+- **Docker:** the `matrix_db` named volume (`/app/data/db/matrix.db`) + `/app/data/seed` (image copy, optionally mounted read-only from the repo)
 
 Override seed directory: `SLM_SEED_DIR=/path/to/seed`
 
@@ -23,7 +23,7 @@ Override seed directory: `SLM_SEED_DIR=/path/to/seed`
 Export profiles from a running DB:
 
 ```bash
-DATABASE_URL=file:./docker/db/matrix.db pnpm seed:export-profiles
+DATABASE_URL=file:./data/matrix.db pnpm seed:export-profiles
 ```
 
 ## Commands

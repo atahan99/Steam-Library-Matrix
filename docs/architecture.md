@@ -70,7 +70,7 @@ A few ideas recur throughout the codebase and explain most of its structure:
 ## 3. System overview
 
 The whole application is **one process** plus **one database file**. The web UI, the API
-routes/server actions, and the background worker all live inside the same Next.js
+routes, and the background worker all live inside the same Next.js
 runtime and talk to the same SQLite database.
 
 ```mermaid
@@ -78,7 +78,7 @@ flowchart TB
   User([You, in a browser])
   subgraph App["Next.js app — one process"]
     UI["Dashboard UI<br/>(tables, filters, charts)"]
-    API["API routes + server actions"]
+    API["API routes"]
     Worker["Background job worker"]
   end
   DB[("SQLite — matrix.db")]
@@ -236,8 +236,8 @@ dashboard isn't empty on first run. Covered in depth in [§9](#9-deep-dive-the-s
 All enrichment is triggered the same way: the UI (and post-import / full-sync) **enqueues
 jobs** via `POST /api/jobs`, and the background worker drains them. There is a single
 execution path — the worker and its per-source steps (`enrichSingle*` primitives reused by
-each batch step). An earlier synchronous server-action refresh path was removed; because
-`/api/jobs` is open, the queue works whether or not the API guard is configured.
+each batch step). An earlier synchronous server-action refresh path was removed, so the
+queue is now the single way enrichment runs.
 
 ---
 
@@ -560,7 +560,7 @@ flowchart TB
   subgraph Docker["Docker (self-hosting)"]
     D1["one container"]
     D2["web server + embedded worker"]
-    D3["DB on a mounted folder + pre-built seed template"]
+    D3["DB in a named volume + pre-built seed template"]
   end
 ```
 

@@ -1,13 +1,18 @@
 # Docker database files
 
-SQLite for **Docker Compose only** (not used by local `pnpm dev:all`).
+SQLite for **Docker Compose only** (not used by local `pnpm dev:all`). This directory holds
+**build-time and reference files only** — the live database is in the `matrix_db` named
+volume (see below), **not** here.
 
 | File | Purpose |
 | --- | --- |
-| `matrix.db.example` | Empty template (legacy manual bootstrap) |
-| `matrix.db.template` | Pre-hydrated seed cache — **generated during `docker build`**, not committed to git; baked into the Docker image |
-| `matrix.db` | Optional local copy for migration/backup only (gitignored) |
-| `matrix.db-wal`, `matrix.db-shm` | SQLite WAL sidecars (gitignored) |
+| `README.md` | This file |
+| `matrix.db.template` | Pre-hydrated seed cache — **generated during `docker build`**, gitignored, baked into the image |
+| `matrix.db.example` | Empty placeholder, vestigial (Compose needs no manual copy step) |
+
+A `matrix.db` (plus `-wal`/`-shm` sidecars) only appears here if you manually copy a backup
+into this folder. The **running** database and its WAL files live in the `matrix_db` volume
+(Docker) or `./data/` (local dev) — never in this directory at runtime.
 
 ## Live database storage
 
