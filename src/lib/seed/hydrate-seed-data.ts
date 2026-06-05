@@ -132,13 +132,14 @@ export const hydrateSeedData = async (
 
     db.transaction((tx) => {
       for (const row of inserts) {
-        tx.insert(steamGames).values({ ...row, updatedAt: now })
+        tx.insert(steamGames).values({ ...row, updatedAt: now }).run()
       }
       for (const row of updates) {
         tx
           .update(steamGames)
           .set({ ...row, updatedAt: now })
           .where(eq(steamGames.appid, row.appid))
+          .run()
       }
     })
 
@@ -251,6 +252,7 @@ export const hydrateSeedData = async (
             target: denuvoAntiTamperCatalog.appid,
             set: { lastSyncedAt: row.lastSyncedAt },
           })
+          .run()
       }
 
       for (const row of gameInserts) {
@@ -259,13 +261,13 @@ export const hydrateSeedData = async (
           name: `App ${row.appid}`,
           storeUrl: `https://store.steampowered.com/app/${row.appid}`,
           updatedAt: now,
-        })
+        }).run()
       }
 
       for (const row of anticheatInserts) {
         tx.insert(anticheatEntries).values(
           row as typeof anticheatEntries.$inferInsert
-        )
+        ).run()
       }
 
       for (const row of anticheatUpdates) {
@@ -273,6 +275,7 @@ export const hydrateSeedData = async (
           .update(anticheatEntries)
           .set(row.values as Partial<typeof anticheatEntries.$inferInsert>)
           .where(eq(anticheatEntries.appid, row.appid))
+          .run()
       }
     })
 
@@ -347,14 +350,14 @@ export const hydrateSeedData = async (
           name: `App ${row.appid}`,
           storeUrl: `https://store.steampowered.com/app/${row.appid}`,
           updatedAt: now,
-        })
+        }).run()
       }
 
       for (const row of detailUpserts) {
         tx.insert(steamAppDetails).values(row).onConflictDoUpdate({
           target: steamAppDetails.appid,
           set: row,
-        })
+        }).run()
       }
     })
 
@@ -427,14 +430,14 @@ export const hydrateSeedData = async (
           name: `App ${row.appid}`,
           storeUrl: `https://store.steampowered.com/app/${row.appid}`,
           updatedAt: now,
-        })
+        }).run()
       }
 
       for (const row of protonUpserts) {
         tx.insert(protondbEntries).values(row).onConflictDoUpdate({
           target: protondbEntries.appid,
           set: row,
-        })
+        }).run()
       }
     })
 
@@ -511,14 +514,14 @@ export const hydrateSeedData = async (
           name: `App ${row.appid}`,
           storeUrl: `https://store.steampowered.com/app/${row.appid}`,
           updatedAt: now,
-        })
+        }).run()
       }
 
       for (const row of hltbUpserts) {
         tx.insert(howlongtobeatEntries).values(row).onConflictDoUpdate({
           target: howlongtobeatEntries.appid,
           set: row,
-        })
+        }).run()
       }
     })
 
