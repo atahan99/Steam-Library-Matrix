@@ -390,7 +390,7 @@ export const HltbTable = () => {
                           </p>
                         ) : null}
                       </div>
-                      <SourceLink href={g.hltb?.sourceUrl} label="HowLongToBeat" />
+                      <SourceLink href={g.hltb?.sourceUrl} label="HowLongToBeat" source="hltb" />
                     </div>
                   </TableCell>
                   <TableCell>

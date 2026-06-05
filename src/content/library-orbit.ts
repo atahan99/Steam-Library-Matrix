@@ -1,11 +1,7 @@
-import type { BrandSlug } from "@/components/icons/brand-icon"
+import { SOURCE_ICON, type SourceIconConfig } from "@/lib/sources/source-icon-config"
 import { LEVVVEL_KERNEL_URL } from "@/lib/anticheat/anticheatTypes"
 
-export type LibraryOrbitIconConfig =
-  | { type: "app" }
-  | { type: "steam" }
-  | { type: "brand"; brand: BrandSlug }
-  | { type: "image"; src: string }
+export type LibraryOrbitIconConfig = { type: "app" } | SourceIconConfig
 
 export type LibraryOrbitNode = {
   id: string
@@ -31,42 +27,36 @@ export const libraryOrbitNodes: LibraryOrbitNode[] = [
     id: "protondb",
     label: "ProtonDB",
     url: "https://www.protondb.com",
-    icon: { type: "brand", brand: "protondb" },
+    icon: SOURCE_ICON.protondb,
   },
   {
     id: "howlongtobeat",
     label: "HowLongToBeat",
     url: "https://howlongtobeat.com",
-    icon: {
-      type: "image",
-      src: "https://howlongtobeat.com/img/icons/favicon-32x32.png",
-    },
+    icon: SOURCE_ICON.hltb,
   },
   {
     id: "awacy",
     label: "Are We Anti-Cheat Yet",
     url: "https://areweanticheatyet.com",
-    icon: { type: "image", src: "https://areweanticheatyet.com/icon.webp" },
+    icon: SOURCE_ICON.awacy,
   },
   {
     id: "steamdb",
     label: "SteamDB",
     url: "https://steamdb.info",
-    icon: { type: "brand", brand: "steamdb" },
+    icon: SOURCE_ICON.steamdb,
   },
   {
     id: "levvvel",
     label: "Levvvel",
     url: LEVVVEL_KERNEL_URL,
-    icon: {
-      type: "image",
-      src: "https://levvvel.com/wp-content/uploads/vvv-favicon-square-1-100x100.png",
-    },
+    icon: SOURCE_ICON.levvvel,
   },
   {
     id: "steam-deck",
     label: "Steam Deck",
     url: "https://www.steamdeck.com/en/verified",
-    icon: { type: "brand", brand: "steam-deck" },
+    icon: SOURCE_ICON["steam-deck"],
   },
 ]

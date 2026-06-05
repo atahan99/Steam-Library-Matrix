@@ -32,7 +32,6 @@ import {
 } from "@/components/ui/table"
 import { AntiCheatStatusBadge } from "@/components/badges/anticheat-status-badge"
 import { PlaytimeBadge } from "@/components/badges/playtime-badge"
-import { AntiCheatNotesCell } from "@/components/tables/anticheat-notes-cell"
 import { FilterSelectField } from "@/components/tables/filter-select-field"
 import { GameCell } from "@/components/tables/game-cell"
 import {
@@ -337,14 +336,13 @@ export const AntiCheatTable = () => {
               <TableHead>Linux anti-cheat status</TableHead>
               <TableHead>Kernel anti-cheat</TableHead>
               <TableHead>Native Linux</TableHead>
-              <TableHead className="w-14">Notes</TableHead>
               <TableHead>Last updated</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {paged.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={9} className="text-center text-muted-foreground">
+                <TableCell colSpan={8} className="text-center text-muted-foreground">
                   {antiCheatGames.length === 0
                     ? "No games checked yet. Sync catalogs, then run Anti-cheat refresh on Data Status."
                     : "No games match these filters."}
@@ -358,14 +356,20 @@ export const AntiCheatTable = () => {
                 const lowConfidence = isLowConfidenceAntiCheatMatch(
                   g.antiCheat?.matchConfidence
                 )
-                const showMatchedName =
-                  lowConfidence &&
-                  g.antiCheat?.matchedName &&
-                  g.antiCheat.matchedName.toLowerCase() !== g.name.toLowerCase()
+
+                const showDenuvoLink = shouldShowDenuvoCuratorLink({
+                  denuvoAntiTamper: g.antiCheat?.denuvoAntiTamper,
+                  denuvoConfidence: g.antiCheat?.denuvoConfidence,
+                  denuvoSource: g.antiCheat?.denuvoSource,
+                })
+                const hasSourceLinks =
+                  Boolean(g.antiCheat?.sourceUrl) ||
+                  Boolean(g.antiCheat?.levvvelSourceUrl) ||
+                  showDenuvoLink
 
                 return (
                   <TableRow key={g.appid}>
-                    <TableCell className={TABLE_GAME_COLUMN_CELL_CLASS}>
+                    <TableCell className={`align-top ${TABLE_GAME_COLUMN_CELL_CLASS}`}>
                       <div className="flex items-start gap-2">
                         <div className="min-w-0 flex-1">
                           <div className="flex items-start gap-1.5">
@@ -387,27 +391,35 @@ export const AntiCheatTable = () => {
                               </span>
                             ) : null}
                           </div>
-                          {showMatchedName ? (
-                            <p className="mt-0.5 truncate pl-11 text-xs text-muted-foreground">
-                              AWACY: {g.antiCheat!.matchedName}
-                            </p>
-                          ) : null}
                         </div>
-                        {g.antiCheat?.sourceUrl ? (
-                          <SourceLink
-                            href={g.antiCheat.sourceUrl}
-                            label="Linux anti-cheat source on Are We Anti-Cheat Yet"
-                          />
-                        ) : null}
-                        {g.antiCheat?.levvvelSourceUrl ? (
-                          <SourceLink
-                            href={g.antiCheat.levvvelSourceUrl}
-                            label="Kernel anti-cheat source on Levvvel"
-                          />
+                        {hasSourceLinks ? (
+                          <div className="flex shrink-0 flex-col gap-1 pt-0.5">
+                            {g.antiCheat?.sourceUrl ? (
+                              <SourceLink
+                                href={g.antiCheat.sourceUrl}
+                                label="Linux anti-cheat source on Are We Anti-Cheat Yet"
+                                source="awacy"
+                              />
+                            ) : null}
+                            {g.antiCheat?.levvvelSourceUrl ? (
+                              <SourceLink
+                                href={g.antiCheat.levvvelSourceUrl}
+                                label="Kernel anti-cheat source on Levvvel"
+                                source="levvvel"
+                              />
+                            ) : null}
+                            {showDenuvoLink ? (
+                              <SourceLink
+                                href={DENUVO_CURATOR_SOURCE_URL}
+                                label="Denuvo Anti-Tamper source on Steam curator"
+                                source="steam"
+                              />
+                            ) : null}
+                          </div>
                         ) : null}
                       </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="align-top">
                       <PlaytimeBadge minutes={g.playtimeForeverMinutes} />
                     </TableCell>
                     <TableCell className="whitespace-normal align-top">
@@ -424,27 +436,15 @@ export const AntiCheatTable = () => {
                       )}
                     </TableCell>
                     <TableCell className="whitespace-normal align-top">
-                      <div className="flex flex-col gap-1">
-                        <DenuvoStatusBadge antiCheat={g.antiCheat} />
-                        {shouldShowDenuvoCuratorLink({
-                          denuvoAntiTamper: g.antiCheat?.denuvoAntiTamper,
-                          denuvoConfidence: g.antiCheat?.denuvoConfidence,
-                          denuvoSource: g.antiCheat?.denuvoSource,
-                        }) ? (
-                          <SourceLink
-                            href={DENUVO_CURATOR_SOURCE_URL}
-                            label="Denuvo Anti-Tamper source on Steam curator"
-                          />
-                        ) : null}
-                      </div>
+                      <DenuvoStatusBadge antiCheat={g.antiCheat} />
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="align-top">
                       <AntiCheatStatusBadge
                         status={g.antiCheat?.status}
                         enriched={enriched}
                       />
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="align-top">
                       {kernelLabel === "Not checked" ? (
                         <Badge variant="outline" className="text-muted-foreground">
                           Not checked
@@ -455,20 +455,14 @@ export const AntiCheatTable = () => {
                         kernelLabel
                       )}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="align-top">
                       {g.antiCheat?.nativeLinux === true ? (
                         <Badge variant="secondary">Native</Badge>
                       ) : (
                         "—"
                       )}
                     </TableCell>
-                    <TableCell className="w-14">
-                      <AntiCheatNotesCell
-                        notes={g.antiCheat?.notes}
-                        gameName={g.name}
-                      />
-                    </TableCell>
-                    <TableCell className="text-xs text-muted-foreground">
+                    <TableCell className="align-top text-xs text-muted-foreground">
                       {g.antiCheat?.awacyDateChanged
                         ? new Date(g.antiCheat.awacyDateChanged).toLocaleDateString()
                         : g.antiCheat?.lastCheckedAt

@@ -446,7 +446,7 @@ export const ProtonDbTable = ({
                       <SourceLink
                         href={g.protondb?.sourceUrl}
                         label="ProtonDB"
-                        brand="protondb"
+                        source="protondb"
                       />
                     </div>
                   </TableCell>

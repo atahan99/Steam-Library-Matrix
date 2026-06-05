@@ -55,15 +55,15 @@ export const DashboardHeader = () => {
     : "Never"
 
   return (
-    <header className="border-neon-bottom relative sticky top-0 z-40 flex h-(--header-height) shrink-0 items-center border-b bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/80">
-      <div className="flex min-w-0 flex-1 items-center gap-3">
+    <header className="border-neon-bottom sticky top-0 z-40 grid h-(--header-height) shrink-0 grid-cols-[1fr_auto_1fr] items-center gap-3 border-b bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+      <div className="flex min-w-0 items-center gap-3">
         <SidebarTrigger />
         <Link
           href={`/dashboard/${profile.steamid}`}
           aria-label="Go to overview"
           className="rounded-full outline-none ring-offset-2 ring-offset-background transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-ring"
         >
-          <Avatar className="size-9 cursor-pointer">
+          <Avatar className="size-9 shrink-0 cursor-pointer">
             <AvatarImage src={profile.avatarUrl} alt={profile.personaName} />
             <AvatarFallback>
               {profile.personaName.slice(0, 2).toUpperCase()}
@@ -72,15 +72,15 @@ export const DashboardHeader = () => {
         </Link>
         <div className="min-w-0">
           <p className="truncate font-semibold">{profile.personaName}</p>
-          <p className="font-mono text-xs tracking-wide text-muted-foreground">
+          <p className="truncate font-mono text-xs tracking-wide text-muted-foreground">
             Last synced: {lastSynced}
           </p>
         </div>
       </div>
-      <p className="text-brand-neon pointer-events-none absolute left-1/2 hidden -translate-x-1/2 text-sm font-bold xl:block xl:text-base">
+      <p className="text-brand-neon pointer-events-none hidden truncate whitespace-nowrap text-sm font-bold justify-self-center sm:block md:text-base">
         {APP_NAME}
       </p>
-      <div className="flex shrink-0 flex-1 items-center justify-end gap-1 sm:gap-2">
+      <div className="flex shrink-0 items-center justify-end justify-self-end gap-1 sm:gap-2">
         <Button
           variant="outline"
           size="sm"
@@ -89,8 +89,7 @@ export const DashboardHeader = () => {
           aria-label="Search games (Command K)"
         >
           <Search className="size-3.5" aria-hidden />
-          <span className="hidden lg:inline">Search games…</span>
-          <kbd className="pointer-events-none hidden rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground lg:inline">
+          <kbd className="pointer-events-none rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground">
             ⌘K
           </kbd>
         </Button>
