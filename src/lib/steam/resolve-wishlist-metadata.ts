@@ -1,5 +1,6 @@
 import { fetchSteamDeckCompatibility } from "@/lib/steam/fetch-steam-deck-compatibility"
 import { getAppidsNeedingDeckRefresh } from "@/lib/steam/refresh-steam-deck-compatibility"
+import { getSteamAppName } from "@/lib/steam/steam-app-list"
 import {
   fetchSteamAppDetails,
   type SteamStoreAppDetails,
@@ -80,8 +81,11 @@ export const resolveWishlistItemsFromStore = async (
             fetchSteamAppDetails(current.appid),
             fetchSteamDeckCompatibility(current.appid),
           ])
-          if (details?.name?.trim()) {
-            resolvedNames.set(current.appid, details.name.trim())
+          const resolvedName =
+            details?.name?.trim() ??
+            (await getSteamAppName(current.appid))?.trim()
+          if (resolvedName) {
+            resolvedNames.set(current.appid, resolvedName)
           }
           if (details?.headerImage) {
             resolvedLogos.set(current.appid, details.headerImage)

@@ -1,5 +1,8 @@
+name: steam-library-matrix
+
 services:
   app:
+    image: steam-library-matrix:latest
     build:
       context: ..
       dockerfile: docker/Dockerfile

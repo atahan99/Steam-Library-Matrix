@@ -101,7 +101,7 @@ Production uses Next.js **standalone** output plus **`better-sqlite3`** (native,
 
 ```bash
 docker compose -f docker/compose.yml build
-docker images docker-app --format '{{.Size}}'
+docker images steam-library-matrix --format '{{.Size}}'
 ```
 
 ## Local development

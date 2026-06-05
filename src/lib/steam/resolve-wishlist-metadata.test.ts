@@ -16,16 +16,22 @@ vi.mock("@/lib/db/steam-app-details", () => ({
   upsertSteamAppDetailsRow: vi.fn(),
 }))
 
+vi.mock("@/lib/steam/steam-app-list", () => ({
+  getSteamAppName: vi.fn(),
+}))
+
 import { upsertSteamAppDetailsRow } from "@/lib/db/steam-app-details"
 import { fetchSteamDeckCompatibility } from "@/lib/steam/fetch-steam-deck-compatibility"
 import { getAppidsNeedingDeckRefresh } from "@/lib/steam/refresh-steam-deck-compatibility"
 import { resolveWishlistItemsFromStore } from "@/lib/steam/resolve-wishlist-metadata"
+import { getSteamAppName } from "@/lib/steam/steam-app-list"
 import { fetchSteamAppDetails } from "@/lib/steam/steam-store"
 
 const mockedGetAppidsNeedingDeckRefresh = vi.mocked(getAppidsNeedingDeckRefresh)
 const mockedFetchSteamAppDetails = vi.mocked(fetchSteamAppDetails)
 const mockedFetchSteamDeckCompatibility = vi.mocked(fetchSteamDeckCompatibility)
 const mockedUpsertSteamAppDetailsRow = vi.mocked(upsertSteamAppDetailsRow)
+const mockedGetSteamAppName = vi.mocked(getSteamAppName)
 
 describe("resolveWishlistItemsFromStore", () => {
   afterEach(() => {
@@ -72,5 +78,21 @@ describe("resolveWishlistItemsFromStore", () => {
     expect(result.deckOnlyToPersist).toEqual([
       { appid, compatibility: "playable" },
     ])
+  })
+
+  it("falls back to GetAppList when storefront appdetails has no name", async () => {
+    const appid = 2999990
+    mockedGetAppidsNeedingDeckRefresh.mockResolvedValue(new Set())
+    mockedFetchSteamAppDetails.mockResolvedValue(null)
+    mockedFetchSteamDeckCompatibility.mockResolvedValue("unknown")
+    mockedGetSteamAppName.mockResolvedValue("Half-Life 3")
+
+    const result = await resolveWishlistItemsFromStore([
+      { appid, name: `App ${appid}`, addedAt: null },
+    ])
+
+    expect(mockedGetSteamAppName).toHaveBeenCalledWith(appid)
+    expect(result.items[0]?.name).toBe("Half-Life 3")
+    expect(result.appDetailsToPersist).toEqual([])
   })
 })

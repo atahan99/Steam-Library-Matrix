@@ -5,6 +5,7 @@ import { steamAppDetails, steamGames } from "@/lib/db/schema"
 import { APP_DETAILS_TTL_HOURS } from "@/lib/enrichment/resolve-enrichment-appids"
 import { fetchSteamDeckCompatibility } from "@/lib/steam/fetch-steam-deck-compatibility"
 import { hasStoredSteamPlatforms } from "@/lib/steam/parse-steam-platforms"
+import { getSteamAppName } from "@/lib/steam/steam-app-list"
 import { fetchSteamAppDetails } from "@/lib/steam/steam-store"
 import { SteamStoreCooldownError } from "@/lib/steam/steam-store-fetch"
 import { isCacheFresh } from "@/lib/utils/cache"
@@ -22,6 +23,30 @@ export type AppDetailsEnrichResult = {
 export type EnrichAppDetailsOptions = {
   /** Skip Deck compat storefront call (seed bulk pass). */
   skipDeck?: boolean
+}
+
+const tryBackfillNameFromAppList = async (appid: number): Promise<boolean> => {
+  const db = getDb()
+  const existingGameRows = await db
+    .select({ name: steamGames.name })
+    .from(steamGames)
+    .where(eq(steamGames.appid, appid))
+    .limit(1)
+  const existingGame = existingGameRows[0]
+
+  if (existingGame?.name && !isPlaceholderGameName(existingGame.name)) {
+    return false
+  }
+
+  const listName = await getSteamAppName(appid)
+  if (!listName?.trim()) return false
+
+  await db
+    .update(steamGames)
+    .set({ name: listName.trim(), updatedAt: new Date() })
+    .where(eq(steamGames.appid, appid))
+
+  return true
 }
 
 /** Single-app Steam store details + Deck compat for job steps and full refresh. */
@@ -79,7 +104,14 @@ export const enrichSingleAppDetails = async (
   try {
     const details = await fetchSteamAppDetails(appid)
     if (!details) {
-      return { checked: 1, updated: 0, failed: 1, skipped: 0 }
+      const backfilled = await tryBackfillNameFromAppList(appid)
+      await new Promise((r) => setTimeout(r, APP_DETAILS_DELAY_MS))
+      return {
+        checked: 1,
+        updated: backfilled ? 1 : 0,
+        failed: backfilled ? 0 : 1,
+        skipped: 0,
+      }
     }
 
     if (!skipDeck) {
@@ -108,11 +140,14 @@ export const enrichSingleAppDetails = async (
       updatedAt: Date
     } = { updatedAt: now }
 
+    const resolvedName =
+      details.name?.trim() ?? (await getSteamAppName(appid))?.trim()
+
     if (
-      details.name?.trim() &&
+      resolvedName &&
       (!existingGame?.name || isPlaceholderGameName(existingGame.name))
     ) {
-      gameUpdates.name = details.name.trim()
+      gameUpdates.name = resolvedName
     }
 
     if (details.headerImage) {

@@ -64,6 +64,26 @@ docker compose -f docker/compose.yml up -d
 
 Adjust the volume name if your Compose project name differs (`docker volume ls`).
 
+## Migrate from default Compose project name (`docker_matrix_db`)
+
+If you previously ran Compose without an explicit project `name:`, the live DB lived in
+`docker_matrix_db`. Adding `name: steam-library-matrix` creates a new volume
+(`steam-library-matrix_matrix_db`), so the app looks empty until you migrate or re-import.
+
+**Option A — re-import:** tear down, bring up with the new project name, and import your
+Steam profile again (seed + import are quick for typical libraries).
+
+**Option B — one-time volume copy:**
+
+```bash
+docker compose -f docker/compose.yml down
+docker run --rm \
+  -v docker_matrix_db:/from \
+  -v steam-library-matrix_matrix_db:/to \
+  alpine sh -c 'cp -a /from/. /to/'
+docker compose -f docker/compose.yml up --build -d
+```
+
 ## Recovery from corruption
 
 ```bash
