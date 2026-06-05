@@ -1,18 +1,6 @@
-import { fetchSteamDeckCompatibility } from "@/lib/steam/fetch-steam-deck-compatibility"
-import { getAppidsNeedingDeckRefresh } from "@/lib/steam/refresh-steam-deck-compatibility"
-import { getSteamAppName } from "@/lib/steam/steam-app-list"
-import {
-  fetchSteamAppDetails,
-  type SteamStoreAppDetails,
-} from "@/lib/steam/steam-store"
-import type { SteamDeckCompatibility } from "@/lib/utils/detect-steam-deck"
+import { getAllSteamAppNames } from "@/lib/steam/steam-api"
 import { isPlaceholderGameName } from "@/lib/utils/placeholder-game-name"
 import type { SteamWishlistItem } from "@/types/steam"
-
-const CONCURRENCY = 5
-const REQUEST_GAP_MS = 120
-
-const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 export type WishlistGameUpsertMeta = {
   appid: number
@@ -20,9 +8,19 @@ export type WishlistGameUpsertMeta = {
   logoUrl?: string
 }
 
-export type WishlistDeckOnlyPersist = {
-  appid: number
-  compatibility: SteamDeckCompatibility
+export const dedupeWishlistItems = (
+  items: SteamWishlistItem[]
+): SteamWishlistItem[] => {
+  const seen = new Set<number>()
+  const deduped: SteamWishlistItem[] = []
+
+  for (const item of items) {
+    if (seen.has(item.appid)) continue
+    seen.add(item.appid)
+    deduped.push(item)
+  }
+
+  return deduped
 }
 
 export const resolveWishlistItemsFromStore = async (
@@ -30,115 +28,42 @@ export const resolveWishlistItemsFromStore = async (
 ): Promise<{
   items: SteamWishlistItem[]
   upsertMeta: WishlistGameUpsertMeta[]
-  appDetailsToPersist: SteamStoreAppDetails[]
-  deckOnlyToPersist: WishlistDeckOnlyPersist[]
 }> => {
-  const placeholderAppids = new Set(
-    items
-      .filter((item) => isPlaceholderGameName(item.name))
-      .map((item) => item.appid)
-  )
-  const deckRefreshAppids = await getAppidsNeedingDeckRefresh(
-    items.map((item) => item.appid)
-  )
+  const deduped = dedupeWishlistItems(items)
+  const placeholderAppids = deduped
+    .filter((item) => isPlaceholderGameName(item.name))
+    .map((item) => item.appid)
 
-  const needsResolveAppids = new Set([
-    ...placeholderAppids,
-    ...deckRefreshAppids,
-  ])
-
-  if (needsResolveAppids.size === 0) {
-    return {
-      items,
-      upsertMeta: items.map((item) => ({ appid: item.appid, name: item.name })),
-      appDetailsToPersist: [],
-      deckOnlyToPersist: [],
+  let appNames: Map<number, string> | null = null
+  if (placeholderAppids.length > 0) {
+    try {
+      appNames = await getAllSteamAppNames()
+    } catch (error) {
+      console.warn("[wishlist-metadata] Failed to load GetAppList names:", error)
     }
   }
 
-  const needsResolve = items.filter((item) =>
-    needsResolveAppids.has(item.appid)
-  )
+  let resolvedNameCount = 0
+  const itemsWithNames = deduped.map((item) => {
+    if (!isPlaceholderGameName(item.name)) return item
 
-  const resolvedNames = new Map<number, string>()
-  const resolvedLogos = new Map<number, string>()
-  const appDetailsToPersist: SteamStoreAppDetails[] = []
-  const deckOnlyToPersist: WishlistDeckOnlyPersist[] = []
-  let index = 0
-
-  const worker = async () => {
-    while (index < needsResolve.length) {
-      const current = needsResolve[index]
-      index += 1
-      if (!current) continue
-
-      const needsName = placeholderAppids.has(current.appid)
-      const needsDeck = deckRefreshAppids.has(current.appid)
-
-      try {
-        if (needsName) {
-          const [details, steamDeckCompatibility] = await Promise.all([
-            fetchSteamAppDetails(current.appid),
-            fetchSteamDeckCompatibility(current.appid),
-          ])
-          const resolvedName =
-            details?.name?.trim() ??
-            (await getSteamAppName(current.appid))?.trim()
-          if (resolvedName) {
-            resolvedNames.set(current.appid, resolvedName)
-          }
-          if (details?.headerImage) {
-            resolvedLogos.set(current.appid, details.headerImage)
-          }
-          if (details) {
-            details.steamDeckCompatibility = steamDeckCompatibility
-            appDetailsToPersist.push(details)
-          }
-        } else if (needsDeck) {
-          const steamDeckCompatibility =
-            await fetchSteamDeckCompatibility(current.appid)
-          deckOnlyToPersist.push({
-            appid: current.appid,
-            compatibility: steamDeckCompatibility ?? "unknown",
-          })
-        }
-      } catch (error) {
-        console.warn(
-          `[wishlist-metadata] Failed to resolve store details for appid ${current.appid}:`,
-          error
-        )
-      }
-
-      await wait(REQUEST_GAP_MS)
-    }
-  }
-
-  await Promise.all(
-    Array.from({ length: Math.min(CONCURRENCY, needsResolve.length) }, () =>
-      worker()
-    )
-  )
-
-  const itemsWithNames = items.map((item) => {
-    const resolvedName = resolvedNames.get(item.appid)
+    const resolvedName = appNames?.get(item.appid)?.trim()
     if (!resolvedName) return item
+
+    resolvedNameCount += 1
     return { ...item, name: resolvedName }
   })
 
   const upsertMeta = itemsWithNames.map((item) => ({
     appid: item.appid,
     name: item.name,
-    logoUrl: resolvedLogos.get(item.appid),
   }))
 
-  console.info(
-    `[wishlist] resolved store metadata: ${resolvedNames.size}/${placeholderAppids.size} names, ${deckRefreshAppids.size} deck refreshes`
-  )
-
-  return {
-    items: itemsWithNames,
-    upsertMeta,
-    appDetailsToPersist,
-    deckOnlyToPersist,
+  if (placeholderAppids.length > 0) {
+    console.info(
+      `[wishlist] resolved GetAppList names: ${resolvedNameCount}/${placeholderAppids.length} placeholders`
+    )
   }
+
+  return { items: itemsWithNames, upsertMeta }
 }

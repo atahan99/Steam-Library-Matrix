@@ -8,13 +8,8 @@ import {
   steamGames,
   steamProfiles,
 } from "@/lib/db/schema"
-import { upsertSteamAppDetailsRow } from "@/lib/db/steam-app-details"
-import type {
-  WishlistDeckOnlyPersist,
-  WishlistGameUpsertMeta,
-} from "@/lib/steam/resolve-wishlist-metadata"
-import { upsertSteamDeckCompatibility } from "@/lib/steam/refresh-steam-deck-compatibility"
-import type { SteamStoreAppDetails } from "@/lib/steam/steam-store"
+import type { WishlistGameUpsertMeta } from "@/lib/steam/resolve-wishlist-metadata"
+import { dedupeWishlistItems } from "@/lib/steam/resolve-wishlist-metadata"
 import { getSteamStoreUrl } from "@/lib/utils/steam-url"
 import { getErrorMessage } from "@/lib/utils/get-error-message"
 import { isPlaceholderGameName } from "@/lib/utils/placeholder-game-name"
@@ -98,38 +93,6 @@ export const upsertWishlistGames = async (
   }
 }
 
-export type WishlistPersistExtras = {
-  appDetailsToPersist?: SteamStoreAppDetails[]
-  deckOnlyToPersist?: WishlistDeckOnlyPersist[]
-}
-
-const persistWishlistChildRows = async ({
-  appDetailsToPersist = [],
-  deckOnlyToPersist = [],
-}: WishlistPersistExtras) => {
-  for (const details of appDetailsToPersist) {
-    try {
-      await upsertSteamAppDetailsRow(details)
-    } catch (error) {
-      console.warn(
-        `[wishlist] Failed to persist store details for appid ${details.appid}:`,
-        error
-      )
-    }
-  }
-
-  for (const { appid, compatibility } of deckOnlyToPersist) {
-    try {
-      await upsertSteamDeckCompatibility(appid, compatibility)
-    } catch (error) {
-      console.warn(
-        `[wishlist] Failed to persist Deck compatibility for appid ${appid}:`,
-        error
-      )
-    }
-  }
-}
-
 const safeUpdateWishlistProfileFields = async (
   steamid: string,
   fields: {
@@ -164,17 +127,30 @@ const safeUpdateWishlistProfileFields = async (
 export const syncProfileWishlist = async (
   steamid: string,
   items: SteamWishlistItem[],
-  upsertMeta?: WishlistGameUpsertMeta[],
-  persistExtras: WishlistPersistExtras = {}
+  upsertMeta?: WishlistGameUpsertMeta[]
 ) => {
   const db = getDb()
   const now = new Date()
+  const dedupedItems = dedupeWishlistItems(items)
 
-  await upsertWishlistGames(items, upsertMeta)
-  await persistWishlistChildRows(persistExtras)
+  await upsertWishlistGames(dedupedItems, upsertMeta)
 
   try {
-    await db.delete(profileWishlist).where(eq(profileWishlist.steamid, steamid))
+    db.transaction((tx) => {
+      tx.delete(profileWishlist)
+        .where(eq(profileWishlist.steamid, steamid))
+        .run()
+
+      for (let i = 0; i < dedupedItems.length; i += CHUNK_SIZE) {
+        const chunk = dedupedItems.slice(i, i + CHUNK_SIZE).map((item) => ({
+          steamid,
+          appid: item.appid,
+          addedAt: item.addedAt ? new Date(item.addedAt * 1000) : null,
+          lastSyncedAt: now,
+        }))
+        tx.insert(profileWishlist).values(chunk).onConflictDoNothing().run()
+      }
+    })
   } catch (error) {
     const message = getErrorMessage(error)
     if (isMissingWishlistSchema(message)) {
@@ -183,18 +159,6 @@ export const syncProfileWishlist = async (
       )
     }
     throw error
-  }
-
-  if (items.length > 0) {
-    for (let i = 0; i < items.length; i += CHUNK_SIZE) {
-      const chunk = items.slice(i, i + CHUNK_SIZE).map((item) => ({
-        steamid,
-        appid: item.appid,
-        addedAt: item.addedAt ? new Date(item.addedAt * 1000) : null,
-        lastSyncedAt: now,
-      }))
-      await db.insert(profileWishlist).values(chunk)
-    }
   }
 
   await safeUpdateWishlistProfileFields(steamid, {

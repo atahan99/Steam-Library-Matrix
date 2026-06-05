@@ -5,7 +5,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { schema, type AppDatabase } from "@/lib/db/schema"
 import {
   profileWishlist,
-  steamAppDetails,
   steamGames,
   steamProfiles,
 } from "@/lib/db/schema"
@@ -38,26 +37,6 @@ const WISHLIST_TABLES_SQL = `
     icon_url text,
     logo_url text,
     store_url text,
-    created_at integer,
-    updated_at integer
-  );
-
-  create table steam_app_details (
-    appid integer primary key references steam_games(appid) on delete cascade,
-    type text,
-    short_description text,
-    header_image text,
-    website text,
-    developers text,
-    publishers text,
-    platforms text,
-    categories text,
-    genres text,
-    release_date text,
-    metacritic text,
-    recommendations text,
-    steam_deck_compatibility text,
-    last_checked_at integer,
     created_at integer,
     updated_at integer
   );
@@ -97,39 +76,12 @@ afterEach(() => {
 })
 
 describe("syncProfileWishlist", () => {
-  it("persists steam_games before steam_app_details for wishlist-only appids", async () => {
-    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {})
-
-    const items = [
-      {
-        appid: UNRELEASED_APPID,
-        name: "Half-Life 3",
-        addedAt: null,
-      },
-    ]
-    const upsertMeta = [
-      {
-        appid: UNRELEASED_APPID,
-        name: "Half-Life 3",
-        logoUrl: "https://cdn.example/hl3.jpg",
-      },
-    ]
-    const appDetailsToPersist = [
-      {
-        appid: UNRELEASED_APPID,
-        name: "Half-Life 3",
-        type: "game",
-        shortDescription: "The next chapter.",
-        steamDeckCompatibility: "verified" as const,
-      },
-    ]
-
-    await syncProfileWishlist(STEAMID, items, upsertMeta, {
-      appDetailsToPersist,
-      deckOnlyToPersist: [],
-    })
-
-    expect(warnSpy).not.toHaveBeenCalled()
+  it("persists wishlist links and steam_games for new appids", async () => {
+    await syncProfileWishlist(
+      STEAMID,
+      [{ appid: UNRELEASED_APPID, name: "Half-Life 3", addedAt: null }],
+      [{ appid: UNRELEASED_APPID, name: "Half-Life 3" }]
+    )
 
     const gameRows = await db
       .select()
@@ -138,20 +90,32 @@ describe("syncProfileWishlist", () => {
     expect(gameRows).toHaveLength(1)
     expect(gameRows[0]?.name).toBe("Half-Life 3")
 
-    const detailRows = await db
-      .select()
-      .from(steamAppDetails)
-      .where(eq(steamAppDetails.appid, UNRELEASED_APPID))
-    expect(detailRows).toHaveLength(1)
-    expect(detailRows[0]?.steamDeckCompatibility).toBe("verified")
-    expect(detailRows[0]?.shortDescription).toBe("The next chapter.")
-
     const wishlistRows = await db
       .select()
       .from(profileWishlist)
       .where(eq(profileWishlist.steamid, STEAMID))
     expect(wishlistRows).toHaveLength(1)
     expect(wishlistRows[0]?.appid).toBe(UNRELEASED_APPID)
+
+    const profileRows = await db
+      .select({ wishlistLastSyncedAt: steamProfiles.wishlistLastSyncedAt })
+      .from(steamProfiles)
+      .where(eq(steamProfiles.steamid, STEAMID))
+    expect(profileRows[0]?.wishlistLastSyncedAt).toBeTruthy()
+  })
+
+  it("dedupes duplicate appids before insert", async () => {
+    await syncProfileWishlist(STEAMID, [
+      { appid: 570, name: "Dota 2", addedAt: 100 },
+      { appid: 570, name: "Duplicate", addedAt: 200 },
+      { appid: 730, name: "Counter-Strike 2", addedAt: null },
+    ])
+
+    const wishlistRows = await db
+      .select({ appid: profileWishlist.appid })
+      .from(profileWishlist)
+      .where(eq(profileWishlist.steamid, STEAMID))
+    expect(wishlistRows.map((row) => row.appid).sort()).toEqual([570, 730])
   })
 
   it("upgrades placeholder steam_games names on re-sync", async () => {
@@ -166,8 +130,7 @@ describe("syncProfileWishlist", () => {
     await syncProfileWishlist(
       STEAMID,
       [{ appid: UNRELEASED_APPID, name: "Half-Life 3", addedAt: null }],
-      [{ appid: UNRELEASED_APPID, name: "Half-Life 3" }],
-      { appDetailsToPersist: [], deckOnlyToPersist: [] }
+      [{ appid: UNRELEASED_APPID, name: "Half-Life 3" }]
     )
 
     const gameRows = await db

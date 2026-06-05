@@ -36,17 +36,9 @@ export const syncSteamWishlist = async (
 ): Promise<WishlistSyncResult> => {
   try {
     const fetched = await fetchSteamWishlist(steamid)
-    const {
-      items,
-      upsertMeta,
-      appDetailsToPersist,
-      deckOnlyToPersist,
-    } = await resolveWishlistItemsFromStore(fetched)
+    const { items, upsertMeta } = await resolveWishlistItemsFromStore(fetched)
     try {
-      await syncProfileWishlist(steamid, items, upsertMeta, {
-        appDetailsToPersist,
-        deckOnlyToPersist,
-      })
+      await syncProfileWishlist(steamid, items, upsertMeta)
       return { count: items.length }
     } catch (dbError) {
       const dbMessage = getErrorMessage(dbError)

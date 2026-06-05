@@ -1,98 +1,69 @@
 import { afterEach, describe, expect, it, vi } from "vitest"
 
-vi.mock("@/lib/steam/refresh-steam-deck-compatibility", () => ({
-  getAppidsNeedingDeckRefresh: vi.fn(),
+vi.mock("@/lib/steam/steam-api", () => ({
+  getAllSteamAppNames: vi.fn(),
 }))
 
-vi.mock("@/lib/steam/steam-store", () => ({
-  fetchSteamAppDetails: vi.fn(),
-}))
+import { getAllSteamAppNames } from "@/lib/steam/steam-api"
+import {
+  dedupeWishlistItems,
+  resolveWishlistItemsFromStore,
+} from "@/lib/steam/resolve-wishlist-metadata"
 
-vi.mock("@/lib/steam/fetch-steam-deck-compatibility", () => ({
-  fetchSteamDeckCompatibility: vi.fn(),
-}))
-
-vi.mock("@/lib/db/steam-app-details", () => ({
-  upsertSteamAppDetailsRow: vi.fn(),
-}))
-
-vi.mock("@/lib/steam/steam-app-list", () => ({
-  getSteamAppName: vi.fn(),
-}))
-
-import { upsertSteamAppDetailsRow } from "@/lib/db/steam-app-details"
-import { fetchSteamDeckCompatibility } from "@/lib/steam/fetch-steam-deck-compatibility"
-import { getAppidsNeedingDeckRefresh } from "@/lib/steam/refresh-steam-deck-compatibility"
-import { resolveWishlistItemsFromStore } from "@/lib/steam/resolve-wishlist-metadata"
-import { getSteamAppName } from "@/lib/steam/steam-app-list"
-import { fetchSteamAppDetails } from "@/lib/steam/steam-store"
-
-const mockedGetAppidsNeedingDeckRefresh = vi.mocked(getAppidsNeedingDeckRefresh)
-const mockedFetchSteamAppDetails = vi.mocked(fetchSteamAppDetails)
-const mockedFetchSteamDeckCompatibility = vi.mocked(fetchSteamDeckCompatibility)
-const mockedUpsertSteamAppDetailsRow = vi.mocked(upsertSteamAppDetailsRow)
-const mockedGetSteamAppName = vi.mocked(getSteamAppName)
+const mockedGetAllSteamAppNames = vi.mocked(getAllSteamAppNames)
 
 describe("resolveWishlistItemsFromStore", () => {
   afterEach(() => {
     vi.clearAllMocks()
   })
 
-  it("fetches store metadata without writing to the database", async () => {
+  it("resolves placeholder names from GetAppList without storefront calls", async () => {
     const appid = 2999990
-    mockedGetAppidsNeedingDeckRefresh.mockResolvedValue(new Set())
-    mockedFetchSteamAppDetails.mockResolvedValue({
-      appid,
-      name: "Half-Life 3",
-      headerImage: "https://cdn.example/hl3.jpg",
-      type: "game",
-    })
-    mockedFetchSteamDeckCompatibility.mockResolvedValue("verified")
-
-    const result = await resolveWishlistItemsFromStore([
-      { appid, name: `App ${appid}`, addedAt: null },
-    ])
-
-    expect(mockedUpsertSteamAppDetailsRow).not.toHaveBeenCalled()
-    expect(result.items[0]?.name).toBe("Half-Life 3")
-    expect(result.appDetailsToPersist).toHaveLength(1)
-    expect(result.appDetailsToPersist[0]?.name).toBe("Half-Life 3")
-    expect(result.appDetailsToPersist[0]?.steamDeckCompatibility).toBe(
-      "verified"
+    mockedGetAllSteamAppNames.mockResolvedValue(
+      new Map([[appid, "Half-Life 3"]])
     )
-    expect(result.deckOnlyToPersist).toEqual([])
-  })
-
-  it("returns deck-only payloads without database writes", async () => {
-    const appid = 570
-    mockedGetAppidsNeedingDeckRefresh.mockResolvedValue(new Set([appid]))
-    mockedFetchSteamDeckCompatibility.mockResolvedValue("playable")
-
-    const result = await resolveWishlistItemsFromStore([
-      { appid, name: "Dota 2", addedAt: null },
-    ])
-
-    expect(mockedUpsertSteamAppDetailsRow).not.toHaveBeenCalled()
-    expect(mockedFetchSteamAppDetails).not.toHaveBeenCalled()
-    expect(result.appDetailsToPersist).toEqual([])
-    expect(result.deckOnlyToPersist).toEqual([
-      { appid, compatibility: "playable" },
-    ])
-  })
-
-  it("falls back to GetAppList when storefront appdetails has no name", async () => {
-    const appid = 2999990
-    mockedGetAppidsNeedingDeckRefresh.mockResolvedValue(new Set())
-    mockedFetchSteamAppDetails.mockResolvedValue(null)
-    mockedFetchSteamDeckCompatibility.mockResolvedValue("unknown")
-    mockedGetSteamAppName.mockResolvedValue("Half-Life 3")
 
     const result = await resolveWishlistItemsFromStore([
       { appid, name: `App ${appid}`, addedAt: null },
     ])
 
-    expect(mockedGetSteamAppName).toHaveBeenCalledWith(appid)
+    expect(mockedGetAllSteamAppNames).toHaveBeenCalledTimes(1)
+    expect(result.items).toHaveLength(1)
     expect(result.items[0]?.name).toBe("Half-Life 3")
-    expect(result.appDetailsToPersist).toEqual([])
+    expect(result.upsertMeta[0]?.name).toBe("Half-Life 3")
+  })
+
+  it("dedupes duplicate appids and keeps the first entry", async () => {
+    mockedGetAllSteamAppNames.mockResolvedValue(new Map())
+
+    const result = await resolveWishlistItemsFromStore([
+      { appid: 570, name: "Dota 2", addedAt: 100 },
+      { appid: 570, name: "Duplicate", addedAt: 200 },
+      { appid: 730, name: "Counter-Strike 2", addedAt: null },
+    ])
+
+    expect(result.items.map((item) => item.appid)).toEqual([570, 730])
+    expect(result.items[0]?.addedAt).toBe(100)
+    expect(mockedGetAllSteamAppNames).not.toHaveBeenCalled()
+  })
+
+  it("keeps API-provided names without calling GetAppList", async () => {
+    const result = await resolveWishlistItemsFromStore([
+      { appid: 570, name: "Dota 2", addedAt: null },
+    ])
+
+    expect(mockedGetAllSteamAppNames).not.toHaveBeenCalled()
+    expect(result.items[0]?.name).toBe("Dota 2")
+  })
+})
+
+describe("dedupeWishlistItems", () => {
+  it("returns the first occurrence for duplicate appids", () => {
+    expect(
+      dedupeWishlistItems([
+        { appid: 1, name: "First", addedAt: 1 },
+        { appid: 1, name: "Second", addedAt: 2 },
+      ])
+    ).toEqual([{ appid: 1, name: "First", addedAt: 1 }])
   })
 })
