@@ -219,28 +219,55 @@ export const getPlayerSummary = async (steamid: string): Promise<SteamProfile> =
 type GetAppListResponse = {
   response?: {
     apps?: Array<{ appid: number; name: string }>
+    have_more_results?: boolean
+    last_appid?: number
   }
 }
 
 let cachedSteamAppNames: Map<number, string> | null = null
 
+// IStoreService/GetAppList returns at most ~10k apps by default (50k with
+// max_results) and pages the rest via have_more_results/last_appid. Without
+// paging we only ever see the lowest appids, so modern games (appid > ~500k)
+// never resolve a name and fall back to the "App {appid}" placeholder.
+const APP_LIST_PAGE_SIZE = 50000
+const APP_LIST_MAX_PAGES = 40
+
 /** Keyed Web API appid → name map (~all Steam apps). Cached per process. */
 export const getAllSteamAppNames = async (): Promise<Map<number, string>> => {
   if (cachedSteamAppNames) return cachedSteamAppNames
 
-  const data = await steamFetch<GetAppListResponse>(
-    "/IStoreService/GetAppList/v1/",
-    {}
-  )
-
-  const apps = data.response?.apps ?? []
   const map = new Map<number, string>()
+  let lastAppid = 0
 
-  for (const entry of apps) {
-    const appid = Number(entry.appid)
-    const name = entry.name?.trim()
-    if (!Number.isFinite(appid) || appid <= 0 || !name) continue
-    map.set(appid, name)
+  for (let page = 0; page < APP_LIST_MAX_PAGES; page++) {
+    const params: Record<string, string> = {
+      max_results: String(APP_LIST_PAGE_SIZE),
+      include_games: "true",
+      include_dlc: "true",
+      include_software: "true",
+      include_videos: "true",
+      include_hardware: "true",
+    }
+    if (lastAppid > 0) params.last_appid = String(lastAppid)
+
+    const data = await steamFetch<GetAppListResponse>(
+      "/IStoreService/GetAppList/v1/",
+      params
+    )
+
+    const apps = data.response?.apps ?? []
+    for (const entry of apps) {
+      const appid = Number(entry.appid)
+      const name = entry.name?.trim()
+      if (!Number.isFinite(appid) || appid <= 0 || !name) continue
+      map.set(appid, name)
+    }
+
+    if (!data.response?.have_more_results) break
+    const nextCursor = Number(data.response?.last_appid)
+    if (!Number.isFinite(nextCursor) || nextCursor <= 0) break
+    lastAppid = nextCursor
   }
 
   cachedSteamAppNames = map
