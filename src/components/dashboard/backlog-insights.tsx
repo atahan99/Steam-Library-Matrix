@@ -1,6 +1,6 @@
 "use client"
 
-import { AddToBacklogButton } from "@/components/dashboard/add-to-backlog-button"
+import { BacklogAddToggle } from "@/components/dashboard/backlog-context"
 import {
   useDashboard,
   useGameDetail,
@@ -29,7 +29,6 @@ type BacklogListCardProps = {
   title: string
   description: string
   games: DashboardGame[]
-  steamid: string
   renderMeta: (game: DashboardGame) => React.ReactNode
   emptyMessage: string
 }
@@ -38,7 +37,6 @@ const BacklogListCard = ({
   title,
   description,
   games,
-  steamid,
   renderMeta,
   emptyMessage,
 }: BacklogListCardProps) => {
@@ -80,11 +78,7 @@ const BacklogListCard = ({
                   <span className="text-sm tabular-nums text-muted-foreground">
                     {renderMeta(game)}
                   </span>
-                  <AddToBacklogButton
-                    steamid={steamid}
-                    appid={game.appid}
-                    compact
-                  />
+                  <BacklogAddToggle appid={game.appid} />
                 </div>
               </div>
             ))}
@@ -103,8 +97,7 @@ const formatReleaseYear = (game: DashboardGame): string => {
 }
 
 export const BacklogInsights = () => {
-  const { games, profile } = useDashboard()
-  const steamid = profile.steamid
+  const { games } = useDashboard()
   const stats = getBacklogStats(games)
   const quickWins = getQuickWins(games, LIST_LIMIT)
   const almostThere = getAlmostThere(games, LIST_LIMIT)
@@ -139,7 +132,6 @@ export const BacklogInsights = () => {
           title="Quick wins"
           description="Unplayed and short — finish in an evening"
           games={quickWins}
-          steamid={steamid}
           renderMeta={(game) => formatHltbMinutes(game.hltb?.mainStoryMinutes)}
           emptyMessage="No short unplayed games with HowLongToBeat data yet."
         />
@@ -147,7 +139,6 @@ export const BacklogInsights = () => {
           title="Almost there"
           description="High achievement progress — push to 100%"
           games={almostThere}
-          steamid={steamid}
           renderMeta={(game) => `${game.achievements?.completionPercent ?? 0}%`}
           emptyMessage="No games between 50% and 99% achievement completion."
         />
@@ -155,7 +146,6 @@ export const BacklogInsights = () => {
           title="Gathering dust"
           description="Oldest unplayed games in your library"
           games={oldestUnplayed}
-          steamid={steamid}
           renderMeta={formatReleaseYear}
           emptyMessage="No never-played games found."
         />
