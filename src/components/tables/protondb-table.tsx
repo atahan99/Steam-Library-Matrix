@@ -448,7 +448,7 @@ export const ProtonDbTable = ({
                   <TableCell>
                     <PlaytimeBadge minutes={g.playtimeForeverMinutes} />
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="whitespace-normal">
                     <ProtonDbBadge game={g} />
                   </TableCell>
                   <TableCell>

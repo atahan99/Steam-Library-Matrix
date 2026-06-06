@@ -418,8 +418,11 @@ export const LibraryTable = ({
                   <TableCell>
                     <PlaytimeBadge minutes={game.playtimeForeverMinutes} />
                   </TableCell>
-                  <TableCell>
-                    <PlaytimeBadge minutes={game.playtime2WeeksMinutes} />
+                  <TableCell className="whitespace-normal">
+                    <PlaytimeBadge
+                      minutes={game.playtime2WeeksMinutes}
+                      releaseDate={game.steamDetails?.releaseDate}
+                    />
                   </TableCell>
                   <TableCell className="text-xs text-muted-foreground">
                     {game.lastSyncedAt

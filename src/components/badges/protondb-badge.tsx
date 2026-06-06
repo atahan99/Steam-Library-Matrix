@@ -1,4 +1,5 @@
 import { Badge } from "@/components/ui/badge"
+import { NotYetReleasedLabel } from "@/components/badges/not-yet-released-label"
 import {
   getProtonChartTier,
   PROTON_CHART_TIER_LABEL,
@@ -53,14 +54,24 @@ export const ProtonDbBadge = ({
         : PROTON_CHART_TIER_LABEL[resolved]
 
   const badgeStyle = getProtonTierBadgeStyle(resolved)
+  const isNotYetReleased = resolved === "not_yet_released"
+
+  const renderLabel = () => {
+    if (!isNotYetReleased) return label
+    return <NotYetReleasedLabel className="items-center capitalize" />
+  }
 
   return (
     <Badge
       variant="outline"
-      className={cn("capitalize", getProtonTierBadgeClassName(resolved))}
+      className={cn(
+        "capitalize",
+        isNotYetReleased && "h-auto min-h-5 whitespace-normal py-0.5",
+        getProtonTierBadgeClassName(resolved)
+      )}
       style={badgeStyle}
     >
-      {label}
+      {renderLabel()}
     </Badge>
   )
 }
