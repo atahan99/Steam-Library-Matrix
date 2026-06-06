@@ -21,7 +21,7 @@ export const dashboardPageIntros: Record<DashboardPageSegment, string> = {
   anticheat:
     "Games with known anti-cheat signals: software names, Linux status from Are We Anti-Cheat Yet (AWACY), and kernel-level data from Levvvel. Run Anti-cheat refresh on Data Status to update matches.",
   mac:
-    "Apple Silicon (native), Rosetta 2, and CrossOver compatibility from AppleGamingWiki, matched to your library — alongside Steam's native Mac flag. Filter to Apple Silicon native or CrossOver-playable titles, or refresh the data from Data Status.",
+    "Your games matched against the AppleGamingWiki macOS database — Apple Silicon (native), Rosetta 2, and CrossOver ratings. Filter by macOS compatibility (Apple Silicon native, Rosetta, CrossOver-playable), or refresh the data from Data Status.",
   vr:
     "Titles with VR support or VR-only flags parsed from Steam store categories. Filter by headset compatibility and search your library or wishlist.",
   "data-status":

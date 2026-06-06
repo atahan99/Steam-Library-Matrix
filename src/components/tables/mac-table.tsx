@@ -52,7 +52,9 @@ import { TableSortControls } from "@/components/tables/table-sort-controls"
 import {
   collectLibraryGenreFilterOptions,
   gameMatchesGenreFilter,
+  parseGenreLabels,
 } from "@/lib/utils/genre-label"
+import { GenreListCell } from "@/components/tables/genre-list-cell"
 import {
   hasMacCompatData,
   hasNativeAppleSilicon,
@@ -89,16 +91,10 @@ type MacUrlState = {
   size: TablePageSize
 }
 
-type MacCompatFilter =
-  | "all"
-  | "has-data"
-  | "apple-silicon"
-  | "rosetta"
-  | "crossover"
+type MacCompatFilter = "all" | "apple-silicon" | "rosetta" | "crossover"
 
 const COMPAT_OPTIONS: { value: MacCompatFilter; label: string }[] = [
-  { value: "all", label: "All games" },
-  { value: "has-data", label: "Has macOS data" },
+  { value: "all", label: "All Mac games" },
   { value: "apple-silicon", label: "Apple Silicon native" },
   { value: "rosetta", label: "Runs via Rosetta" },
   { value: "crossover", label: "CrossOver playable" },
@@ -109,8 +105,6 @@ const matchesCompatFilter = (
   filter: MacCompatFilter
 ): boolean => {
   switch (filter) {
-    case "has-data":
-      return hasMacCompatData(game)
     case "apple-silicon":
       return hasNativeAppleSilicon(game)
     case "rosetta":
@@ -229,19 +223,17 @@ export const MacTable = () => {
     size: pageSize,
   } = url
 
-  const genreOptions = useMemo(
-    () => collectLibraryGenreFilterOptions(games.map((game) => game.steamDetails)),
-    [games]
-  )
+  const macGames = useMemo(() => games.filter(hasMacCompatData), [games])
 
-  const withDataCount = useMemo(
-    () => games.filter(hasMacCompatData).length,
-    [games]
+  const genreOptions = useMemo(
+    () =>
+      collectLibraryGenreFilterOptions(macGames.map((game) => game.steamDetails)),
+    [macGames]
   )
 
   const filtered = useMemo(() => {
     const searchLower = search.toLowerCase()
-    return games
+    return macGames
       .filter((g) => g.name.toLowerCase().includes(searchLower))
       .filter((g) => gameMatchesGenreFilter(g.steamDetails, selectedGenres))
       .filter((g) => {
@@ -252,7 +244,7 @@ export const MacTable = () => {
       .filter((g) => matchesCompatFilter(g, compatFilter))
       .sort((a, b) => compareMacGames(a, b, sortKey, sortDirection))
   }, [
-    games,
+    macGames,
     search,
     selectedGenres,
     playedOnly,
@@ -271,6 +263,7 @@ export const MacTable = () => {
         macRatingDisplay(g.macosCompat?.native ?? "unknown").label,
         macRatingDisplay(g.macosCompat?.rosetta2 ?? "unknown").label,
         macRatingDisplay(g.macosCompat?.crossover ?? "unknown").label,
+        parseGenreLabels(g.steamDetails?.genres).join("; "),
         formatPlaytime(g.playtimeForeverMinutes),
       ]),
     [filtered]
@@ -305,6 +298,7 @@ export const MacTable = () => {
                   "Apple Silicon",
                   "Rosetta 2",
                   "CrossOver",
+                  "Genres",
                   "Playtime",
                 ]}
                 rows={exportRows}
@@ -378,9 +372,9 @@ export const MacTable = () => {
       </div>
 
       <p className="text-sm text-muted-foreground">
-        Showing {filtered.length} game{filtered.length === 1 ? "" : "s"} ·{" "}
-        {withDataCount} with AppleGamingWiki macOS data (Apple Silicon / Rosetta
-        / CrossOver).
+        Showing {filtered.length} of {macGames.length} game
+        {macGames.length === 1 ? "" : "s"} in the AppleGamingWiki macOS database
+        (Apple Silicon / Rosetta / CrossOver).
       </p>
 
       <div className="rounded-lg border border-border">
@@ -389,6 +383,7 @@ export const MacTable = () => {
             <TableRow>
               <TableHead className={TABLE_GAME_COLUMN_HEAD_CLASS}>Game</TableHead>
               <TableHead>macOS compatibility</TableHead>
+              <TableHead>Genres</TableHead>
               <TableHead>Playtime</TableHead>
             </TableRow>
           </TableHeader>
@@ -396,7 +391,7 @@ export const MacTable = () => {
             {paged.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={3}
+                  colSpan={4}
                   className="text-center text-muted-foreground"
                 >
                   No games match the current filters
@@ -416,6 +411,9 @@ export const MacTable = () => {
                   </TableCell>
                   <TableCell className="align-top">
                     <MacCompatCell mac={g.macosCompat} />
+                  </TableCell>
+                  <TableCell className="align-top whitespace-normal">
+                    <GenreListCell genres={g.steamDetails?.genres} />
                   </TableCell>
                   <TableCell>
                     <PlaytimeBadge minutes={g.playtimeForeverMinutes} />
