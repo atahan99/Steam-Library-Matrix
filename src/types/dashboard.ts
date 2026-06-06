@@ -14,6 +14,24 @@ export type AwacyStatus =
   | "Broken"
   | "Denied"
 
+export type MacCompatRating =
+  | "perfect"
+  | "runs"
+  | "menu"
+  | "unplayable"
+  | "na"
+  | "unknown"
+
+export type DashboardMacCompat = {
+  native: MacCompatRating
+  rosetta2: MacCompatRating
+  crossover: MacCompatRating
+  parallels: MacCompatRating
+  matchedName?: string
+  matchConfidence?: string
+  lastCheckedAt?: string
+}
+
 export type DashboardProfile = {
   steamid: string
   personaName: string
@@ -138,6 +156,7 @@ export type DashboardGame = {
     releaseDate?: DashboardReleaseDate
     lastCheckedAt?: string
   }
+  macosCompat?: DashboardMacCompat
 }
 
 export type DashboardPayload = {

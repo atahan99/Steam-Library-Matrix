@@ -7,6 +7,8 @@ import {
   type ProfileGameAchievementRow,
 } from "@/lib/db/profile-achievements-safe"
 import { loadSteamGameJoinRowsByAppids } from "@/lib/db/load-steam-game-join-rows"
+import { loadMacosCompatByAppid } from "@/lib/db/macos-compat"
+import { ensureMacosCompatReady } from "@/lib/mac/sync-macos-compat"
 import {
   mapProfileAchievementToJoinInput,
   type SteamGameJoinRow,
@@ -94,6 +96,10 @@ export const fetchDashboardPayload = async (
   const joinAppids = [...new Set([...libraryAppids, ...wishlistAppids])]
   const gamesByAppid = await loadSteamGameJoinRowsByAppids(joinAppids)
 
+  // Mac compatibility (AppleGamingWiki) — populate lazily, then attach by appid.
+  void ensureMacosCompatReady()
+  const macosCompatByAppid = await loadMacosCompatByAppid(joinAppids)
+
   const libraryRows = libraryLinks.map((link) => ({
     playtimeForeverMinutes: link.playtimeForeverMinutes ?? 0,
     playtime2WeeksMinutes: link.playtime2weeksMinutes ?? 0,
@@ -168,6 +174,22 @@ export const fetchDashboardPayload = async (
       )
     })
     .filter((game): game is DashboardGame => game !== null)
+
+  const attachMacCompat = (game: DashboardGame) => {
+    const entry = macosCompatByAppid.get(game.appid)
+    if (!entry) return
+    game.macosCompat = {
+      native: entry.native,
+      rosetta2: entry.rosetta2,
+      crossover: entry.crossover,
+      parallels: entry.parallels,
+      matchedName: entry.matchedName ?? undefined,
+      matchConfidence: entry.matchConfidence ?? undefined,
+      lastCheckedAt: entry.lastCheckedAt,
+    }
+  }
+  games.forEach(attachMacCompat)
+  wishlistGames.forEach(attachMacCompat)
 
   games.sort((a, b) => a.name.localeCompare(b.name))
   wishlistGames.sort((a, b) => a.name.localeCompare(b.name))

@@ -9,6 +9,8 @@ import {
   steamAppDetails,
   steamGames,
 } from "@/lib/db/schema"
+import { replaceMacosCompatCatalog } from "@/lib/db/macos-compat"
+import { rematchMacosCompatEntries } from "@/lib/mac/sync-macos-compat"
 import { loadSeedFiles, resolveSeedDir } from "@/lib/seed/load-seed-files"
 import {
   isSeedHydrationForcedByEnv,
@@ -527,6 +529,21 @@ export const hydrateSeedData = async (
 
     inserted += gameInserts.length + hltbInserted
     updated += hltbUpdated
+  }
+
+  // Mac compatibility is a global catalog (keyed by name): replace it, then
+  // re-match every seeded game against it to fill macos_compat_entries.
+  if (loaded.macosCompat?.items) {
+    const rows = Object.values(loaded.macosCompat.items).map((item) => ({
+      pageName: item.pageName,
+      native: item.native ?? "",
+      rosetta2: item.rosetta2 ?? "",
+      crossover: item.crossover ?? "",
+      parallels: item.parallels ?? "",
+    }))
+    const { count } = await replaceMacosCompatCatalog(rows)
+    const matched = await rematchMacosCompatEntries()
+    inserted += count + matched
   }
 
   if (loaded.manifest) {

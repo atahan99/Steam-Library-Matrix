@@ -21,6 +21,12 @@ import { GenreMultiSelect } from "@/components/tables/genre-multi-select"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+} from "@/components/ui/select"
+import {
   Table,
   TableBody,
   TableCell,
@@ -29,24 +35,35 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { PlaytimeBadge } from "@/components/badges/playtime-badge"
+import { MacCompatBadge } from "@/components/badges/mac-compat-badge"
 import { formatPlaytime } from "@/lib/utils/format-playtime"
 import { GameCell } from "@/components/tables/game-cell"
 import {
   TABLE_GAME_COLUMN_CELL_CLASS,
   TABLE_GAME_COLUMN_HEAD_CLASS,
 } from "@/components/tables/table-game-column"
-import { GenreListCell } from "@/components/tables/genre-list-cell"
 import { TableExportMenu } from "@/components/tables/table-export-button"
-import { TableFilterSpacer } from "@/components/tables/table-filter-field"
+import {
+  TableFilterField,
+  TableFilterSpacer,
+} from "@/components/tables/table-filter-field"
 import { TableGameSearchInput } from "@/components/tables/table-game-search-input"
 import { TableSortControls } from "@/components/tables/table-sort-controls"
 import {
   collectLibraryGenreFilterOptions,
-  parseGenreLabels,
+  gameMatchesGenreFilter,
 } from "@/lib/utils/genre-label"
-import { filterMacTableGames } from "@/lib/utils/mac-table-filter"
-import { isMacSupported } from "@/lib/utils/platform-support"
-import type { DashboardGame } from "@/types/dashboard"
+import {
+  hasMacCompatData,
+  hasNativeAppleSilicon,
+  isCrossoverPlayable,
+  isRosettaPlayable,
+} from "@/lib/utils/platform-support"
+import {
+  isRatingKnown,
+  macRatingDisplay,
+} from "@/lib/mac/macos-compat-rating"
+import type { DashboardGame, DashboardMacCompat } from "@/types/dashboard"
 import {
   compareDates,
   compareNumbers,
@@ -70,6 +87,39 @@ type MacUrlState = {
   dir: SortDirection
   page: number
   size: TablePageSize
+}
+
+type MacCompatFilter =
+  | "all"
+  | "has-data"
+  | "apple-silicon"
+  | "rosetta"
+  | "crossover"
+
+const COMPAT_OPTIONS: { value: MacCompatFilter; label: string }[] = [
+  { value: "all", label: "All games" },
+  { value: "has-data", label: "Has macOS data" },
+  { value: "apple-silicon", label: "Apple Silicon native" },
+  { value: "rosetta", label: "Runs via Rosetta" },
+  { value: "crossover", label: "CrossOver playable" },
+]
+
+const matchesCompatFilter = (
+  game: DashboardGame,
+  filter: MacCompatFilter
+): boolean => {
+  switch (filter) {
+    case "has-data":
+      return hasMacCompatData(game)
+    case "apple-silicon":
+      return hasNativeAppleSilicon(game)
+    case "rosetta":
+      return isRosettaPlayable(game)
+    case "crossover":
+      return isCrossoverPlayable(game)
+    default:
+      return true
+  }
 }
 
 const isMacSortKey = (value: string | null): value is SortKey =>
@@ -133,12 +183,42 @@ const compareMacGames = (
   }
 }
 
+const MacCompatCell = ({ mac }: { mac?: DashboardMacCompat }) => {
+  const rows = mac
+    ? (
+        [
+          { label: "Apple Silicon", rating: mac.native },
+          { label: "Rosetta 2", rating: mac.rosetta2 },
+          { label: "CrossOver", rating: mac.crossover },
+        ] as const
+      ).filter((row) => isRatingKnown(row.rating))
+    : []
+
+  if (rows.length === 0) {
+    return <span className="text-muted-foreground">—</span>
+  }
+
+  return (
+    <div className="flex flex-col gap-1">
+      {rows.map((row) => (
+        <div key={row.label} className="flex items-center gap-2">
+          <span className="w-24 shrink-0 text-xs text-muted-foreground">
+            {row.label}
+          </span>
+          <MacCompatBadge rating={row.rating} />
+        </div>
+      ))}
+    </div>
+  )
+}
+
 export const MacTable = () => {
   const games = useTableGames()
   const { openGameDetail } = useGameDetail()
   const [url, setUrl] = useDashboardTableParams(parseMacUrl, serializeMacUrl)
   const [playedOnly, setPlayedOnly] = useState(false)
   const [neverPlayedOnly, setNeverPlayedOnly] = useState(false)
+  const [compatFilter, setCompatFilter] = useState<MacCompatFilter>("all")
   const {
     q: search,
     game,
@@ -149,29 +229,35 @@ export const MacTable = () => {
     size: pageSize,
   } = url
 
-  const macGames = useMemo(() => games.filter(isMacSupported), [games])
-
   const genreOptions = useMemo(
-    () =>
-      collectLibraryGenreFilterOptions(
-        macGames.map((game) => game.steamDetails)
-      ),
-    [macGames]
+    () => collectLibraryGenreFilterOptions(games.map((game) => game.steamDetails)),
+    [games]
+  )
+
+  const withDataCount = useMemo(
+    () => games.filter(hasMacCompatData).length,
+    [games]
   )
 
   const filtered = useMemo(() => {
-    return filterMacTableGames(macGames, {
-      search,
-      selectedGenres,
-      playedOnly,
-      neverPlayedOnly,
-    }).sort((a, b) => compareMacGames(a, b, sortKey, sortDirection))
+    const searchLower = search.toLowerCase()
+    return games
+      .filter((g) => g.name.toLowerCase().includes(searchLower))
+      .filter((g) => gameMatchesGenreFilter(g.steamDetails, selectedGenres))
+      .filter((g) => {
+        if (playedOnly) return g.playtimeForeverMinutes > 0
+        if (neverPlayedOnly) return g.playtimeForeverMinutes === 0
+        return true
+      })
+      .filter((g) => matchesCompatFilter(g, compatFilter))
+      .sort((a, b) => compareMacGames(a, b, sortKey, sortDirection))
   }, [
-    macGames,
+    games,
     search,
     selectedGenres,
     playedOnly,
     neverPlayedOnly,
+    compatFilter,
     sortKey,
     sortDirection,
   ])
@@ -182,18 +268,17 @@ export const MacTable = () => {
       filtered.map((g) => [
         g.name,
         g.appid,
+        macRatingDisplay(g.macosCompat?.native ?? "unknown").label,
+        macRatingDisplay(g.macosCompat?.rosetta2 ?? "unknown").label,
+        macRatingDisplay(g.macosCompat?.crossover ?? "unknown").label,
         formatPlaytime(g.playtimeForeverMinutes),
-        parseGenreLabels(g.steamDetails?.genres).join("; "),
-        g.steamDetails?.lastCheckedAt
-          ? new Date(g.steamDetails.lastCheckedAt).toLocaleDateString()
-          : "",
       ]),
     [filtered]
   )
-  const paged = filtered.slice(
-    (safePage - 1) * pageSize,
-    safePage * pageSize
-  )
+  const paged = filtered.slice((safePage - 1) * pageSize, safePage * pageSize)
+
+  const compatLabel =
+    COMPAT_OPTIONS.find((o) => o.value === compatFilter)?.label ?? "All games"
 
   return (
     <div className="flex flex-col gap-4">
@@ -204,7 +289,7 @@ export const MacTable = () => {
               <TableGameSearchInput
                 value={search}
                 pinnedGameAppid={game}
-                aria-label="Search Mac-native games"
+                aria-label="Search Mac and Apple Silicon games"
                 onChange={(next) =>
                   setUrl({ q: next, game: undefined, page: 1 })
                 }
@@ -214,7 +299,14 @@ export const MacTable = () => {
             <TableFilterSpacer>
               <TableExportMenu
                 filename="mac-export.csv"
-                headers={["Name", "AppID", "Playtime", "Genres", "Checked"]}
+                headers={[
+                  "Name",
+                  "AppID",
+                  "Apple Silicon",
+                  "Rosetta 2",
+                  "CrossOver",
+                  "Playtime",
+                ]}
                 rows={exportRows}
               />
             </TableFilterSpacer>
@@ -239,6 +331,30 @@ export const MacTable = () => {
               selected={selectedGenres}
               onSelectedChange={(genres) => setUrl({ genres, page: 1 })}
             />
+            <TableFilterField label="macOS" htmlFor="mac-compat-filter">
+              <Select
+                value={compatFilter}
+                onValueChange={(v) => {
+                  setCompatFilter(((v as string | null) ?? "all") as MacCompatFilter)
+                  setUrl({ page: 1 })
+                }}
+              >
+                <SelectTrigger
+                  id="mac-compat-filter"
+                  className="w-full min-w-0"
+                  aria-label={`macOS compatibility filter: ${compatLabel}`}
+                >
+                  <span className="truncate">{compatLabel}</span>
+                </SelectTrigger>
+                <SelectContent align="start" alignItemWithTrigger={false}>
+                  {COMPAT_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </TableFilterField>
           </div>
         </div>
         <CollectionToggle />
@@ -262,11 +378,9 @@ export const MacTable = () => {
       </div>
 
       <p className="text-sm text-muted-foreground">
-        Showing {filtered.length} Mac-native game
-        {filtered.length === 1 ? "" : "s"}
-        {macGames.length !== filtered.length
-          ? ` (${macGames.length} total in library)`
-          : null}
+        Showing {filtered.length} game{filtered.length === 1 ? "" : "s"} ·{" "}
+        {withDataCount} with AppleGamingWiki macOS data (Apple Silicon / Rosetta
+        / CrossOver).
       </p>
 
       <div className="rounded-lg border border-border">
@@ -274,21 +388,18 @@ export const MacTable = () => {
           <TableHeader>
             <TableRow>
               <TableHead className={TABLE_GAME_COLUMN_HEAD_CLASS}>Game</TableHead>
+              <TableHead>macOS compatibility</TableHead>
               <TableHead>Playtime</TableHead>
-              <TableHead>Genres</TableHead>
-              <TableHead>Checked</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {paged.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={4}
+                  colSpan={3}
                   className="text-center text-muted-foreground"
                 >
-                  {macGames.length === 0
-                    ? "No Mac-native games in this collection. Run Steam app details refresh on Data Status."
-                    : "No games match the current filters"}
+                  No games match the current filters
                 </TableCell>
               </TableRow>
             ) : (
@@ -303,16 +414,11 @@ export const MacTable = () => {
                       onOpenDetail={openGameDetail}
                     />
                   </TableCell>
+                  <TableCell className="align-top">
+                    <MacCompatCell mac={g.macosCompat} />
+                  </TableCell>
                   <TableCell>
                     <PlaytimeBadge minutes={g.playtimeForeverMinutes} />
-                  </TableCell>
-                  <TableCell className="align-top whitespace-normal">
-                    <GenreListCell genres={g.steamDetails?.genres} />
-                  </TableCell>
-                  <TableCell className="text-xs text-muted-foreground">
-                    {g.steamDetails?.lastCheckedAt
-                      ? new Date(g.steamDetails.lastCheckedAt).toLocaleDateString()
-                      : "—"}
                   </TableCell>
                 </TableRow>
               ))

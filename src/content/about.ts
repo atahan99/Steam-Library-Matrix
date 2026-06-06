@@ -106,12 +106,13 @@ export const aboutFeatures: AboutFeature[] = [
   {
     title: "Mac Support",
     description:
-      "Games with native Mac support from Steam store app details (platforms.mac).",
+      "Apple Silicon (native), Rosetta 2, and CrossOver compatibility from AppleGamingWiki, matched to your library — alongside Steam's native Mac flag.",
     pathPattern: "/dashboard/[steamid]/mac",
     highlights: [
-      "Lists only titles where app details report platforms.mac",
-      "Genre multiselect, search, and playtime filters",
-      "Refresh Steam app details from Data Status when the list is empty",
+      "Per-game Apple Silicon / Rosetta 2 / CrossOver ratings (Perfect → Unplayable)",
+      "macOS compatibility dropdown filter (Apple Silicon native, CrossOver playable, …)",
+      "Includes Windows games playable via CrossOver, not only native Mac titles",
+      "Refresh the AppleGamingWiki data from Data Status",
     ],
   },
   {
@@ -124,13 +125,14 @@ export const aboutFeatures: AboutFeature[] = [
     ],
   },
   {
-    title: "Random Game Picker",
+    title: "Backlog",
     description:
-      "Two suggestions per visit: a backlog filler from old unplayed titles and a random pick outside your top played and recent activity.",
+      "Your pile of shame, quantified: never-played count, hours and years to clear at your recent pace, curated picks, a hand-picked queue with a monthly goal, and a random picker.",
     pathPattern: "/dashboard/[steamid]/random",
     highlights: [
-      "Excludes top 30 by lifetime playtime and games played in the last two weeks",
-      "Roll again without leaving the page",
+      "Quick wins, Almost there (50–99% achievements), and Gathering dust lists",
+      "Add games to a Playing-next queue and track a monthly finish goal",
+      "Random picks exclude top-30 played, recent activity, and completed titles",
     ],
   },
   {
@@ -232,6 +234,19 @@ export const aboutDataSources: AboutDataSource[] = [
       "Community-maintained Steam curator — secondary signal after store page DRM notices. Separate from Denuvo Anti-Cheat (kernel), which comes from AWACY/Levvvel software names.",
   },
   {
+    name: "AppleGamingWiki",
+    url: "https://www.applegamingwiki.com",
+    provides:
+      "Apple Silicon (native), Rosetta 2, and CrossOver macOS compatibility ratings",
+    usedIn: "Mac Support section (Apple Silicon / Rosetta / CrossOver column)",
+    fetchMethod:
+      "Cargo API (Compatibility_macOS table); bundled in the seed, re-matched on import, refreshable from Data Status",
+    refreshCadence: "Bundled global catalog (seed); manual refresh from Data Status",
+    matchingMethod: "Normalized title, then fuzzy title match",
+    limitations:
+      "Community-sourced with no Steam app IDs — coverage is partial and untested entries show as Unknown.",
+  },
+  {
     name: "HowLongToBeat",
     url: "https://howlongtobeat.com",
     provides: "Completion time estimates",
@@ -270,6 +285,7 @@ export const aboutDataProvenance = {
     "Are We Anti-Cheat Yet (AWACY)",
     "Levvvel",
     "Denuvo Watch (Steam curator)",
+    "AppleGamingWiki (macOS compatibility)",
   ],
 }
 
@@ -384,6 +400,11 @@ export const aboutAttributions: AboutAttribution[] = [
     credit: "Denuvo Anti-Tamper curator list (Steam app IDs)",
   },
   {
+    name: "AppleGamingWiki",
+    url: "https://www.applegamingwiki.com",
+    credit: "Apple Silicon, Rosetta 2, and CrossOver macOS compatibility ratings",
+  },
+  {
     name: "Valve / Steam",
     url: "https://store.steampowered.com",
     credit: "Game metadata, library, and wishlist via public APIs",
@@ -391,4 +412,4 @@ export const aboutAttributions: AboutAttribution[] = [
 ]
 
 export const aboutAffiliation =
-  "Steam Library Matrix is an independent project. It is not affiliated with Valve, ProtonDB, AWACY, HowLongToBeat, SteamDB, or Levvvel."
+  "Steam Library Matrix is an independent project. It is not affiliated with Valve, ProtonDB, AWACY, HowLongToBeat, SteamDB, Levvvel, or AppleGamingWiki."

@@ -23,7 +23,7 @@ import {
   countHltbResolvedGames,
 } from "@/lib/enrichment/hltb-lookup-outcome"
 import { isUnreleasedGame } from "@/lib/utils/parse-release-date"
-import { hasPlatformData } from "@/lib/utils/platform-support"
+import { hasMacCompatData, hasPlatformData } from "@/lib/utils/platform-support"
 import type { DashboardGame } from "@/types/dashboard"
 
 const hasProtonCoverage = (g: DashboardGame) => {
@@ -56,6 +56,7 @@ export default function DataStatusPage() {
   const anticheatWithData = enrichGames.filter(hasMeaningfulAntiCheatData).length
   const deckCoverage = countSteamDeckCoverage(enrichGames)
   const appDetailsWithData = enrichGames.filter(hasPlatformData).length
+  const macWithData = enrichGames.filter(hasMacCompatData).length
   const enrichmentPercent =
     enrichTotal > 0 ? Math.round((appDetailsWithData / enrichTotal) * 100) : 0
 
@@ -134,7 +135,7 @@ export default function DataStatusPage() {
 
       <DataStatusSection
         title="Compatibility"
-        description="Steam Deck from store app details and the Deck compatibility API. ProtonDB is enriched separately."
+        description="Steam Deck from store app details and the Deck compatibility API. ProtonDB and Mac compatibility (AppleGamingWiki) are enriched separately."
       >
         <SourceStatusCard
           title="Steam Deck compatibility"
@@ -158,6 +159,16 @@ export default function DataStatusPage() {
               ? `Not yet released (skipped): ${unreleasedCount} · Global cache from bundled top sellers`
               : "Global cache from bundled top sellers — pending = not yet resolved for your library"
           }
+        />
+        <SourceStatusCard
+          title="Mac compatibility (AppleGamingWiki)"
+          source="macos_compat"
+          directEndpoint={`/api/dashboard/${profile.steamid}/macos-compat/refresh`}
+          lastChecked={maxChecked((g) => g.macosCompat?.lastCheckedAt)}
+          totalGames={enrichTotal}
+          withData={macWithData}
+          ttlHours={720}
+          coverageNote="Apple Silicon, Rosetta 2, and CrossOver ratings from AppleGamingWiki, matched by game name"
         />
       </DataStatusSection>
 

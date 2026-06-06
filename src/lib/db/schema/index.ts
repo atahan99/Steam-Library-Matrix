@@ -316,6 +316,29 @@ export const profileBacklogGoal = sqliteTable(
   (t) => [primaryKey({ columns: [t.steamid, t.period] })]
 )
 
+export const macosCompatCatalog = sqliteTable("macos_compat_catalog", {
+  normalizedName: text("normalized_name").primaryKey(),
+  pageName: text("page_name").notNull(),
+  native: text("native"),
+  rosetta2: text("rosetta_2"),
+  crossover: text("crossover"),
+  parallels: text("parallels"),
+  lastSyncedAt: timestampMs("last_synced_at").default(sql`(cast(unixepoch('subsec') * 1000 as integer))`),
+})
+
+export const macosCompatEntries = sqliteTable("macos_compat_entries", {
+  appid: integer("appid")
+    .primaryKey()
+    .references(() => steamGames.appid, { onDelete: "cascade" }),
+  matchedName: text("matched_name"),
+  matchConfidence: text("match_confidence"),
+  native: text("native"),
+  rosetta2: text("rosetta_2"),
+  crossover: text("crossover"),
+  parallels: text("parallels"),
+  lastCheckedAt: timestampMs("last_checked_at").default(sql`(cast(unixepoch('subsec') * 1000 as integer))`),
+})
+
 export const schema = {
   steamProfiles,
   steamGames,
@@ -336,6 +359,8 @@ export const schema = {
   profileGameAchievements,
   profileBacklog,
   profileBacklogGoal,
+  macosCompatCatalog,
+  macosCompatEntries,
 }
 
 export type AppDatabase = typeof schema

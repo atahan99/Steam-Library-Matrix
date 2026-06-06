@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-export const SEED_MANIFEST_VERSION = 4
+export const SEED_MANIFEST_VERSION = 5
 
 export const SEED_DENUVO_CONFIDENCE = z.enum(["high", "medium", "low", "none"])
 export type SeedDenuvoConfidence = z.infer<typeof SEED_DENUVO_CONFIDENCE>
@@ -53,6 +53,12 @@ export const metadataManifestSchema = z.object({
       })
       .optional(),
     hltb: z
+      .object({
+        generatedAt: z.string(),
+        count: z.number().int().nonnegative(),
+      })
+      .optional(),
+    macosCompat: z
       .object({
         generatedAt: z.string(),
         count: z.number().int().nonnegative(),
@@ -194,6 +200,22 @@ export const hltbSeedSchema = z.object({
 
 export type HltbSeed = z.infer<typeof hltbSeedSchema>
 
+export const macosCompatSeedItemSchema = z.object({
+  pageName: z.string().min(1),
+  native: z.string().optional(),
+  rosetta2: z.string().optional(),
+  crossover: z.string().optional(),
+  parallels: z.string().optional(),
+})
+
+export const macosCompatSeedSchema = z.object({
+  version: z.number().int().positive(),
+  generatedAt: z.string(),
+  items: z.record(z.string(), macosCompatSeedItemSchema),
+})
+
+export type MacosCompatSeed = z.infer<typeof macosCompatSeedSchema>
+
 export type SeedHydrateResult = {
   version: number
   generatedAt: string | null
@@ -210,5 +232,6 @@ export type LoadedSeedFiles = {
   appDetailsLite: AppDetailsLiteSeed | null
   protondb: ProtonDbSeed | null
   hltb: HltbSeed | null
+  macosCompat: MacosCompatSeed | null
   warnings: string[]
 }

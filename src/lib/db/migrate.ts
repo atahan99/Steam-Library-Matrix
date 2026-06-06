@@ -7,6 +7,7 @@ export const MIGRATION_FILES_ORDERED = [
   "002_seed_denuvo_provenance.sql",
   "003_steam_store_throttle.sql",
   "004_profile_backlog.sql",
+  "005_macos_compat.sql",
 ] as const
 
 const migrationsDir = path.join(process.cwd(), "db", "migrations")

@@ -2,6 +2,10 @@ import { bootstrapAnticheatCatalogsIfNeeded } from "@/lib/anticheat/catalog-boot
 import { enqueueFastProfileSyncJobs } from "@/lib/dashboard/full-profile-sync"
 import { enqueueProfileWarmup } from "@/lib/enrichment/enqueue-profile-warmup"
 import { getRuntimeEnv } from "@/lib/env/runtime-env"
+import {
+  ensureMacosCompatCatalog,
+  rematchMacosCompatEntries,
+} from "@/lib/mac/sync-macos-compat"
 import { syncSteamWishlist } from "@/lib/steam/sync-wishlist"
 
 export type PostImportAppDetailsEnqueue = {
@@ -68,6 +72,13 @@ export const runPostImportBackgroundTasks = async (steamid: string) => {
     await bootstrapAnticheatCatalogsIfNeeded()
   } catch (error) {
     console.error("[post-import] catalog bootstrap failed", error)
+  }
+
+  try {
+    await ensureMacosCompatCatalog()
+    await rematchMacosCompatEntries()
+  } catch (error) {
+    console.error("[post-import] mac compatibility match failed", error)
   }
 
   scheduleCoverageGapWarmup(steamid)

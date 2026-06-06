@@ -24,9 +24,9 @@
 - **ProtonDB** — Linux & Steam Deck compatibility tiers with a clickable distribution chart
 - **HowLongToBeat** — main / main+extras / completionist times, with match confidence
 - **Anti-Cheat** — Linux anti-cheat status (AWACY), kernel-level anti-cheat (Levvvel), and Denuvo signals
-- **Mac & VR** — native macOS support and VR support / VR-only
+- **Mac & VR** — Apple Silicon (native), Rosetta 2, and CrossOver compatibility from AppleGamingWiki plus native macOS support; VR support / VR-only
 - **Compare** — line up multiple profiles (intersection of libraries)
-- **Random Picker** — pull something out of your backlog
+- **Backlog** — pile-of-shame stats, curated picks (quick wins, almost-there, gathering dust), a hand-picked queue with a monthly goal, and a random picker
 - **Global search** (⌘K / Ctrl+K), theme selector, and an About page with data sources & attribution
 
 Enrichment fills in over time via a background worker; **Data Status** shows per-source progress and health.
@@ -38,7 +38,7 @@ Enrichment fills in over time via a background worker; **Data Status** shows per
 | App | [Next.js](https://nextjs.org/) 16 (App Router), React 19, TypeScript |
 | UI | Tailwind CSS 4, [shadcn/ui](https://ui.shadcn.com/) (Base UI), Lucide, Recharts |
 | Data | SQLite ([better-sqlite3](https://github.com/WiseLibs/better-sqlite3)), [Drizzle ORM](https://orm.drizzle.team/), SQL migrations in `db/migrations/` |
-| Enrichment | Steam Web API, ProtonDB API, HowLongToBeat, AWACY / Levvvel / Denuvo catalogs (HTTP; Cheerio for some HTML sources) |
+| Enrichment | Steam Web API, ProtonDB API, HowLongToBeat, AWACY / Levvvel / Denuvo catalogs, AppleGamingWiki (macOS compatibility) (HTTP; Cheerio for some HTML sources) |
 | Jobs | In-process enrichment worker (embedded in Docker; separate `dev:jobs` poller for local dev) |
 | Testing | Vitest |
 | Deploy | Node 22 + pnpm (local dev) · Docker + Docker Compose (self-host) |
@@ -195,8 +195,6 @@ More tuning: [docs/env.md](docs/env.md).
 
 Not implemented yet — rough order, may change.
 
-- [ ] Richer Mac support (Apple Gaming Wiki, community lists)
-- [ ] CrossOver compatibility checker
 - [ ] Finer Linux / distro-specific signals alongside ProtonDB
 - [ ] DLC data — owned DLC, playtime, base-game vs complete filters
 - [ ] Achievement progress view and library completion summary
@@ -204,7 +202,6 @@ Not implemented yet — rough order, may change.
 - [ ] SteamDB calculator in-dashboard (today: external link only)
 - [ ] Price history / deals hooks
 - [ ] Pluggable enrichment sources ([docs/scraping.md](docs/scraping.md))
-- [ ] Backlog goals beyond Random Picker
 
 ## Documentation
 

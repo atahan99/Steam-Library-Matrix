@@ -1,4 +1,5 @@
 import { hasStoredSteamPlatforms } from "@/lib/steam/parse-steam-platforms"
+import { isRatingKnown, isRatingPlayable } from "@/lib/mac/macos-compat-rating"
 import type { DashboardGame } from "@/types/dashboard"
 
 export const hasPlatformData = (game: DashboardGame): boolean =>
@@ -13,6 +14,33 @@ export const isLinuxSupported = (game: DashboardGame): boolean =>
 /** Native Mac support from Steam store app details (`platforms.mac`). */
 export const isMacSupported = (game: DashboardGame): boolean =>
   game.steamDetails?.platforms?.mac === true
+
+/** Game has any tested AppleGamingWiki signal (native, Rosetta, or CrossOver). */
+export const hasMacCompatData = (game: DashboardGame): boolean => {
+  const mac = game.macosCompat
+  if (!mac) return false
+  return (
+    isRatingKnown(mac.native) ||
+    isRatingKnown(mac.rosetta2) ||
+    isRatingKnown(mac.crossover)
+  )
+}
+
+/** Game appears anywhere relevant to Mac: a Mac build or AppleGamingWiki data. */
+export const isMacRelevant = (game: DashboardGame): boolean =>
+  isMacSupported(game) || hasMacCompatData(game)
+
+/** A tested native Apple Silicon build exists. */
+export const hasNativeAppleSilicon = (game: DashboardGame): boolean =>
+  game.macosCompat ? isRatingKnown(game.macosCompat.native) : false
+
+/** At least menu-level playable through CrossOver. */
+export const isCrossoverPlayable = (game: DashboardGame): boolean =>
+  game.macosCompat ? isRatingPlayable(game.macosCompat.crossover) : false
+
+/** At least menu-level playable through Rosetta 2. */
+export const isRosettaPlayable = (game: DashboardGame): boolean =>
+  game.macosCompat ? isRatingPlayable(game.macosCompat.rosetta2) : false
 
 export type OsFilterPlatform = "windows" | "linux" | "mac"
 

@@ -15,6 +15,7 @@ import { loadAllDenuvoCatalogAppids } from "@/lib/db/denuvo-catalog"
 import {
   anticheatEntries,
   howlongtobeatEntries,
+  macosCompatCatalog,
   protondbEntries,
   steamAppDetails,
   steamGames,
@@ -25,6 +26,7 @@ import type {
   AppDetailsLiteSeed,
   DenuvoSeed,
   HltbSeed,
+  MacosCompatSeed,
   MetadataManifest,
   ProtonDbSeed,
   SteamGamesSeed,
@@ -383,6 +385,30 @@ const main = async () => {
     }
   }
 
+  const cleanMacRating = (value: string | null): string | undefined =>
+    value && value !== "unknown" ? value : undefined
+
+  const macosCatalogRows = await db.select().from(macosCompatCatalog)
+  const macosCompatSeed: MacosCompatSeed = {
+    version: SEED_MANIFEST_VERSION,
+    generatedAt,
+    items: {},
+  }
+  for (const row of macosCatalogRows) {
+    const native = cleanMacRating(row.native)
+    const rosetta2 = cleanMacRating(row.rosetta2)
+    const crossover = cleanMacRating(row.crossover)
+    const parallels = cleanMacRating(row.parallels)
+    if (!native && !rosetta2 && !crossover && !parallels) continue
+    macosCompatSeed.items[row.normalizedName] = {
+      pageName: row.pageName,
+      ...(native ? { native } : {}),
+      ...(rosetta2 ? { rosetta2 } : {}),
+      ...(crossover ? { crossover } : {}),
+      ...(parallels ? { parallels } : {}),
+    }
+  }
+
   const manifest: MetadataManifest = {
     version: SEED_MANIFEST_VERSION,
     generatedAt,
@@ -403,6 +429,10 @@ const main = async () => {
       hltb: {
         generatedAt,
         count: Object.keys(hltbSeed.items).length,
+      },
+      macosCompat: {
+        generatedAt,
+        count: Object.keys(macosCompatSeed.items).length,
       },
     },
   }
@@ -432,6 +462,10 @@ const main = async () => {
     path.join(DEFAULT_SEED_DIR, "hltb.seed.json"),
     `${JSON.stringify(hltbSeed, null, 2)}\n`
   )
+  await writeFile(
+    path.join(DEFAULT_SEED_DIR, "macos-compat.seed.json"),
+    `${JSON.stringify(macosCompatSeed, null, 2)}\n`
+  )
 
   console.log("[seed:generate] done")
   console.log(`  steamGames: ${Object.keys(steamGamesSeed.items).length}`)
@@ -441,6 +475,7 @@ const main = async () => {
   console.log(`  appDetailsLite: ${Object.keys(appDetailsLiteSeed.items).length}`)
   console.log(`  protondb: ${Object.keys(protondbSeed.items).length}`)
   console.log(`  hltb: ${Object.keys(hltbSeed.items).length}`)
+  console.log(`  macosCompat: ${Object.keys(macosCompatSeed.items).length}`)
   console.log(`  output: ${DEFAULT_SEED_DIR}`)
 
   await closeDb()

@@ -1,6 +1,6 @@
 {
-  "version": 4,
-  "generatedAt": "2026-06-05T17:58:50.404Z",
+  "version": 5,
+  "generatedAt": "2026-06-06T11:10:34.189Z",
   "sources": {
     "denuvo": {
       "generatedAt": "2026-06-05T17:58:50.404Z",
@@ -21,6 +21,10 @@
     "hltb": {
       "generatedAt": "2026-06-05T17:58:50.404Z",
       "count": 2217
+    },
+    "macosCompat": {
+      "generatedAt": "2026-06-06T11:10:34.189Z",
+      "count": 1842
     }
   }
 }

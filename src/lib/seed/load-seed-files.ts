@@ -5,6 +5,7 @@ import {
   appDetailsLiteSeedSchema,
   denuvoSeedSchema,
   hltbSeedSchema,
+  macosCompatSeedSchema,
   metadataManifestSchema,
   protondbSeedSchema,
   steamGamesSeedSchema,
@@ -61,6 +62,7 @@ export const loadSeedFiles = async (
   let appDetailsLite = null
   let protondb = null
   let hltb = null
+  let macosCompat = null
 
   const manifestPath = path.join(seedDir, "metadata-manifest.json")
   const manifestRead = await readJsonFile(manifestPath)
@@ -136,5 +138,30 @@ export const loadSeedFiles = async (
     if (parsed.warning) warnings.push(parsed.warning)
   }
 
-  return { manifest, steamGames, denuvo, appDetailsLite, protondb, hltb, warnings }
+  const macosCompatPath = path.join(seedDir, "macos-compat.seed.json")
+  const macosCompatRead = await readJsonFile(macosCompatPath)
+  if ("error" in macosCompatRead) {
+    if (!macosCompatRead.error.includes("missing file")) {
+      warnings.push(macosCompatRead.error)
+    }
+  } else {
+    const parsed = parseWithSchema(
+      "macos-compat.seed.json",
+      macosCompatRead.data,
+      macosCompatSeedSchema
+    )
+    macosCompat = parsed.value
+    if (parsed.warning) warnings.push(parsed.warning)
+  }
+
+  return {
+    manifest,
+    steamGames,
+    denuvo,
+    appDetailsLite,
+    protondb,
+    hltb,
+    macosCompat,
+    warnings,
+  }
 }
