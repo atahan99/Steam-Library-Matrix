@@ -6,6 +6,7 @@ export const MIGRATION_FILES_ORDERED = [
   "001_sqlite_baseline.sql",
   "002_seed_denuvo_provenance.sql",
   "003_steam_store_throttle.sql",
+  "004_profile_backlog.sql",
 ] as const
 
 const migrationsDir = path.join(process.cwd(), "db", "migrations")

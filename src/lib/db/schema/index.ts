@@ -283,6 +283,39 @@ export const profileGameAchievements = sqliteTable(
   ]
 )
 
+export const profileBacklog = sqliteTable(
+  "profile_backlog",
+  {
+    steamid: text("steamid")
+      .notNull()
+      .references(() => steamProfiles.steamid, { onDelete: "cascade" }),
+    appid: integer("appid")
+      .notNull()
+      .references(() => steamGames.appid, { onDelete: "cascade" }),
+    status: text("status").notNull().default("queued"),
+    position: integer("position").notNull().default(0),
+    note: text("note"),
+    addedAt: timestampMs("added_at").default(sql`(cast(unixepoch('subsec') * 1000 as integer))`),
+    startedAt: timestampMs("started_at"),
+    finishedAt: timestampMs("finished_at"),
+    updatedAt: timestampMs("updated_at").default(sql`(cast(unixepoch('subsec') * 1000 as integer))`),
+  },
+  (t) => [primaryKey({ columns: [t.steamid, t.appid] })]
+)
+
+export const profileBacklogGoal = sqliteTable(
+  "profile_backlog_goal",
+  {
+    steamid: text("steamid")
+      .notNull()
+      .references(() => steamProfiles.steamid, { onDelete: "cascade" }),
+    period: text("period").notNull(),
+    target: integer("target").notNull().default(0),
+    updatedAt: timestampMs("updated_at").default(sql`(cast(unixepoch('subsec') * 1000 as integer))`),
+  },
+  (t) => [primaryKey({ columns: [t.steamid, t.period] })]
+)
+
 export const schema = {
   steamProfiles,
   steamGames,
@@ -301,6 +334,8 @@ export const schema = {
   seedHydrationMeta,
   steamStoreThrottle,
   profileGameAchievements,
+  profileBacklog,
+  profileBacklogGoal,
 }
 
 export type AppDatabase = typeof schema

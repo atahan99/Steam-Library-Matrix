@@ -5,7 +5,7 @@ import {
   Clock,
   Shield,
   Glasses,
-  Dices,
+  Layers,
   Database,
   BookOpen,
   type LucideIcon,
@@ -60,7 +60,7 @@ export const dashboardSectionNavItems: DashboardNavItem[] = [
     icon: Glasses,
     supportsGameSearch: true,
   },
-  { title: "Random Picker", segment: "random", icon: Dices },
+  { title: "Backlog", segment: "random", icon: Layers },
 ]
 
 export const dashboardFooterNavItems: DashboardNavItem[] = [

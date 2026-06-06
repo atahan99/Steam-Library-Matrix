@@ -27,5 +27,5 @@ export const dashboardPageIntros: Record<DashboardPageSegment, string> = {
   "data-status":
     "Coverage summary, grouped refresh actions, and global catalog sync for AWACY, Levvvel, Denuvo, ProtonDB, HLTB, and Steam app details.",
   random:
-    "Two picks each time you open this page: a backlog filler from old unplayed games and a random title outside your top 30 most played, recent activity, and completed games (100% achievements or HLTB playtime met). Cards show Proton tier, AWACY Linux status, and playtime chips.",
+    "Your pile of shame, quantified — how many games you've never touched, how many years it'd take to clear them at your current pace, and curated picks: quick wins, titles you're one achievement shy of 100%, and the oldest games gathering dust. Plus a random roll for when deciding what to play is the hardest part of gaming.",
 }

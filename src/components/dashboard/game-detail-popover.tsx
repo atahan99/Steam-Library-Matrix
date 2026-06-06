@@ -7,6 +7,7 @@ import { AntiCheatStatusBadge } from "@/components/badges/anticheat-status-badge
 import { PlaytimeBadge } from "@/components/badges/playtime-badge"
 import { ProtonDbBadge } from "@/components/badges/protondb-badge"
 import { SteamDeckBadge } from "@/components/badges/steam-deck-badge"
+import { AddToBacklogButton } from "@/components/dashboard/add-to-backlog-button"
 import { DashboardNavIcon } from "@/components/dashboard/dashboard-nav-icon"
 import { useDashboard, useGameDetail } from "@/components/dashboard/dashboard-context"
 import { SteamIcon } from "@/components/icons/steam-icon"
@@ -193,6 +194,8 @@ const GameDetailBody = ({ game, steamid }: { game: DashboardGame; steamid: strin
           <SteamIcon className="size-3.5" />
           Open on Steam Store
         </Button>
+
+        <AddToBacklogButton steamid={steamid} appid={game.appid} />
 
         {tableNavItems.length > 0 ? (
           <div
