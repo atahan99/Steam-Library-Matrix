@@ -285,8 +285,6 @@ const filterAnticheatAppids = async (
       .select({
         appid: anticheatEntries.appid,
         lastCheckedAt: anticheatEntries.lastCheckedAt,
-        status: anticheatEntries.status,
-        anticheatNames: anticheatEntries.anticheatNames,
         denuvoAntiTamper: anticheatEntries.denuvoAntiTamper,
         denuvoConfidence: anticheatEntries.denuvoConfidence,
         denuvoCheckedAt: anticheatEntries.denuvoCheckedAt,
@@ -300,14 +298,14 @@ const filterAnticheatAppids = async (
       const row = existingByAppid.get(appid)
       if (!row) continue
 
-      const hasAwacyData =
-        Boolean(row.status && row.status !== "Unknown") ||
-        Boolean(
-          Array.isArray(row.anticheatNames) && row.anticheatNames.length > 0
-        )
-      const awacyFresh =
-        hasAwacyData &&
-        isCacheFresh(row.lastCheckedAt?.toISOString(), ANTICHEAT_TTL_HOURS)
+      // An appid is fresh once it has been checked recently — even when the
+      // lookup found no anti-cheat. Requiring a positive AWACY match here meant
+      // every game without anti-cheat (most of a library) was re-matched on
+      // every pass, so the scan never settled and burned CPU in a loop.
+      const awacyFresh = isCacheFresh(
+        row.lastCheckedAt?.toISOString(),
+        ANTICHEAT_TTL_HOURS
+      )
       const denuvoFresh = isDenuvoDataFresh({
         denuvoAntiTamper: row.denuvoAntiTamper,
         denuvoConfidence: row.denuvoConfidence,
