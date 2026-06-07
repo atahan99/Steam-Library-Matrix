@@ -165,13 +165,13 @@ Wishlist import needs a wishlist visible to the Steam Web API.
 
 ## Status & expectations
 
-- Built for **single-user, self-hosted** use on a home machine or LAN — not designed for public multi-user deployment ([docs/scaling.md](docs/scaling.md)). If you expose it beyond localhost, put it behind a reverse proxy with TLS + auth ([docs/security.md](docs/security.md)).
+- Built for **single-user, self-hosted** use on a home machine or LAN — not a public multi-user service. Keep it on your LAN; [docs/security.md](docs/security.md) covers secrets, the CSP, and Docker hardening.
 - Enrichment data is **best-effort**: it's aggregated from community sources via fuzzy name matching, so the occasional value will be missing or wrong. Confidence is shown where it matters (e.g. HowLongToBeat matches, Denuvo signals).
 - Community sources can change without notice. When one breaks, the **Data Status** page surfaces it; a parser fix follows. Expect light, ongoing maintenance.
 
 ## Security
 
-Home LAN vs public internet: [docs/security.md](docs/security.md#deployment-quick-pick) and [docs/env.md](docs/env.md#required).
+Secrets, rate limits, and CSP: [docs/security.md](docs/security.md). Env reference: [docs/env.md](docs/env.md#required).
 
 ## Scripts (local development)
 
@@ -211,8 +211,7 @@ Not implemented yet — rough order, may change.
 - [docs/env.md](docs/env.md) — environment variables
 - [docs/database.md](docs/database.md) — SQLite, migrate, backup
 - [docs/scraping.md](docs/scraping.md) — data sources and enrichment
-- [docs/security.md](docs/security.md) — API guard, rate limits, CSP
-- [docs/scaling.md](docs/scaling.md) — single-user design and public-deploy notes
+- [docs/security.md](docs/security.md) — open routes, rate limits, CSP, secrets
 
 ## License
 

@@ -1,23 +1,6 @@
 # Security
 
-## Deployment quick pick
-
-| Where | Suggested env |
-| --- | --- |
-| Home LAN / private | `CRON_SECRET=<random>` (for `dev:jobs` or external cron) |
-| Public internet | Reverse proxy with TLS + auth; restrict direct port access |
-
-Variable reference: [env.md](./env.md). Docker checklist: [self-hosting.md § Security checklist](./self-hosting.md#security-checklist).
-
-## Threat model
-
-The app imports **public** Steam library data. Anyone with a SteamID64 can view a dashboard for profiles already imported.
-
-Main risks on **public internet**:
-
-1. Anonymous callers triggering expensive enrichment / catalog sync (the `/api/jobs` queue is open)
-2. Exposure of SQLite (`./data/matrix.db` local, or the `matrix_db` Docker volume)
-3. Enumeration of cached JSON via `/api/dashboard/[steamid]`
+Notes for **single-user, self-hosted** use. This app is LAN-first — keep it on a private network. The points below are worth knowing regardless of exposure.
 
 ## API access
 
@@ -26,7 +9,7 @@ There is **no in-app Bearer guard** on import, refresh, dashboard, or enrichment
 - `GET /api/cron/process-jobs` always requires `Authorization: Bearer <CRON_SECRET>`.
 - All other routes — `POST /api/jobs`, `/api/steam/import`, `/api/steam/refresh`, `/api/dashboard/*` — are **open** (rate-limited only).
 
-This app is **LAN-first**: for public exposure, terminate TLS and enforce auth at a reverse proxy and restrict network access (see the checklist below).
+Keep the app on your LAN. The open routes (including the `/api/jobs` enrichment queue) shouldn't be reachable from an untrusted network.
 
 ## Background jobs
 
@@ -40,7 +23,7 @@ In-memory per-IP sliding windows (single-instance Docker). The limiter is **proc
 - Expensive routes: min(10, default limit)
 - Empty windows are dropped from memory after the sliding window expires
 
-IP from `X-Forwarded-For` (first hop) or `X-Real-IP` — configure your reverse proxy accordingly.
+IP comes from `X-Forwarded-For` (first hop) or `X-Real-IP`.
 
 ## Content Security Policy
 
@@ -51,6 +34,8 @@ IP from `X-Forwarded-For` (first hop) or `X-Real-IP` — configure your reverse 
 - `style-src-attr 'unsafe-inline'` (React `style={{…}}` — orbit layout, neon card, charts)
 - Dev: `'unsafe-eval'` (HMR) and `'unsafe-inline'` on `style-src` only
 
+If you add a library that injects scripts/styles and it's blocked, this is why.
+
 ## Scraping
 
 - No browser automation — [scraping.md](./scraping.md)
@@ -59,7 +44,7 @@ IP from `X-Forwarded-For` (first hop) or `X-Real-IP` — configure your reverse 
 ## Secrets
 
 - Never commit `.env` / `docker/.env`
-- Never `NEXT_PUBLIC_*` for `CRON_SECRET` or `STEAM_API_KEY`
+- Never `NEXT_PUBLIC_*` for `CRON_SECRET` or `STEAM_API_KEY` (a leaked Web API key is a leaked key, LAN or not)
 - Rotate `CRON_SECRET` if leaked; restart containers
 
 ## Docker
@@ -70,12 +55,10 @@ IP from `X-Forwarded-For` (first hop) or `X-Real-IP` — configure your reverse 
 
 ## Security checklist
 
-- [ ] TLS + auth on a reverse proxy (the app's own routes are open except cron)
-- [ ] Restrict direct access to the app's published port (3001 for Docker, 3000 for local dev)
-- [ ] `CRON_SECRET` only if using external cron polling (optional with embedded worker)
+- [ ] Keep the app on your LAN; don't publish its port to the internet
+- [ ] `CRON_SECRET` only if you poll `/api/cron/process-jobs` externally (optional with the embedded worker)
+- [ ] Back up `matrix.db` before upgrades
 - [ ] Run `pnpm audit` on build hosts periodically
-
-Docker-specific steps: [self-hosting.md](./self-hosting.md).
 
 ## Reporting
 

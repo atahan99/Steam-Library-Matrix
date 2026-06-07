@@ -7,12 +7,11 @@ Steam Library Matrix runs as **local dev** (`pnpm dev:all`) or **Docker + SQLite
 | Doc | Purpose |
 | --- | --- |
 | [architecture.md](./architecture.md) | How the whole system fits together — **start here** |
-| [self-hosting.md](./self-hosting.md) | Deploy on LAN or the public internet |
+| [self-hosting.md](./self-hosting.md) | Deploy on LAN with Docker |
 | [env.md](./env.md) | Environment variables |
 | [database.md](./database.md) | SQLite, migrations, backups |
 | [scraping.md](./scraping.md) | Data sources, scraping, and the job pipeline |
-| [security.md](./security.md) | API guard, rate limits, CSP |
-| [scaling.md](./scaling.md) | Single-user design + public-deploy notes |
+| [security.md](./security.md) | Open routes, rate limits, CSP, secrets |
 
 ## I want to…
 
@@ -23,7 +22,7 @@ Steam Library Matrix runs as **local dev** (`pnpm dev:all`) or **Docker + SQLite
 | Deploy Docker | [README § Option 2](../README.md#option-2-docker-compose) · [self-hosting.md](./self-hosting.md) |
 | Understand data sources | [scraping.md](./scraping.md) |
 | Backup or migrate the DB | [database.md](./database.md) |
-| Lock down a public host | [security.md](./security.md) |
+| Handle secrets / CSP / open routes | [security.md](./security.md) |
 
 ## Quick start
 

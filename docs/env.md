@@ -10,7 +10,7 @@ Configuration comes from the process environment. In Docker standalone builds, t
 | Docker home lab | `file:/app/data/db/matrix.db` (named volume `matrix_db`) | Open (rate-limited) | `SLM_EMBED_JOB_WORKER=true` |
 | Public internet | same per method | Open — **use a reverse proxy** for auth + TLS | same as above |
 
-Threat model and route behavior: [security.md](./security.md#threat-model). Job pipeline order: [scraping.md](./scraping.md#job-pipeline-order).
+Route behavior and secrets: [security.md](./security.md#api-access). Job pipeline order: [scraping.md](./scraping.md#job-pipeline-order).
 
 ## Required
 
