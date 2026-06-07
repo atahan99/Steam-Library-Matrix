@@ -216,7 +216,7 @@ export const BacklogAddToggle = ({ appid }: { appid: number }) => {
       size="icon-sm"
       variant="ghost"
       className={cn(
-        "shrink-0",
+        "shrink-0 cursor-pointer",
         inBacklog
           ? "text-primary hover:text-primary"
           : "text-muted-foreground hover:text-foreground"

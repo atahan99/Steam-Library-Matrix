@@ -44,7 +44,7 @@ export const AddToBacklogButton = ({
         type="button"
         size="icon-sm"
         variant="ghost"
-        className="shrink-0 text-muted-foreground hover:text-foreground"
+        className="shrink-0 cursor-pointer text-muted-foreground hover:text-foreground"
         onClick={handleAdd}
         disabled={pending || added}
         aria-label={added ? "In backlog" : "Add to backlog"}
@@ -63,7 +63,7 @@ export const AddToBacklogButton = ({
     <Button
       type="button"
       variant="outline"
-      className="w-full"
+      className="w-full cursor-pointer"
       onClick={handleAdd}
       disabled={pending || added}
     >

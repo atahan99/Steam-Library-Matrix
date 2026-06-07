@@ -120,6 +120,7 @@ export const BacklogQueue = () => {
           <Button
             size="sm"
             variant="outline"
+            className="cursor-pointer"
             onClick={handleSaveGoal}
             disabled={savingGoal}
           >
@@ -173,7 +174,7 @@ export const BacklogQueue = () => {
                   <Button
                     size="icon-sm"
                     variant="ghost"
-                    className="shrink-0 text-muted-foreground hover:text-foreground"
+                    className="shrink-0 cursor-pointer text-muted-foreground hover:text-foreground"
                     aria-label={`Remove ${name} from backlog`}
                     onClick={() => removeFromBacklog(item.appid)}
                   >

@@ -277,9 +277,18 @@ html.dark[data-theme="cyberpunk"] {
   .recharts-surface:focus-visible {
     outline: none !important;
   }
+
+  button:not(:disabled):not([disabled]),
+  [role="button"]:not([aria-disabled="true"]) {
+    cursor: pointer;
+  }
 }
 
 @layer utilities {
+  [data-slot="button"]:not(:disabled):not([disabled]) {
+    cursor: pointer;
+  }
+
   .surface-neon {
     border-color: color-mix(in oklch, var(--primary) 35%, var(--border));
     box-shadow:
@@ -304,6 +313,7 @@ html.dark[data-theme="cyberpunk"] {
   }
 
   .link-game {
+    cursor: pointer;
     text-decoration: none;
     background-image: linear-gradient(
       color-mix(in oklch, var(--accent) 70%, oklch(0.72 0.17 165)),
@@ -521,4 +531,12 @@ html.dark[data-theme="cyberpunk"] {
       text-shadow: none;
     }
   }
+}
+
+/* Unlayered so cursor affordance wins over @layer ordering in dev HMR. */
+button:not(:disabled):not([disabled]),
+button[data-slot="button"]:not(:disabled):not([disabled]),
+[role="button"]:not([aria-disabled="true"]),
+button.link-game {
+  cursor: pointer;
 }
