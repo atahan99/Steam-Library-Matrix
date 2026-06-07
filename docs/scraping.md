@@ -28,7 +28,8 @@ Stop dev server / `dev:jobs` while bulk-generating so only one process hits the 
 | Data | How it is loaded |
 | --- | --- |
 | Library / wishlist / achievements | Steam Web API (`STEAM_API_KEY`) |
-| Windows / Linux / Mac (Library & Mac page) | Steam store app details → `platforms.*` |
+| Windows / Linux / native Mac flag | Steam store app details → `platforms.*` |
+| macOS: Apple Silicon / Rosetta 2 / CrossOver | AppleGamingWiki Cargo API (fuzzy name match) |
 | ProtonDB | ProtonDB API |
 | HowLongToBeat | HLTB client |
 | AWACY anti-cheat | Public JSON |
@@ -36,14 +37,14 @@ Stop dev server / `dev:jobs` while bulk-generating so only one process hits the 
 | Denuvo anti-tamper catalog | Steam Store curator AJAX |
 | SteamDB calculator | **External link** on Overview — no server scrape ([`calculator-url.ts`](../src/lib/steamdb/calculator-url.ts)) |
 
-Mac in the UI comes from **`platforms.mac`** in app details (not a separate macOS scrape).
+The Library OS icons use **`platforms.mac`** from app details. The **Mac page** is a separate source: AppleGamingWiki's macOS compatibility table (Apple Silicon native / Rosetta 2 / CrossOver ratings), matched to your library by name — see [Global catalogs](#global-catalogs-awacy--levvvel--denuvo) and [Global vs per-appid](#global-vs-per-appid).
 
 ## Platforms in your library
 
 **App details** run after import/refresh (`app_details` job), from Data Status, or `pnpm bootstrap`. Stores `platforms.windows`, `platforms.linux`, `platforms.mac`.
 
-- **Library** OS column: app details only
-- **Mac Support** page: `platforms.mac === true`
+- **Library** OS column: app details only (`platforms.windows/linux/mac`)
+- **Mac Support** page: AppleGamingWiki ratings (Apple Silicon / Rosetta 2 / CrossOver), defaulting to games found in the AppleGamingWiki database; the native Mac flag (`platforms.mac`) is shown alongside
 
 Needs `STEAM_API_KEY` and `DATABASE_URL` only.
 
@@ -59,6 +60,8 @@ Manual refresh: Data Status. Disable auto: `SLM_SKIP_CATALOG_BOOTSTRAP=true`.
 
 Denuvo catalog: [`fetch-denuvo-curator-catalog.ts`](../src/lib/steam/fetch-denuvo-curator-catalog.ts) via `ajaxgetcuratorrecommendations`.
 
+The **AppleGamingWiki macOS catalog** (`macos_compat_catalog`) is bootstrapped the same way (`src/lib/mac/`): pulled from the AppleGamingWiki Cargo API, then name-matched into per-app `macos_compat_entries` after each import (`rematchMacosCompatEntries`). Refresh from Data Status.
+
 ## Bundled seed metadata
 
 **First-launch performance:** compact derived metadata in [`data/seed/`](../data/seed/) is hydrated into SQLite before live scraping runs.
@@ -72,6 +75,7 @@ Denuvo catalog: [`fetch-denuvo-curator-catalog.ts`](../src/lib/steam/fetch-denuv
 | `app-details-lite.seed.json` | app details: genres, categories, platforms, Deck rating, release (no long descriptions) |
 | `protondb.seed.json` | ProtonDB tier, confidence, reports, checkedAt |
 | `hltb.seed.json` | HLTB durations, match metadata, negative-cache rows |
+| `macos-compat.seed.json` | AppleGamingWiki macOS catalog (native/Rosetta/CrossOver) + name-matched per-app entries |
 
 Flow: migrate → **seed hydrate** → catalog bootstrap → background enrichment for missing/stale/low-confidence rows.
 
@@ -93,8 +97,8 @@ Investigation script: `pnpm tsx --env-file=.env scripts/spike-store-getitems.ts`
 
 | Layer | Tables | Scope |
 | --- | --- | --- |
-| **Global catalogs** | `awacy_catalog`, `levvvel_kernel_catalog`, `denuvo_anti_tamper_catalog` | One copy for the whole instance |
-| **Per-appid cache** | `steam_app_details`, `protondb_entries`, `howlongtobeat_entries`, `anticheat_entries`, `profile_game_achievements` | Keyed by **appid** (achievements by `steamid`+`appid`), shared across profiles |
+| **Global catalogs** | `awacy_catalog`, `levvvel_kernel_catalog`, `denuvo_anti_tamper_catalog`, `macos_compat_catalog` | One copy for the whole instance |
+| **Per-appid cache** | `steam_app_details`, `protondb_entries`, `howlongtobeat_entries`, `anticheat_entries`, `macos_compat_entries`, `profile_game_achievements` | Keyed by **appid** (achievements by `steamid`+`appid`), shared across profiles |
 
 Jobs enqueue only for **your** profile’s appids (or compare warmup scope). If two profiles own appid `570`, the second reuses cached rows within TTL. Targets resolved in [`resolve-enrichment-appids.ts`](../src/lib/enrichment/resolve-enrichment-appids.ts).
 

@@ -48,9 +48,9 @@ Browse data (optional): `pnpm db:studio`.
 
 ## Seed metadata (migration 002)
 
-Migration `002_seed_denuvo_provenance.sql` adds Denuvo provenance columns on `anticheat_entries` (`denuvo_confidence`, `denuvo_source`, `denuvo_evidence`, `denuvo_checked_at`) and `seed_hydration_meta` to track bundled seed hydration.
+Migration `002_seed_denuvo_provenance.sql` adds Denuvo provenance columns on `anticheat_entries` (`denuvo_confidence`, `denuvo_source`, `denuvo_evidence`, `denuvo_checked_at`) and `seed_hydration_meta` to track bundled seed hydration. Later migrations add `steam_store_throttle` (`003`), the backlog tables `profile_backlog` / `profile_backlog_goal` (`004`), and the AppleGamingWiki macOS tables `macos_compat_catalog` / `macos_compat_entries` (`005`).
 
-Bundled JSON lives in [`data/seed/`](../data/seed/) (manifest **v4**: Denuvo, app details incl. genres/categories/platforms/Deck rating, ProtonDB, HLTB, plus `top-appids`/`profile-appids` target lists). On startup (or Docker entrypoint), the app hydrates seed rows before live catalog sync so the dashboard can show metadata immediately. Changing seed contents requires bumping `SEED_MANIFEST_VERSION` or existing installs won't re-hydrate.
+Bundled JSON lives in [`data/seed/`](../data/seed/) (manifest **v5**: Denuvo, app details incl. genres/categories/platforms/Deck rating, ProtonDB, HLTB, AppleGamingWiki macOS compatibility, plus `top-appids`/`profile-appids` target lists). On startup (or Docker entrypoint), the app hydrates seed rows before live catalog sync so the dashboard can show metadata immediately. Changing seed contents requires bumping `SEED_MANIFEST_VERSION` or existing installs won't re-hydrate.
 
 ```bash
 pnpm seed:fetch-top-appids  # refresh Steam top sellers list

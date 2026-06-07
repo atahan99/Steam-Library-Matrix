@@ -118,6 +118,7 @@ Each game is enriched from several independent sources, each answering one quest
 | **AreWeAntiCheatYet (AWACY)** | Whether anti-cheat works on Linux | Community catalog |
 | **Levvvel** | Whether a game uses kernel-level anti-cheat | Community catalog |
 | **Denuvo** (curator + store pages) | Denuvo anti-tamper DRM presence | Curator list + store-page text |
+| **AppleGamingWiki** | macOS: Apple Silicon (native), Rosetta 2, CrossOver ratings | Cargo API (community wiki) |
 
 > **Keyed vs unkeyed — important.** The two Steam hosts are different services. The
 > **Web API** is keyed and generous. The **storefront** ignores keys entirely and limits
@@ -132,7 +133,8 @@ Each game is enriched from several independent sources, each answering one quest
                          ├─ HowLongToBeat ──→ time to beat
                          ├─ AWACY ──────────→ Linux anti-cheat status
                          ├─ Levvvel ────────→ kernel anti-cheat
-                         └─ Denuvo ─────────→ anti-tamper DRM
+                         ├─ Denuvo ─────────→ anti-tamper DRM
+                         └─ AppleGamingWiki → macOS (Apple Silicon / Rosetta / CrossOver)
 ```
 
 ---
@@ -153,7 +155,9 @@ erDiagram
   steam_games ||--o| protondb_entries : "linux tier"
   steam_games ||--o| howlongtobeat_entries : "time to beat"
   steam_games ||--o| anticheat_entries : "anti-cheat + denuvo"
+  steam_games ||--o| macos_compat_entries : "macOS compat"
   steam_profiles ||--o{ profile_game_achievements : "completion"
+  steam_profiles ||--o{ profile_backlog : "backlog queue"
   steam_profiles ||--o{ enrichment_jobs : "background work"
 ```
 
@@ -167,10 +171,12 @@ erDiagram
 | `protondb_entries` | ProtonDB tier, confidence, report counts |
 | `howlongtobeat_entries` | Beat times + matched name + match confidence |
 | `anticheat_entries` | AWACY status, Levvvel kernel flag, Denuvo fields (per game) |
+| `macos_compat_entries` | AppleGamingWiki macOS ratings (Apple Silicon / Rosetta 2 / CrossOver), name-matched per game |
 | `profile_game_achievements` | Per profile/game completion (composite PK) |
+| `profile_backlog`, `profile_backlog_goal` | Hand-picked play queue + monthly goal, per profile (composite PK) |
 | `enrichment_jobs` | The background job queue (see §7) |
 | `data_refresh_log` | Per-source refresh history for the UI |
-| `awacy_catalog`, `levvvel_kernel_catalog`, `denuvo_anti_tamper_catalog` | Global source catalogs |
+| `awacy_catalog`, `levvvel_kernel_catalog`, `denuvo_anti_tamper_catalog`, `macos_compat_catalog` | Global source catalogs |
 | `anticheat_catalog_meta` | Catalog sync status/row counts |
 | `seed_hydration_meta` | Which bundled seed version has been applied (see §9) |
 
@@ -224,7 +230,7 @@ client-side**, with the active view encoded in the URL (shareable, back-button-f
 Server assembly lives in `src/lib/db/dashboard.ts` (`fetchDashboardPayload`), the join
 query in `src/lib/db/load-steam-game-join-rows.ts`, and row mapping in
 `src/lib/db/map-dashboard-game.ts`. Pages include Overview, Library, ProtonDB,
-HowLongToBeat, Anti-cheat, Mac, VR, Compare, Random Picker, Data Status, and About.
+HowLongToBeat, Anti-cheat, Mac, VR, Compare, Random Picker / Backlog, Data Status, and About.
 
 ### 6.4 Seeding
 
@@ -338,6 +344,15 @@ from that cursor. Accumulated `stats` are merged across ticks so progress is con
 finishes it checks for gaps: failures trigger a `missingOnly` retry; `app_details` /
 `protondb` re-resolve what's still missing and queue a gap-fill; `denuvo_catalog`
 re-queues if still incomplete. The system converges toward full coverage on its own.
+
+**"Checked" beats "has data".** A game counts as done for a source once it has been
+*checked*, even when the answer is "nothing here" — a delisted store page (404), a Steam
+Deck rating of `unknown`, a game with no achievements (Steam 400/500), or a HowLongToBeat
+title with no listed time. Those terminal results are cached with a timestamp (a negative
+cache) instead of re-counted as failures, so the queue drains, the worker goes idle, and
+Data Status reads 100% once every game has been checked — data or not. Only genuinely
+transient errors (rate limits, timeouts) retry. This is what stops the worker from
+re-scanning unanswerable games forever.
 
 **Two-phase anti-cheat.** The `anticheat` job runs `phase: "catalog"` first (match every
 game against the in-memory AWACY/Levvvel catalogs — fast, no per-game network), and when
@@ -453,9 +468,19 @@ It trusts HLTB's embedded Steam ID as ground truth, falls back to edition-aware 
 and demands higher confidence when name is the only evidence. Rejections are negative-cached
 so the worker stops re-attempting them.
 
-The throughline across all three matchers: prefer an exact ID, then exact name, then
-increasingly cautious fuzzy logic — and always record how the match was made and how
-confident it was.
+### Matcher D — macOS (AppleGamingWiki, name-only)
+
+AppleGamingWiki's Cargo table carries **no Steam app ID**, so there's no ground-truth anchor —
+name is the only evidence. The catalog is indexed by `normalizeGameName`
+(`src/lib/mac/`); each library game tries an exact normalized-name hit (`exact-title`), then a
+fuzzy fallback (`fuzzy-title`). A hit's `native` / `rosetta_2` / `crossover` / `parallels`
+fields are normalized to a small rating vocabulary — `perfect` / `runs` / `menu` /
+`unplayable` / `na` / `unknown` (the first three count as "playable"). Matching runs after
+each import rather than as a per-game worker job.
+
+The throughline across all four matchers: prefer an exact ID where one exists, then exact
+name, then increasingly cautious fuzzy logic — and always record how the match was made and
+how confident it was.
 
 ---
 
@@ -604,6 +629,8 @@ Quick reference to the main pieces described above:
 | Steam APIs | `src/lib/steam/steam-api.ts` (keyed), `steam-store.ts` / `steam-store-fetch.ts` / `fetch-steam-deck-compatibility.ts` (storefront) |
 | ProtonDB / HLTB | `src/lib/enrichment/protondb.ts`, `src/lib/enrichment/hltb-client.ts`, `src/lib/enrichment/hltb-match.ts` |
 | Anti-cheat / Denuvo | `src/lib/anticheat/*`, `src/lib/steam/denuvo/*` |
+| macOS (AppleGamingWiki) | `src/lib/mac/*` (`fetch-applegamingwiki.ts`, `sync-macos-compat.ts`, `macos-compat-rating.ts`), `src/lib/db/macos-compat.ts` |
+| Backlog | `src/lib/dashboard/backlog.ts`, `src/lib/db/profile-backlog.ts` |
 | Seed system | `src/lib/seed/*`, `scripts/generate-seed-metadata.ts`, `scripts/build-docker-db-template.ts` |
 | Security / env | `src/proxy.ts`, `src/lib/security/csp.ts`, `src/lib/api/*`, `src/lib/env/runtime-env.ts` |
 | Startup / worker embed | `src/instrumentation.ts` |
