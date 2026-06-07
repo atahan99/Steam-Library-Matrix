@@ -393,12 +393,13 @@ export const AntiCheatTable = () => {
                           </div>
                         </div>
                         {hasSourceLinks ? (
-                          <div className="flex shrink-0 flex-col gap-1 pt-0.5">
+                          <div className="flex shrink-0 items-center gap-1.5 pt-0.5">
                             {g.antiCheat?.sourceUrl ? (
                               <SourceLink
                                 href={g.antiCheat.sourceUrl}
                                 label="Linux anti-cheat source on Are We Anti-Cheat Yet"
                                 source="awacy"
+                                size="md"
                               />
                             ) : null}
                             {g.antiCheat?.levvvelSourceUrl ? (
@@ -406,6 +407,7 @@ export const AntiCheatTable = () => {
                                 href={g.antiCheat.levvvelSourceUrl}
                                 label="Kernel anti-cheat source on Levvvel"
                                 source="levvvel"
+                                size="md"
                               />
                             ) : null}
                             {showDenuvoLink ? (
@@ -413,6 +415,7 @@ export const AntiCheatTable = () => {
                                 href={DENUVO_CURATOR_SOURCE_URL}
                                 label="Denuvo Anti-Tamper source on Steam curator"
                                 source="steam"
+                                size="md"
                               />
                             ) : null}
                           </div>
