@@ -3,7 +3,7 @@ import type { BrandSlug } from "@/components/icons/brand-icon"
 export type SourceIconConfig =
   | { type: "steam" }
   | { type: "brand"; brand: BrandSlug }
-  | { type: "favicon"; src: string }
+  | { type: "favicon"; src: string; imgClassName?: string }
 
 export type SourceSlug =
   | BrandSlug
@@ -18,7 +18,13 @@ export const SOURCE_ICON: Record<SourceSlug, SourceIconConfig> = {
   steamdb: { type: "brand", brand: "steamdb" },
   apple: { type: "brand", brand: "apple" },
   "steam-deck": { type: "brand", brand: "steam-deck" },
-  awacy: { type: "favicon", src: "https://areweanticheatyet.com/icon.webp" },
+  // The AWACY icon has ~25% transparent padding baked in, so it reads small next
+  // to edge-to-edge favicons. Scale it up to match the others' visual weight.
+  awacy: {
+    type: "favicon",
+    src: "https://areweanticheatyet.com/icon.webp",
+    imgClassName: "scale-125",
+  },
   levvvel: {
     type: "favicon",
     src: "https://levvvel.com/wp-content/uploads/vvv-favicon-square-1-100x100.png",

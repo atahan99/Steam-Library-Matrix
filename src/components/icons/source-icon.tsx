@@ -44,7 +44,7 @@ export const SourceIconFromConfig = ({
         src={icon.src}
         alt=""
         aria-hidden
-        className="size-full object-cover"
+        className={cn("size-full object-cover", icon.imgClassName)}
         loading="lazy"
         decoding="async"
       />
