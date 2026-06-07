@@ -602,8 +602,8 @@ knobs (batch sizes, concurrency, intervals, rate limits) are environment variabl
 
 ## 11. Security model
 
-For a self-hosted app the defaults aim to be safe on a home LAN and hardenable for the
-public internet (see [`docs/security.md`](./security.md)):
+This is a LAN-first, single-user app; the defaults aim to be safe on a home network
+(see [`docs/security.md`](./security.md)):
 
 - **Security headers + CSP** (`src/proxy.ts`, `src/lib/security/csp.ts`): nonce-based
   Content-Security-Policy with `strict-dynamic`, plus `X-Frame-Options`, `X-Content-Type-Options`,
@@ -612,7 +612,7 @@ public internet (see [`docs/security.md`](./security.md)):
   endpoints).
 - **Input validation**: request bodies are validated with zod; Steam input parsing extracts
   only an ID/vanity (no SSRF surface).
-- **Cron auth** (`/api/cron/process-jobs`): requires `CRON_SECRET`. All other API routes are open (rate-limited); use a reverse proxy for public exposure.
+- **Cron auth** (`/api/cron/process-jobs`): requires `CRON_SECRET`. All other API routes are open (rate-limited) — keep the app on your LAN.
 
 ---
 

@@ -8,7 +8,6 @@ Configuration comes from the process environment. In Docker standalone builds, t
 | --- | --- | --- | --- |
 | Local / home lab | `file:./data/matrix.db` | Open (rate-limited) | `pnpm dev:all` (do **not** set `SLM_EMBED_JOB_WORKER`) |
 | Docker home lab | `file:/app/data/db/matrix.db` (named volume `matrix_db`) | Open (rate-limited) | `SLM_EMBED_JOB_WORKER=true` |
-| Public internet | same per method | Open — **use a reverse proxy** for auth + TLS | same as above |
 
 Route behavior and secrets: [security.md](./security.md#api-access). Job pipeline order: [scraping.md](./scraping.md#job-pipeline-order).
 
@@ -29,7 +28,7 @@ There is **no in-app Bearer guard** on import, refresh, dashboard, or enrichment
 | `GET /api/cron/process-jobs` | `Authorization: Bearer <CRON_SECRET>` (always enforced) |
 | All other API routes | Open — rate-limited per IP only |
 
-For a **public** deployment, terminate TLS and enforce auth at a reverse proxy and restrict network access — this app is designed LAN-first.
+This app is designed **LAN-first** — keep it on a private network; the routes above are open except for cron.
 
 | Variable | Default | Description |
 | --- | --- | --- |

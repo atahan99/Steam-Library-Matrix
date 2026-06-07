@@ -30,35 +30,19 @@ Docker files: [`docker/`](../docker/) (`Dockerfile`, `compose.yml`, `entrypoint.
 
 Check readiness: `curl -s http://localhost:3001/api/health` — `steamApiKey` should be `"ok"` before importing.
 
-## Production hardening
+## Automation (optional)
 
-This app is built for LAN / single-user self-hosting. If you expose it beyond localhost,
-the real protection is at the network edge:
-
-1. Put it behind a **reverse proxy** that terminates TLS and enforces auth (basic auth, an OAuth proxy, or an IP allowlist). In-app routes — including the `POST /api/jobs` enrichment queue — are open today, so don't expose them directly.
-2. Keep the container port off the public internet; only the proxy should reach it.
-3. Keep `SLM_EMBED_JOB_WORKER=true` (enabled in `docker/compose.yml` with 5s worker poll and tuned batch sizes).
-4. Set `CRON_SECRET` (`openssl rand -hex 32`) if you poll `/api/cron/process-jobs` externally — it's the one route that enforces a Bearer token.
-
-Automation example (enqueue a job — `/api/jobs` is open, so restrict it at the proxy):
+The embedded worker (`SLM_EMBED_JOB_WORKER=true`, set in [`docker/compose.yml`](../docker/compose.yml) with a 5s poll and tuned batch sizes) drains the queue on its own — no external scheduler needed. To enqueue work yourself from a LAN script, POST to the `/api/jobs` route:
 
 ```bash
-curl -X POST http://your-host/api/jobs \
+curl -X POST http://localhost:3001/api/jobs \
   -H "Content-Type: application/json" \
   -d '{"steamid":"76561198000000000","kind":"protondb","force":true}'
 ```
 
-Valid `kind` values: `protondb`, `hltb`, `app_details`, `achievements`, `anticheat`, `wishlist`, `anticheat_catalog`, `denuvo_catalog`.
+Valid `kind` values: `protondb`, `hltb`, `app_details`, `achievements`, `anticheat`, `wishlist`, `anticheat_catalog`, `denuvo_catalog`. Set `CRON_SECRET` (`openssl rand -hex 32`) only if you drive `/api/cron/process-jobs` from an external scheduler instead of the embedded worker.
 
-Full checklist: [security.md § Security checklist](./security.md#security-checklist).
-
-## Reverse proxy
-
-Terminate TLS in front of host port **3001** (maps to container port 3000):
-
-- **Caddy:** `reverse_proxy localhost:3001`
-- **Nginx:** `proxy_pass` with `X-Forwarded-For` / `X-Real-IP`
-- **Traefik:** Docker labels on `app`
+Open routes, secrets, and CSP: [security.md](./security.md).
 
 ## Persistent data on the host
 
