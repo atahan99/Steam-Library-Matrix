@@ -230,9 +230,14 @@ export const buildDashboardSyncStatus = async (
     anticheatCatalog.levvvel.complete
   const libraryProcessed = profile.lastSyncedAt ? libraryTotal : 0
   const wishlistProcessed = profile.wishlistLastSyncedAt ? wishlistTotal : 0
+  // Deck status comes from app details, so a game's Deck answer is settled once
+  // its app-details row is checked — including "unknown" (Valve hasn't rated it).
+  // Measure Deck completion against app-details coverage, not only the games with
+  // an authoritative rating, so genuine "unknown" results don't cap it below 100%.
+  const appDetailsProcessed = processedCountForSource(coverage.app_details)
   const steamDeckProcessed = resolveSteamDeckProcessed(
     libraryTotal,
-    deckWithData,
+    Math.max(deckWithData, appDetailsProcessed),
     activeJobs
   )
 

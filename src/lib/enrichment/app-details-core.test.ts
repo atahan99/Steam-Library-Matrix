@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest"
 
 vi.mock("@/lib/steam/steam-store", () => ({
-  fetchSteamAppDetails: vi.fn(),
+  fetchSteamAppDetailsOutcome: vi.fn(),
 }))
 
 vi.mock("@/lib/steam/fetch-steam-deck-compatibility", () => ({
@@ -25,10 +25,10 @@ import { upsertSteamAppDetailsRow } from "@/lib/db/steam-app-details"
 import { enrichSingleAppDetails } from "@/lib/enrichment/app-details-core"
 import { fetchSteamDeckCompatibility } from "@/lib/steam/fetch-steam-deck-compatibility"
 import { getSteamAppName } from "@/lib/steam/steam-app-list"
-import { fetchSteamAppDetails } from "@/lib/steam/steam-store"
+import { fetchSteamAppDetailsOutcome } from "@/lib/steam/steam-store"
 
 const mockedGetDb = vi.mocked(getDb)
-const mockedFetchSteamAppDetails = vi.mocked(fetchSteamAppDetails)
+const mockedFetchSteamAppDetailsOutcome = vi.mocked(fetchSteamAppDetailsOutcome)
 const mockedFetchSteamDeckCompatibility = vi.mocked(fetchSteamDeckCompatibility)
 const mockedGetSteamAppName = vi.mocked(getSteamAppName)
 const mockedUpsertSteamAppDetailsRow = vi.mocked(upsertSteamAppDetailsRow)
@@ -46,7 +46,7 @@ describe("enrichSingleAppDetails", () => {
     vi.clearAllMocks()
   })
 
-  it("backfills steam_games.name from GetAppList when storefront appdetails is null", async () => {
+  it("backfills name without writing a row when the store is transiently unavailable", async () => {
     const updateSet = vi.fn().mockReturnThis()
     const updateWhere = vi.fn().mockResolvedValue(undefined)
 
@@ -63,18 +63,46 @@ describe("enrichSingleAppDetails", () => {
       }),
     } as never)
 
-    mockedFetchSteamAppDetails.mockResolvedValue(null)
+    mockedFetchSteamAppDetailsOutcome.mockResolvedValue({ kind: "unavailable" })
     mockedGetSteamAppName.mockResolvedValue("Half-Life 3")
 
     const result = await enrichSingleAppDetails(APPID, true, { skipDeck: true })
 
     expect(result).toEqual({ checked: 1, updated: 1, failed: 0, skipped: 0 })
     expect(mockedGetSteamAppName).toHaveBeenCalledWith(APPID)
+    // Transient failures must not persist a row — leave it to retry later.
     expect(mockedUpsertSteamAppDetailsRow).not.toHaveBeenCalled()
     expect(mockedFetchSteamDeckCompatibility).not.toHaveBeenCalled()
     expect(updateSet).toHaveBeenCalledWith(
       expect.objectContaining({ name: "Half-Life 3" })
     )
+  })
+
+  it("writes a checked sentinel and backfills name when the store reports not-found", async () => {
+    const updateSet = vi.fn().mockReturnThis()
+    const updateWhere = vi.fn().mockResolvedValue(undefined)
+
+    mockedGetDb.mockReturnValue({
+      select: vi
+        .fn()
+        .mockReturnValue(makeSelectChain([{ name: `App ${APPID}` }])),
+      update: vi.fn().mockReturnValue({
+        set: updateSet.mockReturnValue({
+          where: updateWhere,
+        }),
+      }),
+    } as never)
+
+    mockedFetchSteamAppDetailsOutcome.mockResolvedValue({ kind: "not-found" })
+    mockedGetSteamAppName.mockResolvedValue("Delisted Game")
+
+    const result = await enrichSingleAppDetails(APPID, true, { skipDeck: true })
+
+    // not-found is terminal: record a sentinel so it stops being re-fetched and
+    // stops counting as a perpetual failure.
+    expect(result).toEqual({ checked: 1, updated: 1, failed: 0, skipped: 0 })
+    expect(mockedUpsertSteamAppDetailsRow).toHaveBeenCalledWith({ appid: APPID })
+    expect(mockedFetchSteamDeckCompatibility).not.toHaveBeenCalled()
   })
 
   it("uses GetAppList when storefront details have no name", async () => {
@@ -94,9 +122,9 @@ describe("enrichSingleAppDetails", () => {
       }),
     } as never)
 
-    mockedFetchSteamAppDetails.mockResolvedValue({
-      appid: APPID,
-      type: "game",
+    mockedFetchSteamAppDetailsOutcome.mockResolvedValue({
+      kind: "ok",
+      details: { appid: APPID, type: "game" },
     })
     mockedFetchSteamDeckCompatibility.mockResolvedValue("unknown")
     mockedGetSteamAppName.mockResolvedValue("Half-Life 3")

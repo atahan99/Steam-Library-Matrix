@@ -20,6 +20,18 @@ describe("processedCountForSource", () => {
       processedCountForSource({ total: 10, withData: 4, missing: 3, stale: 3 })
     ).toBe(7)
   })
+
+  it("counts confirmed-absent and stale HLTB rows as processed (only missing is outstanding)", () => {
+    expect(
+      processedCountForSource({
+        total: 10,
+        withData: 4,
+        missing: 0,
+        stale: 3,
+        confirmedAbsent: 3,
+      })
+    ).toBe(10)
+  })
 })
 
 describe("computeSyncProgress", () => {

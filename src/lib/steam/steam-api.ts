@@ -424,7 +424,24 @@ export const getPlayerAchievementStats = async (
       totalCount,
       completionPercent,
     }
-  } catch {
+  } catch (error) {
+    // GetPlayerAchievements answers a missing/unsupported game with HTTP 400
+    // ("Requested app has no stats") and, for a set of games whose achievement
+    // backend is permanently broken, a persistent HTTP 500 ("Internal server
+    // error", success:false). Both are terminal as far as we can ever fetch, so
+    // report "no achievements" and let the caller cache it instead of retrying
+    // forever and pinning the sync below 100%. A genuinely transient 500 simply
+    // re-resolves on the next TTL refresh. Rate limits / gateway errors / network
+    // failures (429/403/502/503/504/timeouts) stay null so they retry soon.
+    const message = error instanceof Error ? error.message : ""
+    if (/Steam API error: (400|500)/.test(message)) {
+      return {
+        hasAchievements: false,
+        unlockedCount: 0,
+        totalCount: 0,
+        completionPercent: 0,
+      }
+    }
     return null
   }
 }

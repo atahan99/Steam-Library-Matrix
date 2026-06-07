@@ -14,7 +14,6 @@ import {
   steamAppDetails,
   steamGames,
 } from "@/lib/db/schema"
-import { hasStoredSteamPlatforms } from "@/lib/steam/parse-steam-platforms"
 import { isCacheFresh } from "@/lib/utils/cache"
 import { isDenuvoDataFresh } from "@/lib/steam/denuvo/is-denuvo-data-fresh"
 import {
@@ -135,7 +134,6 @@ const filterAppDetailsAppids = async (
     {
       lastCheckedAt: Date | null
       steamDeckCompatibility: string | null
-      platforms: unknown
     }
   >()
 
@@ -145,7 +143,6 @@ const filterAppDetailsAppids = async (
         appid: steamAppDetails.appid,
         lastCheckedAt: steamAppDetails.lastCheckedAt,
         steamDeckCompatibility: steamAppDetails.steamDeckCompatibility,
-        platforms: steamAppDetails.platforms,
       })
       .from(steamAppDetails)
       .where(inArray(steamAppDetails.appid, chunk))
@@ -155,17 +152,14 @@ const filterAppDetailsAppids = async (
     }
   }
 
+  // Re-queue only rows that have never been checked or whose cache has expired.
+  // A fresh row is done even when Deck status is "unknown" or the store returned
+  // nothing (delisted) — those are real answers, not gaps. Treating them as work
+  // to redo kept the worker scanning the same games forever and burning CPU.
   const filtered = appids.filter((appid) => {
     const row = byAppid.get(appid)
     if (!row) return true
-    const deckStored = row.steamDeckCompatibility
-    const needsDeckRefresh = !deckStored || deckStored === "unknown"
-    const needsPlatformRefresh = !hasStoredSteamPlatforms(row.platforms)
-    const cacheFresh = isCacheFresh(
-      row.lastCheckedAt?.toISOString(),
-      APP_DETAILS_TTL_HOURS
-    )
-    return !cacheFresh || needsDeckRefresh || needsPlatformRefresh
+    return !isCacheFresh(row.lastCheckedAt?.toISOString(), APP_DETAILS_TTL_HOURS)
   })
 
   return sortAppDetailsDeckPriority(filtered, byAppid)
@@ -182,7 +176,6 @@ const sortAppDetailsDeckPriority = (
     {
       lastCheckedAt: Date | null
       steamDeckCompatibility: string | null
-      platforms: unknown
     }
   >
 ): number[] => {

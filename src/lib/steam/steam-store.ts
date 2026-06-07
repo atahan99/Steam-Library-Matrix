@@ -14,9 +14,21 @@ export type { SteamStoreAppDetails } from "@/lib/steam/parse-steam-appdetails-re
 
 const MAX_FETCH_ATTEMPTS = 4
 
-export const fetchSteamAppDetails = async (
+/**
+ * Outcome of a storefront app-details lookup.
+ * - `not-found` is terminal: the app has no public store page (delisted, beta
+ *   branch, or `success:false`). Callers should cache this so they stop retrying.
+ * - `unavailable` is transient (cooldown, rate-limit exhaustion, bad JSON) and
+ *   should be retried later.
+ */
+export type SteamAppDetailsOutcome =
+  | { kind: "ok"; details: SteamStoreAppDetails }
+  | { kind: "not-found" }
+  | { kind: "unavailable" }
+
+export const fetchSteamAppDetailsOutcome = async (
   appid: number
-): Promise<SteamStoreAppDetails | null> => {
+): Promise<SteamAppDetailsOutcome> => {
   await waitForSteamStoreRequestSlot()
   const url = `https://store.steampowered.com/api/appdetails?appids=${appid}&l=english&cc=us`
   const init = buildSteamStoreFetchInit(0)
@@ -31,13 +43,16 @@ export const fetchSteamAppDetails = async (
         json = await res.json()
       } catch (error) {
         console.warn(`[steam-store] Invalid JSON for appid ${appid}:`, error)
-        return null
+        return { kind: "unavailable" }
       }
-      return parseSteamAppDetailsResponse(appid, json)
+      const details = parseSteamAppDetailsResponse(appid, json)
+      // A parsed null means Steam returned success:false — the app has no public
+      // store page. That's a real answer, not a failure, so report not-found.
+      return details ? { kind: "ok", details } : { kind: "not-found" }
     }
 
-    if (outcome.kind === "not-found") return null
-    if (outcome.kind === "cooldown") return null
+    if (outcome.kind === "not-found") return { kind: "not-found" }
+    if (outcome.kind === "cooldown") return { kind: "unavailable" }
 
     if (outcome.kind === "retry") {
       console.warn(
@@ -50,8 +65,15 @@ export const fetchSteamAppDetails = async (
     console.warn(
       `[steam-store] HTTP ${res.status} for appid ${appid} (attempt ${attempt}/${MAX_FETCH_ATTEMPTS})`
     )
-    return null
+    return { kind: "unavailable" }
   }
 
-  return null
+  return { kind: "unavailable" }
+}
+
+export const fetchSteamAppDetails = async (
+  appid: number
+): Promise<SteamStoreAppDetails | null> => {
+  const outcome = await fetchSteamAppDetailsOutcome(appid)
+  return outcome.kind === "ok" ? outcome.details : null
 }

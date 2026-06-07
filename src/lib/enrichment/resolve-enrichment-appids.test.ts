@@ -70,7 +70,7 @@ describe("resolveAppidsForSource", () => {
     expect(mockedGetProfileAppids).not.toHaveBeenCalled()
   })
 
-  it("filters stale app_details rows but keeps unknown deck compatibility", async () => {
+  it("re-queues stale and never-checked app_details but keeps fresh rows regardless of Deck status", async () => {
     const staleCheckedAt = new Date(Date.now() - 200 * 60 * 60 * 1000)
     const select = vi.fn().mockReturnValue(
       makeSelectChain([
@@ -80,6 +80,7 @@ describe("resolveAppidsForSource", () => {
           steamDeckCompatibility: "playable",
         },
         {
+          // Fresh but Deck "unknown" — a real answer, not a gap; must not re-queue.
           appid: 2,
           lastCheckedAt: new Date(),
           steamDeckCompatibility: "unknown",
@@ -88,7 +89,6 @@ describe("resolveAppidsForSource", () => {
           appid: 3,
           lastCheckedAt: new Date(),
           steamDeckCompatibility: "verified",
-          platforms: { windows: true },
         },
       ])
     )
@@ -105,7 +105,10 @@ describe("resolveAppidsForSource", () => {
       force: false,
     })
 
-    expect(appids).toEqual([2, 1, 4])
+    // Only the stale row (1) and the never-checked row (4) need work; the fresh
+    // rows (2 unknown-Deck, 3 verified) are done. Sort keeps known-Deck before
+    // the missing row.
+    expect(appids).toEqual([1, 4])
   })
 
   it("returns hltb rows with missingOnly and TTL filtering", async () => {

@@ -73,8 +73,13 @@ export type ActiveJobSummary = {
 }
 
 export const processedCountForSource = (source: SourceCoverage): number => {
+  // A game counts as processed once it has been checked, whatever the result —
+  // data, a confirmed absence, or an inconclusive/stale outcome. Only
+  // never-checked ("missing") games are outstanding. This keeps every source at
+  // 100% when the worker is idle, instead of HowLongToBeat lingering below
+  // because some titles (multiplayer, low-confidence matches) have no run time.
   if (source.confirmedAbsent !== undefined) {
-    return source.withData + source.confirmedAbsent
+    return source.withData + source.confirmedAbsent + source.stale
   }
   return source.withData + source.stale
 }

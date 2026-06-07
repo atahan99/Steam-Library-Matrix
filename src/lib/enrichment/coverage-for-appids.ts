@@ -44,7 +44,11 @@ const bumpBucket = (
   coverage: SourceCoverage,
   bucket: CoverageBucket
 ): SourceCoverage => ({
-  total: coverage.total,
+  // Spread so fields this helper doesn't touch (notably confirmedAbsent) survive.
+  // Rebuilding the object from scratch here used to drop confirmedAbsent back to
+  // undefined whenever a normal game was processed after a confirmed-absent one,
+  // erasing most HLTB "no run time" rows from the totals.
+  ...coverage,
   withData: coverage.withData + (bucket === "withData" ? 1 : 0),
   missing: coverage.missing + (bucket === "missing" ? 1 : 0),
   stale: coverage.stale + (bucket === "stale" ? 1 : 0),
@@ -59,15 +63,11 @@ const classifyAppDetails = (game: DashboardGame): CoverageBucket => {
   const lastChecked = game.steamDetails?.lastCheckedAt
   const platforms = game.steamDetails?.platforms
   const hasPlatforms = hasStoredSteamPlatforms(platforms)
-  const deckStored = game.steamDetails?.steamDeckCompatibility
-  const needsDeckRefresh = !deckStored || deckStored === "unknown"
 
+  // A fresh row with platforms is fully covered — a Deck status of "unknown" is
+  // Valve's real answer, not missing data, so it must not hold this below 100%.
   if (!lastChecked) return "missing"
-  if (
-    hasPlatforms &&
-    isCacheFresh(lastChecked, APP_DETAILS_TTL_HOURS) &&
-    !needsDeckRefresh
-  ) {
+  if (hasPlatforms && isCacheFresh(lastChecked, APP_DETAILS_TTL_HOURS)) {
     return "withData"
   }
   return "stale"

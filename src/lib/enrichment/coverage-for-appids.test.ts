@@ -98,8 +98,8 @@ describe("computeEnrichmentCoverageFromGames", () => {
       baseGame(1, {
         steamDetails: {
           platforms: { windows: true },
-          steamDeckCompatibility: "unknown",
-          lastCheckedAt: freshCheckedAt,
+          steamDeckCompatibility: "verified",
+          lastCheckedAt: staleCheckedAt,
         },
         protondb: { tier: "unknown", lastCheckedAt: staleCheckedAt },
         antiCheat: {
@@ -114,6 +114,26 @@ describe("computeEnrichmentCoverageFromGames", () => {
     expect(coverage.protondb.stale).toBe(1)
     expect(coverage.anticheat.stale).toBe(1)
     expect(coverage.hltb.stale).toBe(1)
+  })
+
+  it("keeps confirmedAbsent when a normal game is processed after a confirmed-absent one", () => {
+    const coverage = computeEnrichmentCoverageFromGames([
+      baseGame(1, {
+        hltb: { matchedName: "[failed: no results]", lastCheckedAt: freshCheckedAt },
+      }),
+      baseGame(2, {
+        hltb: { mainStoryMinutes: 300, lastCheckedAt: freshCheckedAt },
+      }),
+    ])
+
+    expect(coverage.hltb.confirmedAbsent).toBe(1)
+    expect(coverage.hltb.withData).toBe(1)
+    expect(
+      coverage.hltb.withData +
+        coverage.hltb.missing +
+        coverage.hltb.stale +
+        (coverage.hltb.confirmedAbsent ?? 0)
+    ).toBe(coverage.hltb.total)
   })
 
   it("partitions buckets so withData + missing + stale + confirmedAbsent equals total", () => {
