@@ -168,29 +168,23 @@ describe("resolveAppidsForSource", () => {
     expect(rows).toEqual([{ appid: 200, name: "Retryable" }])
   })
 
-  it("re-queues protondb when tier is unknown despite fresh timestamp", async () => {
+  it("caches protondb checked recently regardless of tier, but re-queues stale rows", async () => {
+    const stale = new Date(Date.now() - 200 * 60 * 60 * 1000) // older than the 168h TTL
     const select = vi.fn().mockReturnValue(
       makeSelectChain([
-        {
-          appid: 1,
-          tier: "unknown",
-          lastCheckedAt: new Date(),
-        },
-        {
-          appid: 2,
-          tier: "gold",
-          lastCheckedAt: new Date(),
-        },
+        { appid: 1, lastCheckedAt: new Date() }, // fresh, unknown tier → cached
+        { appid: 2, lastCheckedAt: new Date() }, // fresh, gold → cached
+        { appid: 3, lastCheckedAt: stale }, // stale → re-queue
       ])
     )
     mockedGetDb.mockReturnValue({ select } as never)
-    mockedGetProfileAppids.mockResolvedValue([1, 2])
+    mockedGetProfileAppids.mockResolvedValue([1, 2, 3])
 
     const appids = await resolveAppidsForSource("protondb", {
       steamid: "76561198000000001",
       force: false,
     })
 
-    expect(appids).toEqual([1])
+    expect(appids).toEqual([3])
   })
 })

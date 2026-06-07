@@ -212,19 +212,15 @@ const filterProtonDbAppids = async (
     const existing = await db
       .select({
         appid: protondbEntries.appid,
-        tier: protondbEntries.tier,
         lastCheckedAt: protondbEntries.lastCheckedAt,
       })
       .from(protondbEntries)
       .where(inArray(protondbEntries.appid, chunk))
 
     for (const row of existing) {
-      const tier = row.tier
-      const hasMeaningfulTier = Boolean(tier && tier !== "unknown")
-      if (
-        hasMeaningfulTier &&
-        isCacheFresh(row.lastCheckedAt?.toISOString(), PROTONDB_TTL_HOURS)
-      ) {
+      // Checked recently = done, even when ProtonDB has no tier for this game.
+      // Otherwise every game without Proton data was re-fetched on every pass.
+      if (isCacheFresh(row.lastCheckedAt?.toISOString(), PROTONDB_TTL_HOURS)) {
         freshAppids.add(row.appid)
       }
     }

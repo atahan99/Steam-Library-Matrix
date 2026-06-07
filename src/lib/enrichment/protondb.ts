@@ -26,13 +26,31 @@ const normalizeTier = (tier: string | undefined): ProtonDbTier => {
   return "unknown"
 }
 
-export const fetchProtonDbSummary = async (appid: number) => {
+type ProtonDbSummary = {
+  tier: ProtonDbTier
+  confidence: string | undefined
+  totalReports: number | undefined
+  latestReportedAt: string | undefined
+  sourceUrl: string
+}
+
+type ProtonDbFetchResult =
+  | { status: "ok"; summary: ProtonDbSummary }
+  | { status: "not-found" }
+  | { status: "error" }
+
+export const fetchProtonDbSummary = async (
+  appid: number
+): Promise<ProtonDbFetchResult> => {
   await prepareServerEnv()
   const res = await fetchWithTimeout(
     `${PROTONDB_API}/${appid}.json`,
     nextFetchInit(0)
   )
-  if (!res.ok) return null
+  // 404 is a real answer: ProtonDB has no reports for this game — cache it so we
+  // stop refetching. Other non-OK responses are transient, so let them retry.
+  if (res.status === 404) return { status: "not-found" }
+  if (!res.ok) return { status: "error" }
   const data = (await res.json()) as {
     tier?: string
     confidence?: string
@@ -40,15 +58,19 @@ export const fetchProtonDbSummary = async (appid: number) => {
     total?: number
   }
   return {
-    tier: normalizeTier(data.tier),
-    confidence: data.confidence,
-    totalReports: data.total,
-    latestReportedAt: data.trends?.[0]?.testHour,
-    sourceUrl: `https://www.protondb.com/app/${appid}`,
+    status: "ok",
+    summary: {
+      tier: normalizeTier(data.tier),
+      confidence: data.confidence,
+      totalReports: data.total,
+      latestReportedAt: data.trends?.[0]?.testHour,
+      sourceUrl: `https://www.protondb.com/app/${appid}`,
+    },
   }
 }
 
-const upsertUnreleasedSentinel = async (appid: number): Promise<boolean> => {
+/** Write a "checked, no tier" row — used for unreleased games and games with no ProtonDB reports. */
+const upsertProtonDbSentinel = async (appid: number): Promise<boolean> => {
   const db = getDb()
   const now = new Date()
   try {
@@ -111,17 +133,25 @@ export const enrichSingleProtonDb = async (
 
     const releaseDate = parseReleaseDate(appDetailRows[0]?.releaseDate)
     if (isUnreleasedGame(releaseDate)) {
-      if (await upsertUnreleasedSentinel(appid)) {
+      if (await upsertProtonDbSentinel(appid)) {
         return { checked: 1, updated: 1, failed: 0, skipped: 0 }
       }
       return { checked: 1, updated: 0, failed: 1, skipped: 0 }
     }
 
-    const summary = await fetchProtonDbSummary(appid)
+    const result = await fetchProtonDbSummary(appid)
     const now = new Date()
-    if (!summary) {
+    if (result.status === "error") {
       return { checked: 1, updated: 0, failed: 1, skipped: 0 }
     }
+    if (result.status === "not-found") {
+      // No ProtonDB reports — record the check so we don't refetch every pass.
+      if (await upsertProtonDbSentinel(appid)) {
+        return { checked: 1, updated: 1, failed: 0, skipped: 0 }
+      }
+      return { checked: 1, updated: 0, failed: 1, skipped: 0 }
+    }
+    const summary = result.summary
     try {
       await db
         .insert(protondbEntries)
