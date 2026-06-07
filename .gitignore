@@ -18,6 +18,7 @@
 .cursor/
 *.pem
 .env*.local
+.claude/
 
 # debug
 npm-debug.log*
