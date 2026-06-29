@@ -1,4 +1,5 @@
 import { BrandIcon } from "@/components/icons/brand-icon"
+import { SourceSiteIcon } from "@/components/icons/source-site-icons"
 import { SteamIcon } from "@/components/icons/steam-icon"
 import {
   faviconUrlFromHref,
@@ -30,6 +31,10 @@ export const SourceIconFromConfig = ({
 
   if (icon.type === "brand") {
     return <BrandIcon brand={icon.brand} className={iconClass} />
+  }
+
+  if (icon.type === "site") {
+    return <SourceSiteIcon site={icon.site} className={iconClass} />
   }
 
   return (
