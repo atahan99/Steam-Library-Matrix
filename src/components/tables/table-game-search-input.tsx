@@ -3,6 +3,7 @@
 import { XIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { sanitizeSearchQuery } from "@/lib/utils/sanitize-text-input"
 import { cn } from "@/lib/utils"
 
 type TableGameSearchInputProps = {
@@ -39,7 +40,10 @@ export const TableGameSearchInput = ({
         id={id}
         placeholder={placeholder}
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e) => onChange(sanitizeSearchQuery(e.target.value))}
+        autoComplete="off"
+        spellCheck={false}
+        maxLength={200}
         className={cn("w-full", showClear && "pr-10")}
         aria-label={ariaLabel}
       />

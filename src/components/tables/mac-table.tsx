@@ -9,6 +9,7 @@ import {
   parsePageSize,
   parsePinnedGameAppid,
   parseSortDirection,
+  parseTableSearchQuery,
   serializeCommaList,
   serializePinnedGameAppid,
 } from "@/lib/dashboard/table-url-params"
@@ -120,7 +121,7 @@ const isMacSortKey = (value: string | null): value is SortKey =>
   value === "name" || value === "playtime" || value === "checked"
 
 const parseMacUrl = (params: URLSearchParams): MacUrlState => ({
-  q: params.get("q") ?? "",
+  q: parseTableSearchQuery(params.get("q")),
   game: parsePinnedGameAppid(params),
   genres: parseCommaList(params.get("genres")),
   sort: isMacSortKey(params.get("sort")) ? (params.get("sort") as SortKey) : "name",

@@ -8,6 +8,7 @@ import {
   parsePageSize,
   parsePinnedGameAppid,
   parseSortDirection,
+  parseTableSearchQuery,
   serializePinnedGameAppid,
 } from "@/lib/dashboard/table-url-params"
 import { useTableGames } from "@/hooks/use-table-games"
@@ -79,7 +80,7 @@ const isHltbSortKey = (value: string | null): value is SortKey =>
   value === "confidence"
 
 const parseHltbUrl = (params: URLSearchParams): HltbUrlState => ({
-  q: params.get("q") ?? "",
+  q: parseTableSearchQuery(params.get("q")),
   game: parsePinnedGameAppid(params),
   missing: params.get("missing") === "1",
   sort: isHltbSortKey(params.get("sort")) ? (params.get("sort") as SortKey) : "name",

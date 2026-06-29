@@ -23,7 +23,7 @@ export const POST = async (request: Request) =>
     }
 
     try {
-      const result = await importSteamLibrary(parsed.data.input.trim())
+      const result = await importSteamLibrary(parsed.data.input)
       const appDetailsJob = await enqueueAppDetailsAfterImport(result.steamid)
 
       after(async () => {

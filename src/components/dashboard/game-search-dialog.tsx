@@ -20,6 +20,7 @@ import {
   CommandList,
 } from "@/components/ui/command"
 import { formatPlaytime } from "@/lib/utils/format-playtime"
+import { sanitizeSearchQuery } from "@/lib/utils/sanitize-text-input"
 
 export const GameSearchDialog = () => {
   const { games, wishlistGames, profile } = useDashboard()
@@ -53,7 +54,7 @@ export const GameSearchDialog = () => {
         <CommandInput
           placeholder="Type a game name…"
           value={search}
-          onValueChange={setSearch}
+          onValueChange={(value) => setSearch(sanitizeSearchQuery(value))}
         />
         <CommandList>
           <CommandEmpty>

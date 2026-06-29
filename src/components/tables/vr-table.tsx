@@ -9,6 +9,7 @@ import {
   parsePageSize,
   parsePinnedGameAppid,
   parseSortDirection,
+  parseTableSearchQuery,
   serializeCommaList,
   serializePinnedGameAppid,
 } from "@/lib/dashboard/table-url-params"
@@ -100,7 +101,7 @@ const isVrSortKey = (value: string | null): value is SortKey =>
   value === "name" || value === "playtime" || value === "checked"
 
 const parseVrUrl = (params: URLSearchParams): VrUrlState => ({
-  q: params.get("q") ?? "",
+  q: parseTableSearchQuery(params.get("q")),
   game: parsePinnedGameAppid(params),
   genres: parseCommaList(params.get("genres")),
   devices: parseCommaList(params.get("devices")),

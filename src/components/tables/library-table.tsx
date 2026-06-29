@@ -23,6 +23,7 @@ import {
   parsePageSize,
   parsePinnedGameAppid,
   parseSortDirection,
+  parseTableSearchQuery,
   serializeCommaList,
   serializePinnedGameAppid,
   type LibraryPlayFilter,
@@ -89,7 +90,7 @@ const isOsPlatform = (value: string): value is OsFilterPlatform =>
   value === "windows" || value === "linux" || value === "mac"
 
 const parseLibraryUrl = (params: URLSearchParams): LibraryUrlState => ({
-  q: params.get("q") ?? "",
+  q: parseTableSearchQuery(params.get("q")),
   game: parsePinnedGameAppid(params),
   sort: isSortKey(params.get("sort")) ? (params.get("sort") as SortKey) : "name",
   dir: parseSortDirection(params.get("dir")),

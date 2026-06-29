@@ -33,6 +33,7 @@ import {
   getDefaultSortDirection,
   type SortDirection,
 } from "@/lib/utils/table-sort"
+import { sanitizeSearchQuery } from "@/lib/utils/sanitize-text-input"
 
 type CatalogRow = {
   id: string
@@ -267,7 +268,10 @@ export const AnticheatCatalogTable = () => {
                 : "Game name…"
             }
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => setSearch(sanitizeSearchQuery(e.target.value))}
+            autoComplete="off"
+            spellCheck={false}
+            maxLength={200}
             aria-label="Search catalog"
             className="w-full"
           />

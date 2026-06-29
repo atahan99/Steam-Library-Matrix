@@ -1,5 +1,9 @@
 import type { SortDirection } from "@/lib/utils/table-sort"
+import { sanitizeSearchQuery } from "@/lib/utils/sanitize-text-input"
 import type { TablePageSize } from "@/components/tables/table-pagination-footer"
+
+export const parseTableSearchQuery = (value: string | null): string =>
+  sanitizeSearchQuery(value ?? "")
 
 export const parseCommaList = (value: string | null): string[] => {
   if (!value?.trim()) return []

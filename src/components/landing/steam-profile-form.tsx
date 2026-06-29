@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -8,6 +8,8 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { NeonGradientCard } from "@/components/ui/neon-gradient-card"
 import { cn } from "@/lib/utils"
+import { validateSteamProfileInput } from "@/lib/steam/parse-steam-input"
+import { sanitizeSteamProfileInputDraft } from "@/lib/utils/sanitize-text-input"
 import { setActiveSteamid } from "@/lib/session/active-profile"
 
 const importNotes = [
@@ -22,15 +24,36 @@ export const SteamProfileForm = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  const validationError = useMemo(() => {
+    const trimmed = input.trim()
+    if (!trimmed) return null
+    const result = validateSteamProfileInput(trimmed)
+    return result.ok ? null : result.error
+  }, [input])
+
+  const canSubmit = Boolean(input.trim()) && validationError === null
+
+  const handleInputChange = (value: string) => {
+    setInput(sanitizeSteamProfileInputDraft(value))
+    if (error) setError(null)
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    const trimmed = sanitizeSteamProfileInputDraft(input).trim()
+    const clientValidation = validateSteamProfileInput(trimmed)
+    if (!clientValidation.ok) {
+      setError(clientValidation.error)
+      return
+    }
+
     setLoading(true)
     setError(null)
     try {
       const res = await fetch("/api/steam/import", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ input }),
+        body: JSON.stringify({ input: trimmed }),
       })
       const json = (await res.json()) as {
         error?: string
@@ -84,16 +107,20 @@ export const SteamProfileForm = () => {
               className="landing-input"
               placeholder="https://steamcommunity.com/id/example"
               value={input}
-              onChange={(e) => setInput(e.target.value)}
+              onChange={(e) => handleInputChange(e.target.value)}
               aria-label="Steam profile URL or ID"
+              aria-invalid={validationError ? true : undefined}
               disabled={loading}
+              autoComplete="off"
+              spellCheck={false}
+              inputMode="url"
             />
             <div className="flex justify-center">
               <Button
                 type="submit"
                 size="sm"
                 className="min-w-36 px-5 shadow-[0_0_16px_-6px_var(--neon-glow)]"
-                disabled={loading || !input.trim()}
+                disabled={loading || !canSubmit}
               >
                 {loading ? "Importing…" : "Import library"}
               </Button>
@@ -110,6 +137,10 @@ export const SteamProfileForm = () => {
               <AlertTitle>Import failed</AlertTitle>
               <AlertDescription>{error}</AlertDescription>
             </Alert>
+          ) : validationError ? (
+            <p className="mt-3 text-sm text-destructive" role="alert">
+              {validationError}
+            </p>
           ) : null}
         </CardContent>
       </NeonGradientCard>

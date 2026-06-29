@@ -11,6 +11,7 @@ import {
   parsePageSize,
   parsePinnedGameAppid,
   parseSortDirection,
+  parseTableSearchQuery,
   serializePinnedGameAppid,
 } from "@/lib/dashboard/table-url-params"
 import { useTableGames } from "@/hooks/use-table-games"
@@ -168,7 +169,7 @@ const isDeckFilter = (value: string | null): value is DeckFilter =>
   value === "unknown"
 
 const parseProtonUrl = (params: URLSearchParams): ProtonUrlState => ({
-  q: params.get("q") ?? "",
+  q: parseTableSearchQuery(params.get("q")),
   game: parsePinnedGameAppid(params),
   tier: isProtonTier(params.get("tier"))
     ? (params.get("tier") as ProtonChartFilter)

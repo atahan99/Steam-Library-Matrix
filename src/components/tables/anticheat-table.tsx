@@ -10,6 +10,7 @@ import {
   parsePageSize,
   parsePinnedGameAppid,
   parseSortDirection,
+  parseTableSearchQuery,
   serializeCommaList,
   serializePinnedGameAppid,
 } from "@/lib/dashboard/table-url-params"
@@ -90,7 +91,7 @@ const isAntiCheatSortKey = (value: string | null): value is SortKey =>
   value === "name" || value === "status" || value === "playtime"
 
 const parseAntiCheatUrl = (params: URLSearchParams): AntiCheatUrlState => ({
-  q: params.get("q") ?? "",
+  q: parseTableSearchQuery(params.get("q")),
   game: parsePinnedGameAppid(params),
   linux: params.get("linux") ?? "all",
   software: parseCommaList(params.get("software")),
