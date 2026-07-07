@@ -27,13 +27,9 @@ import { LEVVVEL_KERNEL_URL } from "@/lib/anticheat/anticheatTypes"
 import { checkSteamDenuvo } from "@/lib/steam/denuvo"
 import { isDenuvoStoreRefreshNeeded } from "@/lib/steam/denuvo/is-denuvo-data-fresh"
 import type { DenuvoSourceKind } from "@/lib/steam/denuvo/types"
+import { delay } from "@/lib/utils/delay"
 
 const STORE_PAGE_FETCH_DELAY_MS = 250
-
-const sleep = (ms: number) =>
-  new Promise<void>((resolve) => {
-    setTimeout(resolve, ms)
-  })
 
 const SCHEMA_MIGRATION_HINT =
   "Anti-cheat database columns are missing. Run pnpm db:migrate against your DATABASE_URL."
@@ -206,7 +202,7 @@ export const enrichSingleAnticheat = async (
     }
   } else {
     if (delayBeforeStoreFetch) {
-      await sleep(STORE_PAGE_FETCH_DELAY_MS)
+      await delay(STORE_PAGE_FETCH_DELAY_MS)
     }
 
     try {

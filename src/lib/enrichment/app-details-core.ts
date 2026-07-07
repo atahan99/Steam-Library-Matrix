@@ -9,6 +9,7 @@ import { fetchSteamAppDetailsOutcome } from "@/lib/steam/steam-store"
 import { SteamStoreCooldownError } from "@/lib/steam/steam-store-fetch"
 import { isCacheFresh } from "@/lib/utils/cache"
 import { isPlaceholderGameName } from "@/lib/utils/placeholder-game-name"
+import { delay } from "@/lib/utils/delay"
 
 export const APP_DETAILS_DELAY_MS = 300
 
@@ -89,7 +90,7 @@ export const enrichSingleAppDetails = async (
       if (outcome.kind === "not-found") {
         await upsertSteamAppDetailsRow({ appid })
       }
-      await new Promise((r) => setTimeout(r, APP_DETAILS_DELAY_MS))
+      await delay(APP_DETAILS_DELAY_MS)
       return {
         checked: 1,
         updated: outcome.kind === "not-found" || backfilled ? 1 : 0,
@@ -146,7 +147,7 @@ export const enrichSingleAppDetails = async (
       await db.update(steamGames).set(gameUpdates).where(eq(steamGames.appid, appid))
     }
 
-    await new Promise((r) => setTimeout(r, APP_DETAILS_DELAY_MS))
+    await delay(APP_DETAILS_DELAY_MS)
     return { checked: 1, updated: 1, failed: 0, skipped: 0 }
   } catch (error) {
     if (error instanceof SteamStoreCooldownError) throw error

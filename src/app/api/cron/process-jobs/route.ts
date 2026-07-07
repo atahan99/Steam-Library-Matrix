@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server"
-import { requireCronAuth } from "@/lib/api/guard"
+import { requireCronAuth, requireDbConfigured } from "@/lib/api/guard"
 import { processEnrichmentJobsTick } from "@/lib/jobs/worker"
-import { isDbConfiguredAtRuntime } from "@/lib/db/client"
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
@@ -11,12 +10,8 @@ export const GET = async (request: Request) => {
   const denied = requireCronAuth(request)
   if (denied) return denied
 
-  if (!(await isDbConfiguredAtRuntime())) {
-    return NextResponse.json(
-      { error: "DATABASE_URL is not configured" },
-      { status: 503 }
-    )
-  }
+  const dbGuard = await requireDbConfigured()
+  if (dbGuard) return dbGuard
 
   const result = await processEnrichmentJobsTick()
   return NextResponse.json({ ok: true, ...result })

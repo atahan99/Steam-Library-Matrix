@@ -26,10 +26,6 @@ export const hasMacCompatData = (game: DashboardGame): boolean => {
   )
 }
 
-/** Game appears anywhere relevant to Mac: a Mac build or AppleGamingWiki data. */
-export const isMacRelevant = (game: DashboardGame): boolean =>
-  isMacSupported(game) || hasMacCompatData(game)
-
 /** A tested native Apple Silicon build exists. */
 export const hasNativeAppleSilicon = (game: DashboardGame): boolean =>
   game.macosCompat ? isRatingKnown(game.macosCompat.native) : false

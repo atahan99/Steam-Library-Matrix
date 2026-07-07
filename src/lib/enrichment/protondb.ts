@@ -7,6 +7,7 @@ import { PROTONDB_TTL_HOURS } from "@/lib/enrichment/resolve-enrichment-appids"
 import { isCacheFresh } from "@/lib/utils/cache"
 import { parseReleaseDate, isUnreleasedGame } from "@/lib/utils/parse-release-date"
 import type { ProtonDbTier } from "@/types/dashboard"
+import { delay } from "@/lib/utils/delay"
 
 const PROTONDB_API = "https://www.protondb.com/api/v1/reports/summaries"
 const PROTON_DELAY_MS = 200
@@ -182,7 +183,7 @@ export const enrichSingleProtonDb = async (
           },
         })
       if (options?.applyDelay !== false) {
-        await new Promise((r) => setTimeout(r, PROTON_DELAY_MS))
+        await delay(PROTON_DELAY_MS)
       }
       return { checked: 1, updated: 1, failed: 0, skipped: 0 }
     } catch (error) {

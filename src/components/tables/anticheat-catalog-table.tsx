@@ -26,6 +26,7 @@ import {
   LEVVVEL_KERNEL_URL,
 } from "@/lib/anticheat/anticheatTypes"
 import { DENUVO_CURATOR_URL } from "@/lib/steam/denuvo-curator-constants"
+import { AWACY_STATUS_FILTER_OPTIONS } from "@/lib/anticheat/awacy-status-options"
 import type { AnticheatCatalogBrowseSource } from "@/lib/db/list-anticheat-catalog-page"
 import {
   applySortDirection,
@@ -77,16 +78,6 @@ const SOURCE_LINK: Record<AnticheatCatalogBrowseSource, { href: string; label: s
     levvvel: { href: LEVVVEL_KERNEL_URL, label: "Levvvel list" },
     denuvo: { href: DENUVO_CURATOR_URL, label: "Denuvo curator" },
   }
-
-const AWACY_STATUS_FILTER_OPTIONS = [
-  { value: "all", label: "All statuses" },
-  { value: "Supported", label: "Supported" },
-  { value: "Running", label: "Running" },
-  { value: "Broken", label: "Broken" },
-  { value: "Denied", label: "Denied" },
-  { value: "Planned", label: "Planned" },
-  { value: "Unknown", label: "Unknown" },
-]
 
 const formatSoftware = (names?: string[]) => {
   if (!names?.length) return "—"
@@ -283,7 +274,7 @@ export const AnticheatCatalogTable = () => {
               title="Linux status"
               value={linuxStatus}
               onValueChange={(value) => setLinuxStatus(value ?? "all")}
-              options={AWACY_STATUS_FILTER_OPTIONS}
+              options={[...AWACY_STATUS_FILTER_OPTIONS]}
             />
           ) : null}
           <TableSortControls

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
-import { isDbConfiguredAtRuntime } from "@/lib/db/client"
 import { fetchDashboardPayload } from "@/lib/db/dashboard"
 import { parseSteamIdFromParams } from "@/lib/steam/validate-steamid"
+import { requireDbConfigured } from "@/lib/api/guard"
 import { runApiRoute } from "@/lib/api/with-api-route"
 
 export const GET = async (
@@ -9,12 +9,8 @@ export const GET = async (
   context: { params: Promise<{ steamid: string }> }
 ) =>
   runApiRoute(request, { tier: "default" }, async () => {
-    if (!(await isDbConfiguredAtRuntime())) {
-      return NextResponse.json(
-        { error: "DATABASE_URL is not configured" },
-        { status: 503 }
-      )
-    }
+    const dbGuard = await requireDbConfigured()
+    if (dbGuard) return dbGuard
     const { steamid } = await context.params
     const parsed = parseSteamIdFromParams(steamid)
     if (!parsed.ok) return parsed.response

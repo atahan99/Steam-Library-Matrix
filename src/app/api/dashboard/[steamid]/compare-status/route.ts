@@ -1,15 +1,15 @@
-import { and, eq, inArray } from "drizzle-orm"
-import { NextResponse } from "next/server"
-import { isDbConfiguredAtRuntime } from "@/lib/db/client"
+import { eq } from "drizzle-orm"
 import { getDb } from "@/lib/db/client"
+import { fetchActiveEnrichmentJobs } from "@/lib/db/active-enrichment-jobs"
 import {
   intersectAppidSets,
   parseCompareIds,
 } from "@/lib/compare/library-appids"
 import { getUnionProfileAppids } from "@/lib/db/profile-appids"
-import { enrichmentJobs, profileGames } from "@/lib/db/schema"
+import { profileGames } from "@/lib/db/schema"
 import { getEnrichmentCoverage } from "@/lib/enrichment/coverage-for-appids"
 import { toJobResponse } from "@/lib/jobs/enqueue"
+import { requireDbConfigured } from "@/lib/api/guard"
 import { runApiRoute } from "@/lib/api/with-api-route"
 import { parseSteamId, parseSteamIdFromParams } from "@/lib/steam/validate-steamid"
 
@@ -59,12 +59,8 @@ export const GET = async (
   context: { params: Promise<{ steamid: string }> }
 ) =>
   runApiRoute(request, { tier: "default" }, async () => {
-    if (!(await isDbConfiguredAtRuntime())) {
-      return NextResponse.json(
-        { error: "DATABASE_URL is not configured" },
-        { status: 503 }
-      )
-    }
+    const dbGuard = await requireDbConfigured()
+    if (dbGuard) return dbGuard
 
     const { steamid: rawSteamid } = await context.params
     const parsedOwner = parseSteamIdFromParams(rawSteamid)
@@ -95,16 +91,7 @@ export const GET = async (
     const unionAppids = await getUnionProfileAppids(allSteamids)
     const coverage = await getEnrichmentCoverage(intersectAppids)
 
-    const db = getDb()
-    const activeJobRows = await db
-      .select()
-      .from(enrichmentJobs)
-      .where(
-        and(
-          eq(enrichmentJobs.steamid, ownerSteamid),
-          inArray(enrichmentJobs.status, ["pending", "running"])
-        )
-      )
+    const activeJobRows = await fetchActiveEnrichmentJobs(ownerSteamid)
 
     return NextResponse.json({
       intersectAppids: intersectAppids.length,

@@ -5,14 +5,11 @@ import { TriangleAlertIcon } from "lucide-react"
 import { useGameDetail } from "@/components/dashboard/dashboard-context"
 import { useDashboardTableParams } from "@/hooks/use-dashboard-table-params"
 import {
+  parseBaseTableUrlFields,
   parseCommaList,
-  parsePage,
-  parsePageSize,
-  parsePinnedGameAppid,
-  parseSortDirection,
-  parseTableSearchQuery,
+  serializeBaseTableUrlFields,
   serializeCommaList,
-  serializePinnedGameAppid,
+  type BaseTableUrlFields,
 } from "@/lib/dashboard/table-url-params"
 import { formatPlaytime } from "@/lib/utils/format-playtime"
 import { useTableGames } from "@/hooks/use-table-games"
@@ -63,6 +60,7 @@ import {
   applySortDirection,
   compareNumbers,
   compareStrings,
+  compareWithTiebreaker,
   getDefaultSortDirection,
   type SortDirection,
 } from "@/lib/utils/table-sort"
@@ -70,50 +68,37 @@ import type { DashboardGame } from "@/types/dashboard"
 import {
   getSafeTablePage,
   TablePaginationFooter,
-  type TablePageSize,
 } from "@/components/tables/table-pagination-footer"
 
 type SortKey = "name" | "status" | "playtime"
 
 type AntiCheatUrlState = {
-  q: string
-  game?: number
   linux: string
   software: string[]
   sort: SortKey
-  dir: SortDirection
   played: boolean
-  page: number
-  size: TablePageSize
-}
+} & BaseTableUrlFields
 
 const isAntiCheatSortKey = (value: string | null): value is SortKey =>
   value === "name" || value === "status" || value === "playtime"
 
-const parseAntiCheatUrl = (params: URLSearchParams): AntiCheatUrlState => ({
-  q: parseTableSearchQuery(params.get("q")),
-  game: parsePinnedGameAppid(params),
-  linux: params.get("linux") ?? "all",
-  software: parseCommaList(params.get("software")),
-  sort: isAntiCheatSortKey(params.get("sort"))
-    ? (params.get("sort") as SortKey)
-    : "name",
-  dir: parseSortDirection(params.get("dir")),
-  played: params.get("played") === "1",
-  page: parsePage(params.get("page")),
-  size: parsePageSize(params.get("size")),
-})
+const parseAntiCheatUrl = (params: URLSearchParams): AntiCheatUrlState => {
+  const base = parseBaseTableUrlFields(params)
+  const sortParam = params.get("sort")
+  return {
+    ...base,
+    linux: params.get("linux") ?? "all",
+    software: parseCommaList(params.get("software")),
+    sort: isAntiCheatSortKey(sortParam) ? sortParam : "name",
+    played: params.get("played") === "1",
+  }
+}
 
 const serializeAntiCheatUrl = (state: AntiCheatUrlState) => ({
-  q: state.q || undefined,
-  game: serializePinnedGameAppid(state.game),
+  ...serializeBaseTableUrlFields(state, state.sort),
   linux: state.linux !== "all" ? state.linux : undefined,
   software: serializeCommaList(state.software),
-  sort: state.sort !== "name" ? state.sort : undefined,
-  dir: state.dir !== "asc" ? state.dir : undefined,
   played: state.played ? "1" : undefined,
-  page: state.page > 1 ? String(state.page) : undefined,
-  size: state.size !== 10 ? String(state.size) : undefined,
 })
 
 const ANTICHEAT_SORT_OPTIONS = [
@@ -122,15 +107,7 @@ const ANTICHEAT_SORT_OPTIONS = [
   { value: "playtime", label: "Playtime" },
 ] as const
 
-const LINUX_STATUS_FILTER_OPTIONS = [
-  { value: "all", label: "All statuses" },
-  { value: "Supported", label: "Supported" },
-  { value: "Running", label: "Running" },
-  { value: "Broken", label: "Broken" },
-  { value: "Denied", label: "Denied" },
-  { value: "Planned", label: "Planned" },
-  { value: "Unknown", label: "Unknown" },
-]
+import { AWACY_STATUS_FILTER_OPTIONS } from "@/lib/anticheat/awacy-status-options"
 
 const compareGames = (
   a: DashboardGame,
@@ -147,7 +124,9 @@ const compareGames = (
           awacyStatusSortIndex(b.antiCheat?.status),
         direction
       )
-      return diff !== 0 ? diff : compareStrings(a.name, b.name, "asc")
+      return compareWithTiebreaker(diff, direction, () =>
+        compareStrings(a.name, b.name, "asc")
+      )
     }
     case "playtime": {
       const primary = compareNumbers(
@@ -155,7 +134,9 @@ const compareGames = (
         b.playtimeForeverMinutes,
         direction
       )
-      return primary !== 0 ? primary : compareStrings(a.name, b.name, "asc")
+      return compareWithTiebreaker(primary, direction, () =>
+        compareStrings(a.name, b.name, "asc")
+      )
     }
     default:
       return 0
@@ -281,7 +262,7 @@ export const AntiCheatTable = () => {
               title="Linux anti-cheat status"
               value={linuxStatus}
               onValueChange={(v) => setUrl({ linux: v ?? "all", page: 1 })}
-              options={LINUX_STATUS_FILTER_OPTIONS}
+              options={[...AWACY_STATUS_FILTER_OPTIONS]}
               className="min-w-[11rem]"
             />
             <TableSortControls

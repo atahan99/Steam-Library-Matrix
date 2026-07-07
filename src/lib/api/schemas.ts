@@ -13,21 +13,6 @@ const steamProfileInputSchema = z
   })
   .transform((value) => sanitizeSteamProfileInputDraft(value).trim())
 
-export const enrichBodySchema = z.object({
-  steamid: steamIdSchema,
-  force: z.boolean().optional(),
-  missingOnly: z.boolean().optional(),
-})
-
-export const wishlistSyncBodySchema = z.object({
-  steamid: steamIdSchema,
-})
-
-export const catalogSyncBodySchema = z.object({
-  steamid: steamIdSchema,
-  force: z.boolean().optional(),
-})
-
 export const steamRefreshBodySchema = z.object({
   steamid: steamIdSchema.optional(),
   input: steamProfileInputSchema.optional(),

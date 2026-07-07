@@ -7,12 +7,9 @@ import {
 } from "@/components/dashboard/dashboard-context"
 import { useDashboardTableParams } from "@/hooks/use-dashboard-table-params"
 import {
-  parsePage,
-  parsePageSize,
-  parsePinnedGameAppid,
-  parseSortDirection,
-  parseTableSearchQuery,
-  serializePinnedGameAppid,
+  parseBaseTableUrlFields,
+  serializeBaseTableUrlFields,
+  type BaseTableUrlFields,
 } from "@/lib/dashboard/table-url-params"
 import { useTableGames } from "@/hooks/use-table-games"
 import {
@@ -39,7 +36,6 @@ import { formatPlaytime } from "@/lib/utils/format-playtime"
 import {
   getSafeTablePage,
   TablePaginationFooter,
-  type TablePageSize,
 } from "@/components/tables/table-pagination-footer"
 import { GameCell } from "@/components/tables/game-cell"
 import {
@@ -55,6 +51,7 @@ import {
   applySortDirection,
   compareNumbers,
   compareStrings,
+  compareWithTiebreaker,
   getDefaultSortDirection,
   type SortDirection,
 } from "@/lib/utils/table-sort"
@@ -112,44 +109,34 @@ const compareProtonGames = (
   switch (sort) {
     case "name":
       return compareStrings(a.name, b.name, direction)
-    case "tier": {
-      const primary = applySortDirection(
-        protonTierSortIndex(a) - protonTierSortIndex(b),
-        direction
+    case "tier":
+      return compareWithTiebreaker(
+        applySortDirection(protonTierSortIndex(a) - protonTierSortIndex(b), direction),
+        direction,
+        tiebreak
       )
-      return primary !== 0 ? primary : tiebreak()
-    }
-    case "playtime": {
-      const primary = compareNumbers(
-        a.playtimeForeverMinutes,
-        b.playtimeForeverMinutes,
-        direction
+    case "playtime":
+      return compareWithTiebreaker(
+        compareNumbers(a.playtimeForeverMinutes, b.playtimeForeverMinutes, direction),
+        direction,
+        tiebreak
       )
-      return primary !== 0 ? primary : tiebreak()
-    }
-    case "reports": {
-      const primary = compareNumbers(
-        a.protondb?.totalReports,
-        b.protondb?.totalReports,
-        direction
+    case "reports":
+      return compareWithTiebreaker(
+        compareNumbers(a.protondb?.totalReports, b.protondb?.totalReports, direction),
+        direction,
+        tiebreak
       )
-      return primary !== 0 ? primary : tiebreak()
-    }
     default:
       return 0
   }
 }
 
 type ProtonUrlState = {
-  q: string
-  game?: number
   tier: ProtonChartFilter
   deck: DeckFilter
   sort: SortKey
-  dir: SortDirection
-  page: number
-  size: TablePageSize
-}
+} & BaseTableUrlFields
 
 const isProtonSortKey = (value: string | null): value is SortKey =>
   value === "name" ||
@@ -168,32 +155,25 @@ const isDeckFilter = (value: string | null): value is DeckFilter =>
   value === "unsupported" ||
   value === "unknown"
 
-const parseProtonUrl = (params: URLSearchParams): ProtonUrlState => ({
-  q: parseTableSearchQuery(params.get("q")),
-  game: parsePinnedGameAppid(params),
-  tier: isProtonTier(params.get("tier"))
-    ? (params.get("tier") as ProtonChartFilter)
-    : "all",
-  deck: isDeckFilter(params.get("deck"))
-    ? (params.get("deck") as DeckFilter)
-    : "all",
-  sort: isProtonSortKey(params.get("sort"))
-    ? (params.get("sort") as SortKey)
-    : "name",
-  dir: parseSortDirection(params.get("dir")),
-  page: parsePage(params.get("page")),
-  size: parsePageSize(params.get("size")),
-})
+const parseProtonUrl = (params: URLSearchParams): ProtonUrlState => {
+  const base = parseBaseTableUrlFields(params)
+  const sortParam = params.get("sort")
+  return {
+    ...base,
+    tier: isProtonTier(params.get("tier"))
+      ? (params.get("tier") as ProtonChartFilter)
+      : "all",
+    deck: isDeckFilter(params.get("deck"))
+      ? (params.get("deck") as DeckFilter)
+      : "all",
+    sort: isProtonSortKey(sortParam) ? sortParam : "name",
+  }
+}
 
 const serializeProtonUrl = (state: ProtonUrlState) => ({
-  q: state.q || undefined,
-  game: serializePinnedGameAppid(state.game),
+  ...serializeBaseTableUrlFields(state, state.sort),
   tier: state.tier !== "all" ? state.tier : undefined,
   deck: state.deck !== "all" ? state.deck : undefined,
-  sort: state.sort !== "name" ? state.sort : undefined,
-  dir: state.dir !== "asc" ? state.dir : undefined,
-  page: state.page > 1 ? String(state.page) : undefined,
-  size: state.size !== 10 ? String(state.size) : undefined,
 })
 
 type ProtonDbTableProps = {

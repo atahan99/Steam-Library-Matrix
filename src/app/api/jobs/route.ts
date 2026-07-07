@@ -3,6 +3,7 @@ import { z } from "zod"
 import { enqueueEnrichmentJob, toJobResponse } from "@/lib/jobs/enqueue"
 import { ENRICHMENT_JOB_KINDS } from "@/lib/jobs/types"
 import { parseSteamId } from "@/lib/steam/validate-steamid"
+import { zodErrorResponse } from "@/lib/api/guard"
 import { runApiRoute } from "@/lib/api/with-api-route"
 import { getEnrichmentJob } from "@/lib/jobs/enqueue"
 
@@ -19,10 +20,7 @@ export const POST = async (request: Request) =>
     const body = await request.json()
     const parsed = bodySchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: parsed.error.issues[0]?.message ?? "Invalid request" },
-        { status: 400 }
-      )
+      return zodErrorResponse(parsed)
     }
 
     const steamParsed = parseSteamId(parsed.data.steamid)

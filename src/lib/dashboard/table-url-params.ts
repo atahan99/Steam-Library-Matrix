@@ -2,6 +2,37 @@ import type { SortDirection } from "@/lib/utils/table-sort"
 import { sanitizeSearchQuery } from "@/lib/utils/sanitize-text-input"
 import type { TablePageSize } from "@/components/tables/table-pagination-footer"
 
+export type BaseTableUrlFields = {
+  q: string
+  game?: number
+  dir: SortDirection
+  page: number
+  size: TablePageSize
+}
+
+export const parseBaseTableUrlFields = (
+  params: URLSearchParams
+): BaseTableUrlFields => ({
+  q: parseTableSearchQuery(params.get("q")),
+  game: parsePinnedGameAppid(params),
+  dir: parseSortDirection(params.get("dir")),
+  page: parsePage(params.get("page")),
+  size: parsePageSize(params.get("size")),
+})
+
+export const serializeBaseTableUrlFields = (
+  state: BaseTableUrlFields,
+  sort?: string,
+  sortDefault = "name"
+): Record<string, string | undefined> => ({
+  q: state.q || undefined,
+  game: serializePinnedGameAppid(state.game),
+  sort: sort !== undefined && sort !== sortDefault ? sort : undefined,
+  dir: state.dir !== "asc" ? state.dir : undefined,
+  page: state.page > 1 ? String(state.page) : undefined,
+  size: state.size !== 10 ? String(state.size) : undefined,
+})
+
 export const parseTableSearchQuery = (value: string | null): string =>
   sanitizeSearchQuery(value ?? "")
 

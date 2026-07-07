@@ -16,6 +16,7 @@ import {
   pickBestHltbHit,
   resolveHltbSearchQueries,
 } from "@/lib/enrichment/hltb-match"
+import { delay } from "@/lib/utils/delay"
 const DELAY_MS = 400
 
 type HltbUpsertRow = {
@@ -207,8 +208,6 @@ const enrichOneGame = async (
   }
 }
 
-const sleepBetween = (ms: number) => new Promise((r) => setTimeout(r, ms))
-
 /** Single-game HLTB enrich for background job steps. */
 export const enrichSingleHowLongToBeatGame = async (
   appid: number,
@@ -223,7 +222,7 @@ export const enrichSingleHowLongToBeatGame = async (
   const applyDelay = options?.applyDelay ?? true
   const maybeDelay = async () => {
     if (applyDelay) {
-      await sleepBetween(DELAY_MS)
+      await delay(DELAY_MS)
     }
   }
   const result = await enrichOneGame(appid, gameName)

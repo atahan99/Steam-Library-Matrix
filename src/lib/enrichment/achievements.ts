@@ -8,6 +8,7 @@ import { profileGameAchievements } from "@/lib/db/schema"
 import { ACHIEVEMENTS_TTL_HOURS } from "@/lib/enrichment/resolve-enrichment-appids"
 import { getPlayerAchievementStats } from "@/lib/steam/steam-api"
 import { isCacheFresh } from "@/lib/utils/cache"
+import { delay } from "@/lib/utils/delay"
 
 const REQUEST_DELAY_MS = 300
 const CONCURRENT_REQUEST_DELAY_MS = 50
@@ -52,7 +53,7 @@ export const enrichSingleAchievement = async (
     })
     if (stats === null) {
       if (applyDelay) {
-        await new Promise((r) => setTimeout(r, delayMs))
+        await delay(delayMs)
       }
       return { checked: 1, updated: 0, failed: 1, skipped: 0 }
     }
@@ -86,7 +87,7 @@ export const enrichSingleAchievement = async (
           },
         })
       if (applyDelay) {
-        await new Promise((r) => setTimeout(r, delayMs))
+        await delay(delayMs)
       }
       return { checked: 1, updated: 1, failed: 0, skipped: 0 }
     } catch (error) {
@@ -94,7 +95,7 @@ export const enrichSingleAchievement = async (
         throw new Error(ACHIEVEMENTS_MIGRATION_HINT)
       }
       if (applyDelay) {
-        await new Promise((r) => setTimeout(r, delayMs))
+        await delay(delayMs)
       }
       return { checked: 1, updated: 0, failed: 1, skipped: 0 }
     }
@@ -103,7 +104,7 @@ export const enrichSingleAchievement = async (
       throw error
     }
     if (applyDelay) {
-      await new Promise((r) => setTimeout(r, delayMs))
+      await delay(delayMs)
     }
     return { checked: 1, updated: 0, failed: 1, skipped: 0 }
   }

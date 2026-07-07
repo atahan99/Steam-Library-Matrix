@@ -1,4 +1,3 @@
-import { and, eq, inArray } from "drizzle-orm"
 import { NextResponse } from "next/server"
 import { buildDashboardSyncStatus } from "@/lib/enrichment/build-dashboard-sync-status"
 import {
@@ -8,9 +7,9 @@ import {
   type ActiveJobSummary,
 } from "@/lib/enrichment/sync-progress"
 import type { JobPayload, JobProgress } from "@/lib/jobs/types"
-import { getDb, isDbConfiguredAtRuntime } from "@/lib/db/client"
-import { enrichmentJobs } from "@/lib/db/schema"
+import { fetchActiveEnrichmentJobs } from "@/lib/db/active-enrichment-jobs"
 import { toJobResponse } from "@/lib/jobs/enqueue"
+import { requireDbConfigured } from "@/lib/api/guard"
 import { runApiRoute } from "@/lib/api/with-api-route"
 import { parseSteamIdFromParams } from "@/lib/steam/validate-steamid"
 
@@ -19,28 +18,15 @@ export const GET = async (
   context: { params: Promise<{ steamid: string }> }
 ) =>
   runApiRoute(request, { tier: "default" }, async () => {
-    if (!(await isDbConfiguredAtRuntime())) {
-      return NextResponse.json(
-        { error: "DATABASE_URL is not configured" },
-        { status: 503 }
-      )
-    }
+    const dbGuard = await requireDbConfigured()
+    if (dbGuard) return dbGuard
 
     const { steamid: rawSteamid } = await context.params
     const parsed = parseSteamIdFromParams(rawSteamid)
     if (!parsed.ok) return parsed.response
 
     const steamid = parsed.steamid
-    const db = getDb()
-    const activeJobRows = await db
-      .select()
-      .from(enrichmentJobs)
-      .where(
-        and(
-          eq(enrichmentJobs.steamid, steamid),
-          inArray(enrichmentJobs.status, ["pending", "running"])
-        )
-      )
+    const activeJobRows = await fetchActiveEnrichmentJobs(steamid)
 
     const activeJobResponses = activeJobRows.map(toJobResponse)
     const activeJobs: ActiveJobSummary[] = activeJobRows.map((row) => ({

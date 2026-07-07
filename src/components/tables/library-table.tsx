@@ -17,15 +17,12 @@ import { useGameDetail } from "@/components/dashboard/dashboard-context"
 import { useDashboardTableParams } from "@/hooks/use-dashboard-table-params"
 import { useTableGames } from "@/hooks/use-table-games"
 import {
+  parseBaseTableUrlFields,
   parseCommaList,
   parseLibraryPlayFilter,
-  parsePage,
-  parsePageSize,
-  parsePinnedGameAppid,
-  parseSortDirection,
-  parseTableSearchQuery,
+  serializeBaseTableUrlFields,
   serializeCommaList,
-  serializePinnedGameAppid,
+  type BaseTableUrlFields,
   type LibraryPlayFilter,
 } from "@/lib/dashboard/table-url-params"
 import {
@@ -60,28 +57,21 @@ import {
   compareNumbers,
   compareStrings,
   getDefaultSortDirection,
-  type SortDirection,
 } from "@/lib/utils/table-sort"
 import type { DashboardGame } from "@/types/dashboard"
 import {
   getSafeTablePage,
   TablePaginationFooter,
-  type TablePageSize,
 } from "@/components/tables/table-pagination-footer"
 
 type SortKey = "name" | "playtime" | "recent"
 
 type LibraryUrlState = {
-  q: string
-  game?: number
-  sort: SortKey
-  dir: SortDirection
   play: LibraryPlayFilter
   genres: string[]
   os: OsFilterPlatform[]
-  page: number
-  size: TablePageSize
-}
+  sort: SortKey
+} & BaseTableUrlFields
 
 const isSortKey = (value: string | null): value is SortKey =>
   value === "name" || value === "playtime" || value === "recent"
@@ -89,28 +79,23 @@ const isSortKey = (value: string | null): value is SortKey =>
 const isOsPlatform = (value: string): value is OsFilterPlatform =>
   value === "windows" || value === "linux" || value === "mac"
 
-const parseLibraryUrl = (params: URLSearchParams): LibraryUrlState => ({
-  q: parseTableSearchQuery(params.get("q")),
-  game: parsePinnedGameAppid(params),
-  sort: isSortKey(params.get("sort")) ? (params.get("sort") as SortKey) : "name",
-  dir: parseSortDirection(params.get("dir")),
-  play: parseLibraryPlayFilter(params.get("play")),
-  genres: parseCommaList(params.get("genres")),
-  os: parseCommaList(params.get("os")).filter(isOsPlatform),
-  page: parsePage(params.get("page")),
-  size: parsePageSize(params.get("size")),
-})
+const parseLibraryUrl = (params: URLSearchParams): LibraryUrlState => {
+  const base = parseBaseTableUrlFields(params)
+  const sortParam = params.get("sort")
+  return {
+    ...base,
+    sort: isSortKey(sortParam) ? sortParam : "name",
+    play: parseLibraryPlayFilter(params.get("play")),
+    genres: parseCommaList(params.get("genres")),
+    os: parseCommaList(params.get("os")).filter(isOsPlatform),
+  }
+}
 
 const serializeLibraryUrl = (state: LibraryUrlState) => ({
-  q: state.q || undefined,
-  game: serializePinnedGameAppid(state.game),
-  sort: state.sort !== "name" ? state.sort : undefined,
-  dir: state.dir !== "asc" ? state.dir : undefined,
+  ...serializeBaseTableUrlFields(state, state.sort),
   play: state.play !== "all" ? state.play : undefined,
   genres: serializeCommaList(state.genres),
   os: serializeCommaList(state.os),
-  page: state.page > 1 ? String(state.page) : undefined,
-  size: state.size !== 10 ? String(state.size) : undefined,
 })
 
 const LIBRARY_SORT_OPTIONS = [

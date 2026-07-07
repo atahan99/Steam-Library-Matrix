@@ -72,6 +72,3 @@ export const TableExportMenu = ({
     </DropdownMenu>
   )
 }
-
-/** @deprecated Use TableExportMenu */
-export const TableExportButton = TableExportMenu

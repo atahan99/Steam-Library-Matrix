@@ -4,29 +4,21 @@ import { useMemo, useState } from "react"
 import { useGameDetail } from "@/components/dashboard/dashboard-context"
 import { useDashboardTableParams } from "@/hooks/use-dashboard-table-params"
 import {
+  parseBaseTableUrlFields,
   parseCommaList,
-  parsePage,
-  parsePageSize,
-  parsePinnedGameAppid,
-  parseSortDirection,
-  parseTableSearchQuery,
+  serializeBaseTableUrlFields,
   serializeCommaList,
-  serializePinnedGameAppid,
+  type BaseTableUrlFields,
 } from "@/lib/dashboard/table-url-params"
 import { useTableGames } from "@/hooks/use-table-games"
-import {
-  CollectionToggle,
-  WishlistEmptyHint,
-} from "@/components/tables/collection-toggle"
 import { GenreMultiSelect } from "@/components/tables/genre-multi-select"
-import { Switch } from "@/components/ui/switch"
-import { Label } from "@/components/ui/label"
+import { FilterSelectField } from "@/components/tables/filter-select-field"
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-} from "@/components/ui/select"
+  createTableSearchHandlers,
+  TableFilterToolbar,
+  TableSearchExportBar,
+} from "@/components/tables/table-filter-toolbar"
+import { PlayedFilterSwitches } from "@/components/tables/played-filter-switches"
 import {
   Table,
   TableBody,
@@ -43,25 +35,17 @@ import {
   TABLE_GAME_COLUMN_CELL_CLASS,
   TABLE_GAME_COLUMN_HEAD_CLASS,
 } from "@/components/tables/table-game-column"
-import { TableExportMenu } from "@/components/tables/table-export-button"
-import {
-  TableFilterField,
-  TableFilterSpacer,
-} from "@/components/tables/table-filter-field"
-import { TableGameSearchInput } from "@/components/tables/table-game-search-input"
 import { TableSortControls } from "@/components/tables/table-sort-controls"
 import {
   collectLibraryGenreFilterOptions,
-  gameMatchesGenreFilter,
   parseGenreLabels,
 } from "@/lib/utils/genre-label"
 import { GenreListCell } from "@/components/tables/genre-list-cell"
+import { hasMacCompatData } from "@/lib/utils/platform-support"
 import {
-  hasMacCompatData,
-  hasNativeAppleSilicon,
-  isCrossoverPlayable,
-  isRosettaPlayable,
-} from "@/lib/utils/platform-support"
+  filterMacTableGames,
+  type MacCompatFilter,
+} from "@/lib/utils/mac-table-filter"
 import {
   isRatingKnown,
   macRatingDisplay,
@@ -71,28 +55,21 @@ import {
   compareDates,
   compareNumbers,
   compareStrings,
+  compareWithTiebreaker,
   getDefaultSortDirection,
   type SortDirection,
 } from "@/lib/utils/table-sort"
 import {
   getSafeTablePage,
   TablePaginationFooter,
-  type TablePageSize,
 } from "@/components/tables/table-pagination-footer"
 
 type SortKey = "name" | "playtime" | "checked"
 
 type MacUrlState = {
-  q: string
-  game?: number
   genres: string[]
   sort: SortKey
-  dir: SortDirection
-  page: number
-  size: TablePageSize
-}
-
-type MacCompatFilter = "all" | "apple-silicon" | "rosetta" | "crossover"
+} & BaseTableUrlFields
 
 const COMPAT_OPTIONS: { value: MacCompatFilter; label: string }[] = [
   { value: "all", label: "All Mac games" },
@@ -101,43 +78,22 @@ const COMPAT_OPTIONS: { value: MacCompatFilter; label: string }[] = [
   { value: "crossover", label: "CrossOver playable" },
 ]
 
-const matchesCompatFilter = (
-  game: DashboardGame,
-  filter: MacCompatFilter
-): boolean => {
-  switch (filter) {
-    case "apple-silicon":
-      return hasNativeAppleSilicon(game)
-    case "rosetta":
-      return isRosettaPlayable(game)
-    case "crossover":
-      return isCrossoverPlayable(game)
-    default:
-      return true
-  }
-}
-
 const isMacSortKey = (value: string | null): value is SortKey =>
   value === "name" || value === "playtime" || value === "checked"
 
-const parseMacUrl = (params: URLSearchParams): MacUrlState => ({
-  q: parseTableSearchQuery(params.get("q")),
-  game: parsePinnedGameAppid(params),
-  genres: parseCommaList(params.get("genres")),
-  sort: isMacSortKey(params.get("sort")) ? (params.get("sort") as SortKey) : "name",
-  dir: parseSortDirection(params.get("dir")),
-  page: parsePage(params.get("page")),
-  size: parsePageSize(params.get("size")),
-})
+const parseMacUrl = (params: URLSearchParams): MacUrlState => {
+  const base = parseBaseTableUrlFields(params)
+  const sortParam = params.get("sort")
+  return {
+    ...base,
+    genres: parseCommaList(params.get("genres")),
+    sort: isMacSortKey(sortParam) ? sortParam : "name",
+  }
+}
 
 const serializeMacUrl = (state: MacUrlState) => ({
-  q: state.q || undefined,
-  game: serializePinnedGameAppid(state.game),
+  ...serializeBaseTableUrlFields(state, state.sort),
   genres: serializeCommaList(state.genres),
-  sort: state.sort !== "name" ? state.sort : undefined,
-  dir: state.dir !== "asc" ? state.dir : undefined,
-  page: state.page > 1 ? String(state.page) : undefined,
-  size: state.size !== 10 ? String(state.size) : undefined,
 })
 
 const MAC_SORT_OPTIONS = [
@@ -157,22 +113,18 @@ const compareMacGames = (
   switch (sort) {
     case "name":
       return compareStrings(a.name, b.name, direction)
-    case "playtime": {
-      const primary = compareNumbers(
-        a.playtimeForeverMinutes,
-        b.playtimeForeverMinutes,
-        direction
+    case "playtime":
+      return compareWithTiebreaker(
+        compareNumbers(a.playtimeForeverMinutes, b.playtimeForeverMinutes, direction),
+        direction,
+        tiebreak
       )
-      return primary !== 0 ? primary : tiebreak()
-    }
-    case "checked": {
-      const primary = compareDates(
-        a.steamDetails?.lastCheckedAt,
-        b.steamDetails?.lastCheckedAt,
-        direction
+    case "checked":
+      return compareWithTiebreaker(
+        compareDates(a.steamDetails?.lastCheckedAt, b.steamDetails?.lastCheckedAt, direction),
+        direction,
+        tiebreak
       )
-      return primary !== 0 ? primary : tiebreak()
-    }
     default:
       return 0
   }
@@ -232,28 +184,26 @@ export const MacTable = () => {
     [macGames]
   )
 
-  const filtered = useMemo(() => {
-    const searchLower = search.toLowerCase()
-    return macGames
-      .filter((g) => g.name.toLowerCase().includes(searchLower))
-      .filter((g) => gameMatchesGenreFilter(g.steamDetails, selectedGenres))
-      .filter((g) => {
-        if (playedOnly) return g.playtimeForeverMinutes > 0
-        if (neverPlayedOnly) return g.playtimeForeverMinutes === 0
-        return true
-      })
-      .filter((g) => matchesCompatFilter(g, compatFilter))
-      .sort((a, b) => compareMacGames(a, b, sortKey, sortDirection))
-  }, [
-    macGames,
-    search,
-    selectedGenres,
-    playedOnly,
-    neverPlayedOnly,
-    compatFilter,
-    sortKey,
-    sortDirection,
-  ])
+  const filtered = useMemo(
+    () =>
+      filterMacTableGames(games, {
+        search,
+        selectedGenres,
+        playedOnly,
+        neverPlayedOnly,
+        compatFilter,
+      }).sort((a, b) => compareMacGames(a, b, sortKey, sortDirection)),
+    [
+      games,
+      search,
+      selectedGenres,
+      playedOnly,
+      neverPlayedOnly,
+      compatFilter,
+      sortKey,
+      sortDirection,
+    ]
+  )
 
   const safePage = getSafeTablePage(page, filtered.length, pageSize)
   const exportRows = useMemo(
@@ -270,42 +220,31 @@ export const MacTable = () => {
     [filtered]
   )
   const paged = filtered.slice((safePage - 1) * pageSize, safePage * pageSize)
-
-  const compatLabel =
-    COMPAT_OPTIONS.find((o) => o.value === compatFilter)?.label ?? "All games"
+  const searchHandlers = createTableSearchHandlers(setUrl)
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="flex min-w-0 flex-1 flex-col gap-3">
-          <div className="flex flex-wrap items-start gap-3">
-            <TableFilterSpacer className="w-full max-w-sm">
-              <TableGameSearchInput
-                value={search}
-                pinnedGameAppid={game}
-                aria-label="Search Mac and Apple Silicon games"
-                onChange={(next) =>
-                  setUrl({ q: next, game: undefined, page: 1 })
-                }
-                onClearPinned={() => setUrl({ q: "", game: undefined, page: 1 })}
-              />
-            </TableFilterSpacer>
-            <TableFilterSpacer>
-              <TableExportMenu
-                filename="mac-export.csv"
-                headers={[
-                  "Name",
-                  "AppID",
-                  "Apple Silicon",
-                  "Rosetta 2",
-                  "CrossOver",
-                  "Genres",
-                  "Playtime",
-                ]}
-                rows={exportRows}
-              />
-            </TableFilterSpacer>
-          </div>
+      <TableFilterToolbar
+        searchRow={
+          <TableSearchExportBar
+            search={search}
+            pinnedGameAppid={game}
+            ariaLabel="Search Mac and Apple Silicon games"
+            exportFilename="mac-export.csv"
+            exportHeaders={[
+              "Name",
+              "AppID",
+              "Apple Silicon",
+              "Rosetta 2",
+              "CrossOver",
+              "Genres",
+              "Playtime",
+            ]}
+            exportRows={exportRows}
+            {...searchHandlers}
+          />
+        }
+        filterRow={
           <div className="flex flex-wrap items-start gap-3">
             <TableSortControls
               sortKey={sortKey}
@@ -326,51 +265,28 @@ export const MacTable = () => {
               selected={selectedGenres}
               onSelectedChange={(genres) => setUrl({ genres, page: 1 })}
             />
-            <TableFilterField label="macOS" htmlFor="mac-compat-filter">
-              <Select
-                value={compatFilter}
-                onValueChange={(v) => {
-                  setCompatFilter(((v as string | null) ?? "all") as MacCompatFilter)
-                  setUrl({ page: 1 })
-                }}
-              >
-                <SelectTrigger
-                  id="mac-compat-filter"
-                  className="w-full min-w-0"
-                  aria-label={`macOS compatibility filter: ${compatLabel}`}
-                >
-                  <span className="truncate">{compatLabel}</span>
-                </SelectTrigger>
-                <SelectContent align="start" alignItemWithTrigger={false}>
-                  {COMPAT_OPTIONS.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </TableFilterField>
+            <FilterSelectField
+              id="mac-compat-filter"
+              title="macOS"
+              value={compatFilter}
+              onValueChange={(value) => {
+                setCompatFilter(((value as string | null) ?? "all") as MacCompatFilter)
+                setUrl({ page: 1 })
+              }}
+              options={COMPAT_OPTIONS}
+            />
           </div>
-        </div>
-        <CollectionToggle />
-      </div>
+        }
+      />
 
-      <WishlistEmptyHint />
-
-      <div className="flex flex-wrap gap-4">
-        <div className="flex items-center gap-2">
-          <Switch id="mac-p" checked={playedOnly} onCheckedChange={setPlayedOnly} />
-          <Label htmlFor="mac-p">Played only</Label>
-        </div>
-        <div className="flex items-center gap-2">
-          <Switch
-            id="mac-np"
-            checked={neverPlayedOnly}
-            onCheckedChange={setNeverPlayedOnly}
-          />
-          <Label htmlFor="mac-np">Never played</Label>
-        </div>
-      </div>
+      <PlayedFilterSwitches
+        playedId="mac-p"
+        neverPlayedId="mac-np"
+        playedOnly={playedOnly}
+        neverPlayedOnly={neverPlayedOnly}
+        onPlayedOnlyChange={setPlayedOnly}
+        onNeverPlayedOnlyChange={setNeverPlayedOnly}
+      />
 
       <p className="text-sm text-muted-foreground">
         Showing {filtered.length} of {macGames.length} game

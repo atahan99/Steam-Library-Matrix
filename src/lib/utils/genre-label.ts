@@ -82,12 +82,6 @@ export const sortGenreFilterOptions = (options: string[]): string[] => {
   return [...gameGenres, ...utilities]
 }
 
-export const genreLabel = (genres: unknown[] | undefined) => {
-  const labels = parseGenreLabels(genres)
-  if (!labels.length) return "—"
-  return labels.slice(0, 3).join(", ")
-}
-
 export const gameMatchesGenreFilter = (
   source: LibraryGenreSource | undefined,
   selected: string[]

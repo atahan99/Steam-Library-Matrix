@@ -1,5 +1,4 @@
 import {
-  hasAntiCheatSoftware,
   hasMeaningfulAntiCheatData,
   isAntiCheatChecked,
   isAntiCheatEnriched,
@@ -165,6 +164,3 @@ export const filterAntiCheatTableGames = (
     )
     .filter((g) => !filters.playedOnly || g.playtimeForeverMinutes > 0)
 }
-
-// Re-export for callers that still use hasAntiCheatSoftware in tandem
-export { hasAntiCheatSoftware }

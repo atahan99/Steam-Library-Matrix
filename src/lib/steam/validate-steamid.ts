@@ -28,25 +28,3 @@ export const parseSteamId = (value: unknown): SteamIdParseResult => {
 export const parseSteamIdFromParams = (
   steamid: string | undefined
 ): SteamIdParseResult => parseSteamId(steamid ?? "")
-
-export const parseSteamIdFromBody = async (
-  request: Request
-): Promise<
-  | { ok: true; steamid: string; body: Record<string, unknown> }
-  | { ok: false; response: NextResponse }
-> => {
-  let body: Record<string, unknown>
-  try {
-    body = (await request.json()) as Record<string, unknown>
-  } catch {
-    return {
-      ok: false,
-      response: NextResponse.json({ error: "Invalid JSON body" }, { status: 400 }),
-    }
-  }
-
-  const steamidResult = parseSteamId(body.steamid)
-  if (!steamidResult.ok) return steamidResult
-
-  return { ok: true, steamid: steamidResult.steamid, body }
-}

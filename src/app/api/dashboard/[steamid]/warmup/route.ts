@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
-import { isDbConfiguredAtRuntime } from "@/lib/db/client"
 import {
   enqueueProfileWarmup,
   MAX_WARMUP_STEAMIDS,
 } from "@/lib/enrichment/enqueue-profile-warmup"
 import type { EnrichmentJobKind } from "@/lib/jobs/types"
+import { requireDbConfigured, zodErrorResponse } from "@/lib/api/guard"
 import { runApiRoute } from "@/lib/api/with-api-route"
 import { parseSteamId, parseSteamIdFromParams } from "@/lib/steam/validate-steamid"
 
@@ -56,12 +56,8 @@ export const POST = async (
   context: { params: Promise<{ steamid: string }> }
 ) =>
   runApiRoute(request, { tier: "default" }, async () => {
-    if (!(await isDbConfiguredAtRuntime())) {
-      return NextResponse.json(
-        { error: "DATABASE_URL is not configured" },
-        { status: 503 }
-      )
-    }
+    const dbGuard = await requireDbConfigured()
+    if (dbGuard) return dbGuard
 
     const { steamid: rawOwner } = await context.params
     const ownerParsed = parseSteamIdFromParams(rawOwner)
@@ -76,10 +72,7 @@ export const POST = async (
 
     const parsedBody = bodySchema.safeParse(body)
     if (!parsedBody.success) {
-      return NextResponse.json(
-        { error: parsedBody.error.issues[0]?.message ?? "Invalid request" },
-        { status: 400 }
-      )
+      return zodErrorResponse(parsedBody)
     }
 
     const steamidsParsed = parseRequestSteamids(parsedBody.data.steamids)

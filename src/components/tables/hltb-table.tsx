@@ -4,12 +4,9 @@ import { useMemo, useState } from "react"
 import { useGameDetail } from "@/components/dashboard/dashboard-context"
 import { useDashboardTableParams } from "@/hooks/use-dashboard-table-params"
 import {
-  parsePage,
-  parsePageSize,
-  parsePinnedGameAppid,
-  parseSortDirection,
-  parseTableSearchQuery,
-  serializePinnedGameAppid,
+  parseBaseTableUrlFields,
+  serializeBaseTableUrlFields,
+  type BaseTableUrlFields,
 } from "@/lib/dashboard/table-url-params"
 import { useTableGames } from "@/hooks/use-table-games"
 import {
@@ -44,13 +41,13 @@ import type { DashboardGame } from "@/types/dashboard"
 import {
   compareNumbers,
   compareStrings,
+  compareWithTiebreaker,
   getDefaultSortDirection,
   type SortDirection,
 } from "@/lib/utils/table-sort"
 import {
   getSafeTablePage,
   TablePaginationFooter,
-  type TablePageSize,
 } from "@/components/tables/table-pagination-footer"
 
 type SortKey =
@@ -62,14 +59,9 @@ type SortKey =
   | "confidence"
 
 type HltbUrlState = {
-  q: string
-  game?: number
   missing: boolean
   sort: SortKey
-  dir: SortDirection
-  page: number
-  size: TablePageSize
-}
+} & BaseTableUrlFields
 
 const isHltbSortKey = (value: string | null): value is SortKey =>
   value === "name" ||
@@ -79,24 +71,19 @@ const isHltbSortKey = (value: string | null): value is SortKey =>
   value === "completionist" ||
   value === "confidence"
 
-const parseHltbUrl = (params: URLSearchParams): HltbUrlState => ({
-  q: parseTableSearchQuery(params.get("q")),
-  game: parsePinnedGameAppid(params),
-  missing: params.get("missing") === "1",
-  sort: isHltbSortKey(params.get("sort")) ? (params.get("sort") as SortKey) : "name",
-  dir: parseSortDirection(params.get("dir")),
-  page: parsePage(params.get("page")),
-  size: parsePageSize(params.get("size")),
-})
+const parseHltbUrl = (params: URLSearchParams): HltbUrlState => {
+  const base = parseBaseTableUrlFields(params)
+  const sortParam = params.get("sort")
+  return {
+    ...base,
+    missing: params.get("missing") === "1",
+    sort: isHltbSortKey(sortParam) ? sortParam : "name",
+  }
+}
 
 const serializeHltbUrl = (state: HltbUrlState) => ({
-  q: state.q || undefined,
-  game: serializePinnedGameAppid(state.game),
+  ...serializeBaseTableUrlFields(state, state.sort),
   missing: state.missing ? "1" : undefined,
-  sort: state.sort !== "name" ? state.sort : undefined,
-  dir: state.dir !== "asc" ? state.dir : undefined,
-  page: state.page > 1 ? String(state.page) : undefined,
-  size: state.size !== 10 ? String(state.size) : undefined,
 })
 
 const HLTB_SORT_OPTIONS = [
@@ -119,46 +106,36 @@ const compareHltbGames = (
   switch (sort) {
     case "name":
       return compareStrings(a.name, b.name, direction)
-    case "playtime": {
-      const primary = compareNumbers(
-        a.playtimeForeverMinutes,
-        b.playtimeForeverMinutes,
-        direction
+    case "playtime":
+      return compareWithTiebreaker(
+        compareNumbers(a.playtimeForeverMinutes, b.playtimeForeverMinutes, direction),
+        direction,
+        tiebreak
       )
-      return primary !== 0 ? primary : tiebreak()
-    }
-    case "mainStory": {
-      const primary = compareNumbers(
-        a.hltb?.mainStoryMinutes,
-        b.hltb?.mainStoryMinutes,
-        direction
+    case "mainStory":
+      return compareWithTiebreaker(
+        compareNumbers(a.hltb?.mainStoryMinutes, b.hltb?.mainStoryMinutes, direction),
+        direction,
+        tiebreak
       )
-      return primary !== 0 ? primary : tiebreak()
-    }
-    case "mainExtra": {
-      const primary = compareNumbers(
-        a.hltb?.mainExtraMinutes,
-        b.hltb?.mainExtraMinutes,
-        direction
+    case "mainExtra":
+      return compareWithTiebreaker(
+        compareNumbers(a.hltb?.mainExtraMinutes, b.hltb?.mainExtraMinutes, direction),
+        direction,
+        tiebreak
       )
-      return primary !== 0 ? primary : tiebreak()
-    }
-    case "completionist": {
-      const primary = compareNumbers(
-        a.hltb?.completionistMinutes,
-        b.hltb?.completionistMinutes,
-        direction
+    case "completionist":
+      return compareWithTiebreaker(
+        compareNumbers(a.hltb?.completionistMinutes, b.hltb?.completionistMinutes, direction),
+        direction,
+        tiebreak
       )
-      return primary !== 0 ? primary : tiebreak()
-    }
-    case "confidence": {
-      const primary = compareNumbers(
-        a.hltb?.matchConfidence,
-        b.hltb?.matchConfidence,
-        direction
+    case "confidence":
+      return compareWithTiebreaker(
+        compareNumbers(a.hltb?.matchConfidence, b.hltb?.matchConfidence, direction),
+        direction,
+        tiebreak
       )
-      return primary !== 0 ? primary : tiebreak()
-    }
     default:
       return 0
   }

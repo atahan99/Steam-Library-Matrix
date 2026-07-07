@@ -4,20 +4,20 @@ import { useMemo, useState } from "react"
 import { useGameDetail } from "@/components/dashboard/dashboard-context"
 import { useDashboardTableParams } from "@/hooks/use-dashboard-table-params"
 import {
+  parseBaseTableUrlFields,
   parseCommaList,
-  parsePage,
-  parsePageSize,
-  parsePinnedGameAppid,
-  parseSortDirection,
-  parseTableSearchQuery,
+  serializeBaseTableUrlFields,
   serializeCommaList,
-  serializePinnedGameAppid,
+  type BaseTableUrlFields,
 } from "@/lib/dashboard/table-url-params"
 import { useTableGames } from "@/hooks/use-table-games"
 import {
-  CollectionToggle,
-  WishlistEmptyHint,
-} from "@/components/tables/collection-toggle"
+  createTableSearchHandlers,
+  TableFilterToolbar,
+  TableSearchExportBar,
+} from "@/components/tables/table-filter-toolbar"
+import { PlayedFilterSwitches } from "@/components/tables/played-filter-switches"
+import { isVrListedGame } from "@/lib/dashboard/game-table-membership"
 import { GenreMultiSelect } from "@/components/tables/genre-multi-select"
 import { VrDeviceMultiSelect } from "@/components/tables/vr-device-multi-select"
 import { Switch } from "@/components/ui/switch"
@@ -37,9 +37,6 @@ import {
   TABLE_GAME_COLUMN_CELL_CLASS,
   TABLE_GAME_COLUMN_HEAD_CLASS,
 } from "@/components/tables/table-game-column"
-import { TableExportMenu } from "@/components/tables/table-export-button"
-import { TableFilterSpacer } from "@/components/tables/table-filter-field"
-import { TableGameSearchInput } from "@/components/tables/table-game-search-input"
 import { TableSortControls } from "@/components/tables/table-sort-controls"
 import {
   collectVrDeviceFilterOptions,
@@ -56,17 +53,14 @@ import {
   compareDates,
   compareNumbers,
   compareStrings,
+  compareWithTiebreaker,
   getDefaultSortDirection,
   type SortDirection,
 } from "@/lib/utils/table-sort"
 import {
   getSafeTablePage,
   TablePaginationFooter,
-  type TablePageSize,
 } from "@/components/tables/table-pagination-footer"
-
-const isVrListedGame = (g: DashboardGame): boolean =>
-  g.steamDetails?.vrSupported === true || g.steamDetails?.vrOnly === true
 
 const VrYesNoCell = ({
   active,
@@ -87,39 +81,29 @@ const VrYesNoCell = ({
 type SortKey = "name" | "playtime" | "checked"
 
 type VrUrlState = {
-  q: string
-  game?: number
   genres: string[]
   devices: string[]
   sort: SortKey
-  dir: SortDirection
-  page: number
-  size: TablePageSize
-}
+} & BaseTableUrlFields
 
 const isVrSortKey = (value: string | null): value is SortKey =>
   value === "name" || value === "playtime" || value === "checked"
 
-const parseVrUrl = (params: URLSearchParams): VrUrlState => ({
-  q: parseTableSearchQuery(params.get("q")),
-  game: parsePinnedGameAppid(params),
-  genres: parseCommaList(params.get("genres")),
-  devices: parseCommaList(params.get("devices")),
-  sort: isVrSortKey(params.get("sort")) ? (params.get("sort") as SortKey) : "name",
-  dir: parseSortDirection(params.get("dir")),
-  page: parsePage(params.get("page")),
-  size: parsePageSize(params.get("size")),
-})
+const parseVrUrl = (params: URLSearchParams): VrUrlState => {
+  const base = parseBaseTableUrlFields(params)
+  const sortParam = params.get("sort")
+  return {
+    ...base,
+    genres: parseCommaList(params.get("genres")),
+    devices: parseCommaList(params.get("devices")),
+    sort: isVrSortKey(sortParam) ? sortParam : "name",
+  }
+}
 
 const serializeVrUrl = (state: VrUrlState) => ({
-  q: state.q || undefined,
-  game: serializePinnedGameAppid(state.game),
+  ...serializeBaseTableUrlFields(state, state.sort),
   genres: serializeCommaList(state.genres),
   devices: serializeCommaList(state.devices),
-  sort: state.sort !== "name" ? state.sort : undefined,
-  dir: state.dir !== "asc" ? state.dir : undefined,
-  page: state.page > 1 ? String(state.page) : undefined,
-  size: state.size !== 10 ? String(state.size) : undefined,
 })
 
 const PLATFORM_SORT_OPTIONS = [
@@ -139,22 +123,18 @@ const compareVrGames = (
   switch (sort) {
     case "name":
       return compareStrings(a.name, b.name, direction)
-    case "playtime": {
-      const primary = compareNumbers(
-        a.playtimeForeverMinutes,
-        b.playtimeForeverMinutes,
-        direction
+    case "playtime":
+      return compareWithTiebreaker(
+        compareNumbers(a.playtimeForeverMinutes, b.playtimeForeverMinutes, direction),
+        direction,
+        tiebreak
       )
-      return primary !== 0 ? primary : tiebreak()
-    }
-    case "checked": {
-      const primary = compareDates(
-        a.steamDetails?.lastCheckedAt,
-        b.steamDetails?.lastCheckedAt,
-        direction
+    case "checked":
+      return compareWithTiebreaker(
+        compareDates(a.steamDetails?.lastCheckedAt, b.steamDetails?.lastCheckedAt, direction),
+        direction,
+        tiebreak
       )
-      return primary !== 0 ? primary : tiebreak()
-    }
     default:
       return 0
   }
@@ -244,40 +224,32 @@ export const VrTable = () => {
     (safePage - 1) * pageSize,
     safePage * pageSize
   )
+  const searchHandlers = createTableSearchHandlers(setUrl)
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="flex min-w-0 flex-1 flex-col gap-3">
-          <div className="flex flex-wrap items-start gap-3">
-            <TableFilterSpacer className="w-full max-w-sm">
-              <TableGameSearchInput
-                value={search}
-                pinnedGameAppid={game}
-                placeholder="Search VR games..."
-                aria-label="Search VR games"
-                onChange={(next) =>
-                  setUrl({ q: next, game: undefined, page: 1 })
-                }
-                onClearPinned={() => setUrl({ q: "", game: undefined, page: 1 })}
-              />
-            </TableFilterSpacer>
-            <TableFilterSpacer>
-              <TableExportMenu
-                filename="vr-export.csv"
-                headers={[
-                  "Name",
-                  "AppID",
-                  "Playtime",
-                  "Genres",
-                  "VR support",
-                  "VR-only",
-                  "Checked",
-                ]}
-                rows={exportRows}
-              />
-            </TableFilterSpacer>
-          </div>
+      <TableFilterToolbar
+        searchRow={
+          <TableSearchExportBar
+            search={search}
+            pinnedGameAppid={game}
+            placeholder="Search VR games..."
+            ariaLabel="Search VR games"
+            exportFilename="vr-export.csv"
+            exportHeaders={[
+              "Name",
+              "AppID",
+              "Playtime",
+              "Genres",
+              "VR support",
+              "VR-only",
+              "Checked",
+            ]}
+            exportRows={exportRows}
+            {...searchHandlers}
+          />
+        }
+        filterRow={
           <div className="flex flex-wrap items-start gap-3">
             <TableSortControls
               sortKey={sortKey}
@@ -305,11 +277,8 @@ export const VrTable = () => {
               onSelectedChange={(devices) => setUrl({ devices, page: 1 })}
             />
           </div>
-        </div>
-        <CollectionToggle />
-      </div>
-
-      <WishlistEmptyHint />
+        }
+      />
 
       <div className="flex flex-wrap items-center gap-4">
         <div className="flex items-center gap-2">
@@ -320,18 +289,14 @@ export const VrTable = () => {
           <Switch id="vr-vro" checked={vrOnly} onCheckedChange={setVrOnly} />
           <Label htmlFor="vr-vro">VR-only</Label>
         </div>
-        <div className="flex items-center gap-2">
-          <Switch id="vr-p" checked={playedOnly} onCheckedChange={setPlayedOnly} />
-          <Label htmlFor="vr-p">Played only</Label>
-        </div>
-        <div className="flex items-center gap-2">
-          <Switch
-            id="vr-np"
-            checked={neverPlayedOnly}
-            onCheckedChange={setNeverPlayedOnly}
-          />
-          <Label htmlFor="vr-np">Never played</Label>
-        </div>
+        <PlayedFilterSwitches
+          playedId="vr-p"
+          neverPlayedId="vr-np"
+          playedOnly={playedOnly}
+          neverPlayedOnly={neverPlayedOnly}
+          onPlayedOnlyChange={setPlayedOnly}
+          onNeverPlayedOnlyChange={setNeverPlayedOnly}
+        />
       </div>
 
       <p className="text-sm text-muted-foreground">

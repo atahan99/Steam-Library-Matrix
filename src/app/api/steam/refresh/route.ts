@@ -3,15 +3,13 @@ import { NextResponse } from "next/server"
 import { getProfile } from "@/lib/db/profiles"
 import { importSteamLibrary } from "@/lib/steam/import-library"
 import { isCacheFresh } from "@/lib/utils/cache"
-import { PRIVATE_LIBRARY_MESSAGE } from "@/lib/steam/steam-api"
 import {
   enqueueAppDetailsAfterImport,
   runPostImportBackgroundTasks,
 } from "@/lib/steam/post-import-background"
 import { steamRefreshBodySchema } from "@/lib/api/schemas"
+import { privateLibraryErrorResponse, zodErrorResponse } from "@/lib/api/guard"
 import { runApiRoute } from "@/lib/api/with-api-route"
-import { getErrorMessage } from "@/lib/utils/get-error-message"
-import { toApiErrorResponse } from "@/lib/api/api-error"
 
 const LIBRARY_TTL_HOURS = 12
 
@@ -32,10 +30,7 @@ export const POST = async (request: Request) =>
     const body = await request.json()
     const parsed = steamRefreshBodySchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: parsed.error.issues[0]?.message ?? "Invalid request" },
-        { status: 400 }
-      )
+      return zodErrorResponse(parsed)
     }
 
     try {
@@ -85,14 +80,8 @@ export const POST = async (request: Request) =>
           : null,
       })
     } catch (error) {
-      const message = getErrorMessage(error) || "Refresh failed"
-      if (message === PRIVATE_LIBRARY_MESSAGE) {
-        return toApiErrorResponse(error, {
-          status: 403,
-          exposeMessage: true,
-          publicMessage: message,
-        })
-      }
+      const privateLibrary = privateLibraryErrorResponse(error, "Refresh failed")
+      if (privateLibrary) return privateLibrary
       throw error
     }
   })
