@@ -140,6 +140,23 @@ Compare shows games in **every** selected profile (intersection). Columns read S
 - **Refresh compare data** triggers warmup manually
 - Auto warmup on load: `NEXT_PUBLIC_SLM_COMPARE_AUTO_WARMUP=true` at build time (default off)
 
+## Add a source (EnrichmentSource registry)
+
+Per-appid batch sources (ProtonDB, HowLongToBeat today) register under [`src/lib/enrichment/sources/`](../src/lib/enrichment/sources/). Wishlist, catalog sync, and multi-phase anti-cheat stay on the legacy switch in [`run-step.ts`](../src/lib/jobs/run-step.ts).
+
+Checklist for a new registered source:
+
+1. **Kind** — add the string to `ENRICHMENT_JOB_KINDS` in [`types.ts`](../src/lib/jobs/types.ts) and worker claim priority SQL if enqueue order matters.
+2. **Module** — add `src/lib/enrichment/sources/<name>.ts` implementing `EnrichmentSource` (`resolveTargets` + `runBatch`). Reuse an existing step helper under `src/lib/jobs/steps/` when possible.
+3. **Register** — `registerSource(...)` from [`index.ts`](../src/lib/enrichment/sources/index.ts) (side-effect import loads the registry).
+4. **Resolve / TTL** — extend [`resolve-enrichment-appids.ts`](../src/lib/enrichment/resolve-enrichment-appids.ts) (and TTL constants) so jobs only target stale/missing appids.
+5. **Storage** — Drizzle schema + migration if you need a new table; seed export/hydrate only if the source should ship in bundled seed JSON.
+6. **Enqueue** — wire the kind into import / Data Status / full-sync enqueue lists where the source should run.
+7. **Data Status** — coverage row in sync-status builders when the UI should show progress.
+8. **Optional UI** — dashboard column/page only if users need to browse the data (not required for the registry itself).
+
+`runEnrichmentJobStep` dispatches registered kinds via `getSource` → `runRegisteredSourceStep`; unregistered kinds keep using the legacy switch.
+
 ## Scripts
 
 `scripts/` use the same HTTP stack as the app — no browser required.

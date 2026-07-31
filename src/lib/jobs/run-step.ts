@@ -10,11 +10,14 @@ import {
   ensureAnticheatCatalogsReady,
   loadAnticheatEnrichContext,
 } from "@/lib/enrichment/anticheat"
+import {
+  getSource,
+  runRegisteredSourceStep,
+} from "@/lib/enrichment/sources"
 import { enrichLog } from "@/lib/jobs/enrich-logger"
 import { runAchievementsBatch } from "@/lib/jobs/steps/achievements-step"
 import { runAnticheatBatch } from "@/lib/jobs/steps/anticheat-step"
 import { runAppDetailsBatch } from "@/lib/jobs/steps/app-details-step"
-import { runHltbBatch } from "@/lib/jobs/steps/hltb-step"
 import {
   getAppDetailsBatch,
   getAppDetailsConcurrency,
@@ -22,13 +25,8 @@ import {
   getAchievementsBatch,
   getAchievementsConcurrency,
   getDenuvoStoreBatch,
-  getHltbBatch,
-  getHltbConcurrency,
-  getProtonDbBatch,
-  getProtonDbConcurrency,
 } from "@/lib/jobs/batch-config"
-import { runProtonDbBatch } from "@/lib/jobs/steps/protondb-step"
-import { resolveAppDetailsAppids, resolveHltbAppids } from "@/lib/jobs/steps/resolve-appids"
+import { resolveAppDetailsAppids } from "@/lib/jobs/steps/resolve-appids"
 import type { JobPayload, JobProgress } from "@/lib/jobs/types"
 import { syncSteamWishlist } from "@/lib/steam/sync-wishlist"
 import type { EnrichmentJobKind } from "@/lib/jobs/types"
@@ -65,6 +63,11 @@ export const runEnrichmentJobStep = async (input: {
   payload: JobPayload
   deadlineMs: number
 }): Promise<StepResult> => {
+  const registered = getSource(input.kind)
+  if (registered) {
+    return runRegisteredSourceStep(registered, input)
+  }
+
   const force = input.payload.force ?? false
   const missingOnly = input.payload.missingOnly ?? false
   const stats = { ...input.payload.stats }
@@ -130,56 +133,6 @@ export const runEnrichmentJobStep = async (input: {
               "Denuvo catalog sync incomplete",
         },
         error: denuvoDone ? undefined : denuvoResult.denuvoAntiTamperError,
-      }
-    }
-    case "protondb": {
-      let appids = input.payload.appids
-      if (!appids?.length) {
-        appids = await resolveAppidsForSource(
-          "protondb",
-          resolveOptions(input.steamid, scopedPayload, force, missingOnly)
-        )
-      }
-      const cursor = input.payload.cursor ?? 0
-      const total = appids.length
-      if (total === 0) {
-        return {
-          done: true,
-          payload: { ...input.payload, appids, cursor: 0, stats },
-          progress: { ...stats, total: 0, message: "Nothing to refresh" },
-        }
-      }
-
-      const batch = await runProtonDbBatch(
-        appids,
-        cursor,
-        getProtonDbBatch(),
-        input.deadlineMs,
-        force,
-        getProtonDbConcurrency()
-      )
-      const nextCursor = cursor + batch.processed
-      const nextStats = mergeProgress({
-        checked: batch.checked,
-        updated: batch.updated,
-        failed: batch.failed,
-        total,
-      })
-      const done = nextCursor >= total
-      return {
-        done,
-        payload: {
-          ...input.payload,
-          appids,
-          cursor: nextCursor,
-          stats: nextStats,
-        },
-        progress: {
-          ...nextStats,
-          message: done
-            ? "ProtonDB refresh completed"
-            : `ProtonDB ${nextCursor}/${total}`,
-        },
       }
     }
     case "achievements": {
@@ -429,68 +382,6 @@ export const runEnrichmentJobStep = async (input: {
           message: done
             ? "App details refresh completed"
             : `App details ${nextCursor}/${total}`,
-        },
-      }
-    }
-    case "hltb": {
-      let rows = input.payload.appids?.length
-        ? input.payload.appids.map((appid) => ({
-            appid,
-            name: input.payload.gameNames?.[String(appid)] ?? `App ${appid}`,
-          }))
-        : null
-
-      if (!rows) {
-        const resolved = await resolveHltbAppids(input.steamid, {
-          force,
-          missingOnly,
-          scopeAppids: input.payload.scopeAppids,
-        })
-        rows = resolved
-        input.payload.appids = resolved.map((r) => r.appid)
-        input.payload.gameNames = Object.fromEntries(
-          resolved.map((r) => [String(r.appid), r.name])
-        )
-      }
-
-      const cursor = input.payload.cursor ?? 0
-      const total = rows.length
-      if (total === 0) {
-        return {
-          done: true,
-          payload: { ...input.payload, cursor: 0, stats },
-          progress: { ...stats, total: 0, message: "Nothing to refresh" },
-        }
-      }
-
-      const batch = await runHltbBatch(
-        rows,
-        cursor,
-        getHltbBatch(),
-        input.deadlineMs,
-        getHltbConcurrency()
-      )
-      const nextCursor = cursor + batch.processed
-      const nextStats = mergeProgress({
-        checked: batch.checked,
-        updated: batch.updated,
-        failed: batch.failed,
-        skippedLowConfidence: batch.skippedLowConfidence,
-        total,
-      })
-      const done = nextCursor >= total
-      return {
-        done,
-        payload: {
-          ...input.payload,
-          cursor: nextCursor,
-          stats: nextStats,
-        },
-        progress: {
-          ...nextStats,
-          message: done
-            ? "HowLongToBeat refresh completed"
-            : `HowLongToBeat ${nextCursor}/${total}`,
         },
       }
     }
