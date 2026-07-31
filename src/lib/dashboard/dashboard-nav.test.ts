@@ -7,14 +7,22 @@ import {
 
 describe("dashboard-nav", () => {
   it("table nav items are searchable section pages only", () => {
-    expect(dashboardTableNavItems).toHaveLength(6)
+    expect(dashboardTableNavItems).toHaveLength(7)
     expect(dashboardTableNavItems.every((item) => item.supportsGameSearch)).toBe(
       true
     )
     expect(
       dashboardTableNavItems.map((item) => item.segment).sort()
     ).toEqual(
-      ["anticheat", "howlongtobeat", "library", "mac", "protondb", "vr"].sort()
+      [
+        "achievements",
+        "anticheat",
+        "howlongtobeat",
+        "library",
+        "mac",
+        "protondb",
+        "vr",
+      ].sort()
     )
   })
 

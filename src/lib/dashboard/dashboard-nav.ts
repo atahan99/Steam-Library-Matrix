@@ -6,6 +6,8 @@ import {
   Shield,
   Glasses,
   Layers,
+  Tags,
+  Trophy,
   Database,
   BookOpen,
   type LucideIcon,
@@ -29,6 +31,13 @@ export const dashboardSectionNavItems: DashboardNavItem[] = [
     icon: Library,
     supportsGameSearch: true,
   },
+  {
+    title: "Achievements",
+    segment: "achievements",
+    icon: Trophy,
+    supportsGameSearch: true,
+  },
+  { title: "Backlog", segment: "random", icon: Layers },
   { title: "Compare", segment: "compare", icon: Users },
   {
     title: "HowLongToBeat",
@@ -48,6 +57,7 @@ export const dashboardSectionNavItems: DashboardNavItem[] = [
     brand: "protondb",
     supportsGameSearch: true,
   },
+  { title: "Genres", segment: "genres", icon: Tags },
   {
     title: "Mac Support",
     segment: "mac",
@@ -60,7 +70,6 @@ export const dashboardSectionNavItems: DashboardNavItem[] = [
     icon: Glasses,
     supportsGameSearch: true,
   },
-  { title: "Backlog", segment: "random", icon: Layers },
 ]
 
 export const dashboardFooterNavItems: DashboardNavItem[] = [

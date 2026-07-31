@@ -20,13 +20,16 @@
 ## Features
 
 - **Overview** — playtime, completion, and top-played / recently-played charts (plus an external SteamDB calculator link)
-- **Library** — every owned game with OS-support icons, lifetime & recent playtime, search, filters (genre / OS / played), sort, pagination, and CSV export
+- **Library** — every owned game with OS-support icons, lifetime & recent playtime, search, filters (genre / OS / played / game vs DLC), sort, pagination, and CSV export
+- **Achievements** — library-wide achievement progress with completion %, near-100%, and never-started filters
+- **Genres** — store genre analytics: game counts and lifetime playtime per tag
 - **ProtonDB** — Linux & Steam Deck compatibility tiers with a clickable distribution chart
 - **HowLongToBeat** — main / main+extras / completionist times, with match confidence
 - **Anti-Cheat** — Linux anti-cheat status (AWACY), kernel-level anti-cheat (Levvvel), and Denuvo signals
 - **Mac & VR** — Apple Silicon (native), Rosetta 2, and CrossOver compatibility from AppleGamingWiki plus native macOS support; VR support / VR-only
 - **Compare** — line up multiple profiles (intersection of libraries)
 - **Backlog** — pile-of-shame stats, curated picks (quick wins, almost-there, gathering dust), a hand-picked queue with a monthly goal, and a random picker
+- **Pluggable enrichment registry** — ProtonDB and HowLongToBeat run behind a shared `EnrichmentSource` contract ([docs/scraping.md](docs/scraping.md)); other sources still use legacy job steps
 - **Global search** (⌘K / Ctrl+K), theme selector, and an About page with data sources & attribution
 
 Enrichment fills in over time via a background worker; **Data Status** shows per-source progress and health.
@@ -57,7 +60,7 @@ Never commit `.env`, `docker/.env`, `data/*.db`, or `docker/db/*.db`.
 
 ## Get a Steam Web API key
 
-Required for both options.
+Required for both options. A key is **required for import** — there is no optional slower mode without one. Each self-hoster registers and uses their **own** key; do not share keys across deployments.
 
 1. Sign in at [https://steamcommunity.com/dev/apikey](https://steamcommunity.com/dev/apikey).
 2. Register a new key. For **Domain Name**, use `localhost` (fine for LAN and self-host).
@@ -195,13 +198,11 @@ More tuning: [docs/env.md](docs/env.md).
 
 Not implemented yet — rough order, may change.
 
-- [ ] Finer Linux / distro-specific signals alongside ProtonDB
-- [ ] DLC data — owned DLC, playtime, base-game vs complete filters
-- [ ] Achievement progress view and library completion summary
-- [ ] Tags and genre analytics from store metadata
-- [ ] SteamDB calculator in-dashboard (today: external link only)
-- [ ] Price history / deals hooks
-- [ ] Pluggable enrichment sources ([docs/scraping.md](docs/scraping.md))
+- [ ] Richer DLC — parent appid linkage and complete-edition views beyond the library game/DLC filter
+- [ ] First *new* source on the enrichment registry (e.g. PCGamingWiki, player counts, or review scores)
+- [ ] Publish a prebuilt image to GHCR
+
+Intentionally external (not planned in-app): SteamDB calculator (Overview link only) and price/deals data.
 
 ## Documentation
 
