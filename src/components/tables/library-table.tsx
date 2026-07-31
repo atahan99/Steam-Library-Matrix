@@ -7,6 +7,7 @@ import {
   TABLE_GAME_COLUMN_CELL_CLASS,
   TABLE_GAME_COLUMN_HEAD_CLASS,
 } from "@/components/tables/table-game-column"
+import { FilterSelectField } from "@/components/tables/filter-select-field"
 import { GenreMultiSelect } from "@/components/tables/genre-multi-select"
 import { OsSupportMultiSelect } from "@/components/tables/os-support-multi-select"
 import { TableExportMenu } from "@/components/tables/table-export-button"
@@ -45,6 +46,11 @@ import {
   collectLibraryGenreFilterOptions,
   gameMatchesGenreFilter,
 } from "@/lib/utils/genre-label"
+import {
+  gameMatchesLibraryTypeFilter,
+  parseLibraryTypeFilter,
+  type LibraryTypeFilter,
+} from "@/lib/utils/library-type-filter"
 import { formatPlaytime } from "@/lib/utils/format-playtime"
 import {
   gameMatchesOsFilter,
@@ -68,6 +74,7 @@ type SortKey = "name" | "playtime" | "recent"
 
 type LibraryUrlState = {
   play: LibraryPlayFilter
+  type: LibraryTypeFilter
   genres: string[]
   os: OsFilterPlatform[]
   sort: SortKey
@@ -86,6 +93,7 @@ const parseLibraryUrl = (params: URLSearchParams): LibraryUrlState => {
     ...base,
     sort: isSortKey(sortParam) ? sortParam : "name",
     play: parseLibraryPlayFilter(params.get("play")),
+    type: parseLibraryTypeFilter(params.get("type")),
     genres: parseCommaList(params.get("genres")),
     os: parseCommaList(params.get("os")).filter(isOsPlatform),
   }
@@ -94,6 +102,7 @@ const parseLibraryUrl = (params: URLSearchParams): LibraryUrlState => {
 const serializeLibraryUrl = (state: LibraryUrlState) => ({
   ...serializeBaseTableUrlFields(state, state.sort),
   play: state.play !== "all" ? state.play : undefined,
+  type: state.type !== "all" ? state.type : undefined,
   genres: serializeCommaList(state.genres),
   os: serializeCommaList(state.os),
 })
@@ -103,6 +112,12 @@ const LIBRARY_SORT_OPTIONS = [
   { value: "playtime", label: "Total playtime" },
   { value: "recent", label: "Recent playtime" },
 ] as const
+
+const LIBRARY_TYPE_OPTIONS: { value: LibraryTypeFilter; label: string }[] = [
+  { value: "all", label: "All types" },
+  { value: "game", label: "Games" },
+  { value: "dlc", label: "DLC" },
+]
 
 type LibraryTableProps = {
   gamesOverride?: DashboardGame[]
@@ -127,6 +142,7 @@ export const LibraryTable = ({
     sort: sortKey,
     dir: sortDirection,
     play,
+    type: typeFilter,
     genres: selectedGenres,
     os: selectedOs,
     page,
@@ -159,6 +175,7 @@ export const LibraryTable = ({
         gameMatchesGenreFilter(game.steamDetails, selectedGenres)
       )
       .filter((game) => gameMatchesOsFilter(game, selectedOs))
+      .filter((game) => gameMatchesLibraryTypeFilter(game, typeFilter))
       .sort((a, b) => {
         if (sortKey === "name") {
           return compareStrings(a.name, b.name, sortDirection)
@@ -192,6 +209,7 @@ export const LibraryTable = ({
     recentOnly,
     selectedGenres,
     selectedOs,
+    typeFilter,
   ])
 
   const safePage = getSafeTablePage(page, filteredGames.length, pageSize)
@@ -298,6 +316,18 @@ export const LibraryTable = ({
             <OsSupportMultiSelect
               selected={selectedOs}
               onSelectedChange={(platforms) => setUrl({ os: platforms, page: 1 })}
+            />
+            <FilterSelectField
+              id={`${idPrefix}-type`}
+              title="Type"
+              value={typeFilter}
+              options={LIBRARY_TYPE_OPTIONS}
+              onValueChange={(next) =>
+                setUrl({
+                  type: parseLibraryTypeFilter(next),
+                  page: 1,
+                })
+              }
             />
           </div>
         </div>
