@@ -1,3 +1,4 @@
+import { NextResponse } from "next/server"
 import { eq } from "drizzle-orm"
 import { getDb } from "@/lib/db/client"
 import { fetchActiveEnrichmentJobs } from "@/lib/db/active-enrichment-jobs"
