@@ -59,4 +59,13 @@ describe("computeLibraryAchievementStats", () => {
     expect(stats.withProgressCount).toBe(2)
     expect(stats.averageCompletionPercent).toBe(67)
   })
+
+  it("treats synced 0% games as hasData", () => {
+    const stats = computeLibraryAchievementStats([
+      gameWithAchievements(1, 0, 10),
+    ])
+    expect(stats.hasData).toBe(true)
+    expect(stats.trackableCount).toBe(1)
+    expect(stats.withProgressCount).toBe(0)
+  })
 })

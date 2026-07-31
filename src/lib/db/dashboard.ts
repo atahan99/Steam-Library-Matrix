@@ -170,7 +170,8 @@ export const fetchDashboardPayload = async (
           playtime2WeeksMinutes: owned?.playtime2WeeksMinutes ?? 0,
           lastSyncedAt: owned?.lastSyncedAt ?? row.lastSyncedAt,
         },
-        undefined
+        // owned+wishlisted titles share profile_game_achievements rows
+        achievementByAppid.get(row.game.appid) ?? null
       )
     })
     .filter((game): game is DashboardGame => game !== null)

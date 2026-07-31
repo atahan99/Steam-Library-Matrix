@@ -69,7 +69,8 @@ export const computeLibraryAchievementStats = (
   )
 
   return {
-    hasData: withProgress.length > 0,
+    // trackable rows mean sync ran; withProgress can still be 0 (all at 0%)
+    hasData: true,
     trackableCount: trackable.length,
     withProgressCount: withProgress.length,
     completedCount,
