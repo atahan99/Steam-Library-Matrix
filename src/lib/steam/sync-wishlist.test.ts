@@ -53,9 +53,9 @@ describe("syncSteamWishlist", () => {
     const placeholderAppid = 2999990
 
     mockedFetchSteamWishlist.mockResolvedValue([
-      { appid: placeholderAppid, name: `App ${placeholderAppid}`, addedAt: null },
-      { appid: placeholderAppid, name: "Duplicate", addedAt: null },
-      { appid: 570, name: "Dota 2", addedAt: null },
+      { appid: placeholderAppid, name: `App ${placeholderAppid}` },
+      { appid: placeholderAppid, name: "Duplicate" },
+      { appid: 570, name: "Dota 2" },
     ])
     mockedGetAllSteamAppNames.mockResolvedValue(
       new Map([[placeholderAppid, "Half-Life 3"]])
@@ -69,8 +69,8 @@ describe("syncSteamWishlist", () => {
     expect(mockedSyncProfileWishlist).toHaveBeenCalledWith(
       steamid,
       [
-        { appid: placeholderAppid, name: "Half-Life 3", addedAt: null },
-        { appid: 570, name: "Dota 2", addedAt: null },
+        { appid: placeholderAppid, name: "Half-Life 3" },
+        { appid: 570, name: "Dota 2" },
       ],
       [
         { appid: placeholderAppid, name: "Half-Life 3" },

@@ -24,7 +24,7 @@ describe("resolveWishlistItemsFromStore", () => {
     )
 
     const result = await resolveWishlistItemsFromStore([
-      { appid, name: `App ${appid}`, addedAt: null },
+      { appid, name: `App ${appid}` },
     ])
 
     expect(mockedGetAllSteamAppNames).toHaveBeenCalledTimes(1)
@@ -39,7 +39,7 @@ describe("resolveWishlistItemsFromStore", () => {
     const result = await resolveWishlistItemsFromStore([
       { appid: 570, name: "Dota 2", addedAt: 100 },
       { appid: 570, name: "Duplicate", addedAt: 200 },
-      { appid: 730, name: "Counter-Strike 2", addedAt: null },
+      { appid: 730, name: "Counter-Strike 2" },
     ])
 
     expect(result.items.map((item) => item.appid)).toEqual([570, 730])
@@ -49,7 +49,7 @@ describe("resolveWishlistItemsFromStore", () => {
 
   it("keeps API-provided names without calling GetAppList", async () => {
     const result = await resolveWishlistItemsFromStore([
-      { appid: 570, name: "Dota 2", addedAt: null },
+      { appid: 570, name: "Dota 2" },
     ])
 
     expect(mockedGetAllSteamAppNames).not.toHaveBeenCalled()
