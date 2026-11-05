@@ -38,6 +38,39 @@ import { TableFilterSpacer } from "@/components/tables/table-filter-field"
 import { TableGameSearchInput } from "@/components/tables/table-game-search-input"
 import { TableSortControls } from "@/components/tables/table-sort-controls"
 import type { DashboardGame } from "@/types/dashboard"
+import { classifyHltbLookupOutcome } from "@/lib/enrichment/hltb-lookup-outcome"
+
+/** Why a HowLongToBeat time is missing, so "not found" and "no submissions" read differently. */
+const HltbMissing = ({ game }: { game: DashboardGame }) => {
+  const muted = "text-muted-foreground"
+  if (game.hltb?.hltbId) {
+    return (
+      <span className={muted} title="Matched on HowLongToBeat, but no player has submitted this time yet">
+        N/A
+      </span>
+    )
+  }
+  const outcome = classifyHltbLookupOutcome(game.hltb)
+  if (outcome === "never_checked") return <span className={muted}>Pending</span>
+  if (outcome === "confirmed_absent") {
+    return (
+      <a
+        className={`${muted} underline decoration-dotted underline-offset-2 hover:text-foreground`}
+        href={`https://howlongtobeat.com/?q=${encodeURIComponent(game.name)}`}
+        target="_blank"
+        rel="noreferrer"
+        title="No HowLongToBeat entry found — search or submit it there"
+      >
+        Not on HLTB
+      </a>
+    )
+  }
+  return (
+    <span className={muted} title="Last lookup failed or was unsure; it will be retried">
+      Retrying
+    </span>
+  )
+}
 import {
   compareNumbers,
   compareStrings,
@@ -379,27 +412,17 @@ export const HltbTable = () => {
                     )}
                   </TableCell>
                   <TableCell>
-                    {main ? (
-                      formatPlaytime(main)
-                    ) : (
-                      <span className="text-muted-foreground">No match</span>
-                    )}
+                    {main ? formatPlaytime(main) : <HltbMissing game={g} />}
                   </TableCell>
-                  <TableCell>
-                    {g.hltb?.mainExtraMinutes
-                      ? formatPlaytime(g.hltb.mainExtraMinutes)
-                      : "—"}
-                  </TableCell>
-                  <TableCell>
-                    {g.hltb?.completionistMinutes
-                      ? formatPlaytime(g.hltb.completionistMinutes)
-                      : "—"}
-                  </TableCell>
-                  <TableCell>
-                    {g.hltb?.allStylesMinutes
-                      ? formatPlaytime(g.hltb.allStylesMinutes)
-                      : "—"}
-                  </TableCell>
+                  {[
+                    g.hltb?.mainExtraMinutes,
+                    g.hltb?.completionistMinutes,
+                    g.hltb?.allStylesMinutes,
+                  ].map((minutes, i) => (
+                    <TableCell key={i}>
+                      {minutes ? formatPlaytime(minutes) : g.hltb?.hltbId ? <HltbMissing game={g} /> : "—"}
+                    </TableCell>
+                  ))}
                   <TableCell>
                     {diff !== null ? formatPlaytime(Math.abs(diff)) : "—"}
                   </TableCell>
