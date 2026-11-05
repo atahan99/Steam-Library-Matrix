@@ -12,7 +12,7 @@ export const AppFooter = ({ className }: AppFooterProps) => {
     <footer
       role="contentinfo"
       className={cn(
-        "flex flex-col items-center justify-center gap-1 border-t border-border px-4 py-4 text-center text-xs text-muted-foreground md:px-6",
+        "flex flex-col items-center justify-center gap-1 px-4 py-4 text-center text-xs text-muted-foreground md:px-6",
         className
       )}
     >

@@ -5,16 +5,17 @@ import { AppFooter } from "@/components/layout/app-footer"
 
 export default function HomePage() {
   return (
-    <div className="relative flex min-h-screen flex-col overflow-hidden bg-background">
+    // Desktop: exactly one screen (content scales down on short screens); mobile scrolls.
+    <div className="relative flex min-h-dvh flex-col overflow-hidden bg-background lg:h-dvh">
       <CoverColumns />
-      <main className="relative mx-auto flex w-full max-w-4xl flex-1 flex-col items-center justify-center px-6 py-20 md:py-24">
+      <main className="relative mx-auto flex min-h-0 w-full max-w-4xl flex-1 flex-col items-center justify-center px-6 py-6">
         <div className="landing-hero-glow pointer-events-none absolute inset-0" aria-hidden />
-        <div className="relative flex w-full max-w-xl flex-col items-center gap-10">
+        <div className="landing-stack relative flex w-full max-w-xl flex-col items-center gap-6">
           <LandingHero />
           <SteamProfileForm />
         </div>
       </main>
-      <AppFooter className="relative mt-auto" />
+      <AppFooter className="relative shrink-0 py-3" />
     </div>
   )
 }
