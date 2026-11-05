@@ -55,6 +55,21 @@ describe("parseLevvvelTableRows", () => {
 })
 
 describe("parseLevvvelHtml", () => {
+  it("parses the redesigned kernel-table-grid layout", () => {
+    const html = readFileSync(
+      join(fixtureDir, "__fixtures__/levvvel-kernel-grid-snippet.html"),
+      "utf8"
+    )
+    const rows = parseLevvvelHtml(html)
+    expect(rows.map((r) => r.name)).toEqual([
+      "2XKO",
+      "3on3 FreeStyle",
+      "3on3 FreeStyle: Rebound",
+    ])
+    expect(rows[0]?.antiCheats).toEqual(["Vanguard"])
+    expect(rows[0]?.publisher).toBe("Riot Games")
+  })
+
   it("parses known kernel anti-cheat rows", () => {
     const rows = parseLevvvelHtml(fixtureHtml)
     expect(rows).toHaveLength(4)

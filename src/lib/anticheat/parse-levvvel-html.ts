@@ -109,7 +109,10 @@ export const extractLevvvelNonce = (html: string): string | undefined => {
 
 export const parseLevvvelHtml = (html: string): LevvvelNormalizedRow[] => {
   const $ = cheerio.load(html)
-  const tables = $("table.wpDataTable, table.wpDataTableID-20").toArray()
+  // kernel-table-grid: Levvvel redesign (2026-11); wpDataTable: older layout kept for fallback
+  const tables = $(
+    "table.kernel-table-grid, table.wpDataTable, table.wpDataTableID-20"
+  ).toArray()
   if (!tables.length) return []
 
   const allRows: LevvvelNormalizedRow[] = []

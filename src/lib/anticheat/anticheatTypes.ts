@@ -101,7 +101,7 @@ export const AWACY_GAMES_JSON_URL =
 export const AWACY_SITE = "https://areweanticheatyet.com"
 
 export const LEVVVEL_KERNEL_URL =
-  "https://levvvel.com/games-with-kernel-level-anti-cheat-software/"
+  "https://levvvel.com/tech/games-with-kernel-level-anti-cheat-software/"
 
 export const LEVVVEL_TABLE_ID = 20
 
