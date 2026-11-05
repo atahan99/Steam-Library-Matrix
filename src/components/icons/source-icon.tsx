@@ -1,5 +1,4 @@
 import { BrandIcon } from "@/components/icons/brand-icon"
-import { SteamIcon } from "@/components/icons/steam-icon"
 import {
   faviconUrlFromHref,
   SOURCE_ICON,
@@ -23,10 +22,6 @@ export const SourceIconFromConfig = ({
   className?: string
 }) => {
   const iconClass = cn(DEFAULT_ICON_CLASS, className)
-
-  if (icon.type === "steam") {
-    return <SteamIcon className={iconClass} />
-  }
 
   if (icon.type === "brand") {
     return <BrandIcon brand={icon.brand} className={iconClass} />
