@@ -23,6 +23,7 @@ type HltbSearchSession = {
 }
 
 let cachedSession: HltbSearchSession | null = null
+let sessionRefresh: Promise<HltbSearchSession> | null = null
 
 export type HltbSearchHit = {
   gameId: string
@@ -171,11 +172,20 @@ const getSearchSession = async (): Promise<HltbSearchSession> => {
     return cachedSession
   }
 
-  const apiPath = await discoverSearchApiPath()
-  const auth = await fetchSearchAuth(apiPath)
-  cachedSession = { apiPath, auth, fetchedAt: Date.now() }
-  return cachedSession
+  // Single-flight: concurrent callers share one homepage/script scrape.
+  sessionRefresh ??= (async () => {
+    const apiPath = await discoverSearchApiPath()
+    const auth = await fetchSearchAuth(apiPath)
+    cachedSession = { apiPath, auth, fetchedAt: Date.now() }
+    return cachedSession
+  })().finally(() => {
+    sessionRefresh = null
+  })
+  return sessionRefresh
 }
+
+const isAuthRejection = (err: unknown) =>
+  err instanceof Error && /^HLTB HTTP 40[13]$/.test(err.message)
 
 const buildSearchPayload = (terms: string[], auth: HltbAuth) => {
   const body: Record<string, unknown> = {
@@ -231,21 +241,30 @@ export const searchHltbGames = async (
   const terms = query.trim().split(/\s+/).filter(Boolean)
   if (!terms.length) return []
 
-  const session = await getSearchSession()
-  const searchUrl = new URL(session.apiPath, BASE_URL).toString()
-  const body = buildSearchPayload(terms, session.auth)
+  const postSearch = async () => {
+    const session = await getSearchSession()
+    return hltbFetch(new URL(session.apiPath, BASE_URL).toString(), {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        accept: "*/*",
+        "x-auth-token": session.auth.token,
+        "x-hp-key": session.auth.hpKey,
+        "x-hp-val": session.auth.hpVal,
+      },
+      body: JSON.stringify(buildSearchPayload(terms, session.auth)),
+    })
+  }
 
-  const res = await hltbFetch(searchUrl, {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-      accept: "*/*",
-      "x-auth-token": session.auth.token,
-      "x-hp-key": session.auth.hpKey,
-      "x-hp-val": session.auth.hpVal,
-    },
-    body: JSON.stringify(body),
-  })
+  let res
+  try {
+    res = await postSearch()
+  } catch (err) {
+    if (!isAuthRejection(err)) throw err
+    // Token rotated: drop the stale session and retry once with a fresh one.
+    cachedSession = null
+    res = await postSearch()
+  }
 
   const json = (await res.json()) as {
     data?: RawSearchRow[]
