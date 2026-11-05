@@ -3,7 +3,6 @@ import type { BrandSlug } from "@/components/icons/brand-icon"
 export type SourceIconConfig =
   | { type: "steam" }
   | { type: "brand"; brand: BrandSlug }
-  | { type: "site"; site: "awacy" | "levvvel" | "hltb" }
   | { type: "favicon"; src: string; imgClassName?: string }
 
 export type SourceSlug =
@@ -15,14 +14,14 @@ export type SourceSlug =
 
 export const SOURCE_ICON: Record<SourceSlug, SourceIconConfig> = {
   steam: { type: "steam" },
-  protondb: { type: "brand", brand: "protondb" },
   steamdb: { type: "brand", brand: "steamdb" },
   apple: { type: "brand", brand: "apple" },
   "steam-deck": { type: "brand", brand: "steam-deck" },
-  // Bundled SVG marks — external favicon URLs for these sites break or block hotlinking.
-  awacy: { type: "site", site: "awacy" },
-  levvvel: { type: "site", site: "levvvel" },
-  hltb: { type: "site", site: "hltb" },
+  // Real site logos bundled in public/icons/sites — hotlinking their favicons breaks or is blocked.
+  protondb: { type: "favicon", src: "/icons/sites/protondb.svg" },
+  awacy: { type: "favicon", src: "/icons/sites/awacy.webp" },
+  levvvel: { type: "favicon", src: "/icons/sites/levvvel.svg" },
+  hltb: { type: "favicon", src: "/icons/sites/hltb.png" },
 }
 
 export const faviconUrlFromHref = (href: string): string | null => {
