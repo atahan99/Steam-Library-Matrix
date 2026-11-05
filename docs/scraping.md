@@ -87,7 +87,7 @@ Refresh top sellers: `pnpm seed:fetch-top-appids`. Regenerate (includes live Pro
 
 ### GetItems spike (future bulk appdetails)
 
-Investigation script: `pnpm tsx --env-file=.env scripts/spike-store-getitems.ts` → [`docs/getitems-spike-report.md`](./getitems-spike-report.md).
+A June 2026 spike found the plain `STEAM_API_KEY` gets HTTP 405 on `IStoreBrowseService/GetItems/v1/`; it likely needs a store session `access_token`.
 
 `IStoreBrowseService/GetItems` on `api.steampowered.com` is batchable and keyed — a possible replacement for per-app storefront `appdetails` during seed generation. **Not migrated yet.** Deck compatibility and Denuvo store-page HTML have **no** keyed equivalent and must stay on the throttled storefront path.
 
