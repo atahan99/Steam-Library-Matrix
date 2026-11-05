@@ -14,7 +14,7 @@ export const LandingHero = () => {
         Import your public Steam library, enrich it with compatibility and
         completion data, and explore it in one dashboard.
       </p>
-      <LibraryOrbit variant="landing" className="mt-2" />
+      <LibraryOrbit variant="landing" className="mt-7" />
     </header>
   )
 }
