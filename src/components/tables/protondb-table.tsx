@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import { formatDateDisplay } from "@/lib/utils/format-datetime"
 import {
   useDashboardCollection,
   useGameDetail,
@@ -252,7 +253,7 @@ export const ProtonDbTable = ({
           g.protondb?.confidence ?? "",
           g.protondb?.totalReports ?? "",
           g.protondb?.lastCheckedAt
-            ? new Date(g.protondb.lastCheckedAt).toLocaleDateString()
+            ? formatDateDisplay(g.protondb.lastCheckedAt)
             : "",
         ]
       }),
@@ -441,7 +442,7 @@ export const ProtonDbTable = ({
                   <TableCell>{g.protondb?.totalReports ?? "—"}</TableCell>
                   <TableCell className="text-xs text-muted-foreground">
                     {g.protondb?.lastCheckedAt
-                      ? new Date(g.protondb.lastCheckedAt).toLocaleDateString()
+                      ? formatDateDisplay(g.protondb.lastCheckedAt)
                       : "—"}
                   </TableCell>
                 </TableRow>

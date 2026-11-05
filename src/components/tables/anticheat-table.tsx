@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo } from "react"
+import { formatDateDisplay } from "@/lib/utils/format-datetime"
 import { TriangleAlertIcon } from "lucide-react"
 import { useGameDetail } from "@/components/dashboard/dashboard-context"
 import { useDashboardTableParams } from "@/hooks/use-dashboard-table-params"
@@ -449,9 +450,9 @@ export const AntiCheatTable = () => {
                     </TableCell>
                     <TableCell className="align-top text-xs text-muted-foreground">
                       {g.antiCheat?.awacyDateChanged
-                        ? new Date(g.antiCheat.awacyDateChanged).toLocaleDateString()
+                        ? formatDateDisplay(g.antiCheat.awacyDateChanged)
                         : g.antiCheat?.lastCheckedAt
-                          ? new Date(g.antiCheat.lastCheckedAt).toLocaleDateString()
+                          ? formatDateDisplay(g.antiCheat.lastCheckedAt)
                           : "—"}
                     </TableCell>
                   </TableRow>

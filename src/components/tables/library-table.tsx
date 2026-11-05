@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo } from "react"
+import { formatDateDisplay } from "@/lib/utils/format-datetime"
 import { ArrowDown, ArrowUp } from "lucide-react"
 import { GameCell } from "@/components/tables/game-cell"
 import {
@@ -442,7 +443,7 @@ export const LibraryTable = ({
                   </TableCell>
                   <TableCell className="text-xs text-muted-foreground">
                     {game.lastSyncedAt
-                      ? new Date(game.lastSyncedAt).toLocaleDateString()
+                      ? formatDateDisplay(game.lastSyncedAt)
                       : "—"}
                   </TableCell>
                 </TableRow>

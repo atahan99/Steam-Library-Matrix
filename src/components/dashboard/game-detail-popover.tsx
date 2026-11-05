@@ -1,6 +1,7 @@
 "use client"
 
 import Image from "next/image"
+import { formatDateDisplay } from "@/lib/utils/format-datetime"
 import Link from "next/link"
 import { Gamepad2, XIcon } from "lucide-react"
 import { AntiCheatStatusBadge } from "@/components/badges/anticheat-status-badge"
@@ -65,7 +66,7 @@ const GameDetailBody = ({ game, steamid }: { game: DashboardGame; steamid: strin
   const vrDisplay = getVrDetailDisplay(game.steamDetails)
   const genreLabels = getGenreLabelsForDetail(game.steamDetails?.genres)
   const release = game.steamDetails?.releaseDate?.date
-    ? new Date(game.steamDetails.releaseDate.date).toLocaleDateString()
+    ? formatDateDisplay(game.steamDetails.releaseDate.date)
     : "—"
 
   return (
