@@ -29,7 +29,7 @@ In-memory sliding windows, one global bucket per tier (single-user app; client I
 [`src/proxy.ts`](../src/proxy.ts) sets a per-request nonce ([`csp.ts`](../src/lib/security/csp.ts)) in production:
 
 - `script-src 'self' 'nonce-{nonce}' 'strict-dynamic'`
-- `style-src 'self' 'nonce-{nonce}'` (Recharts via [`NonceProvider`](../src/components/security/nonce-provider.tsx))
+- `style-src 'self' 'nonce-{nonce}' 'sha256-…'` (Recharts via [`NonceProvider`](../src/components/security/nonce-provider.tsx); two hashes for the `<style>` Sonner injects without a nonce — `csp.test.ts` fails if a Sonner upgrade changes them)
 - `style-src-attr 'unsafe-inline'` (React `style={{…}}` — orbit layout, neon card, charts)
 - Dev: `'unsafe-eval'` (HMR) and `'unsafe-inline'` on `style-src` only
 - No `upgrade-insecure-requests`, so plain-HTTP LAN access by IP works; HTTPS deployments get HSTS from `proxy.ts`
