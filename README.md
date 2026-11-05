@@ -10,12 +10,64 @@
 
 | Landing | Overview |
 | :---: | :---: |
-| ![Steam Library Matrix landing page — import form and source orbit](docs/images/landing.png) | ![Dashboard overview — playtime, completion, and top-played charts](docs/images/overview.png) |
+| ![Steam Library Matrix landing page — import form, source orbit, and scrolling game covers](docs/images/landing.png) | ![Dashboard overview — playtime, completion, and top-played charts](docs/images/overview.png) |
 | Paste a public profile URL, vanity name, or SteamID64 | Profile stats, quick metrics, and playtime distribution |
 
-**ProtonDB compatibility**
+| ProtonDB | HowLongToBeat |
+| :---: | :---: |
+| ![ProtonDB page — tier distribution, filters, and compatibility table](docs/images/protondb.png) | ![HowLongToBeat page — completion times with match confidence and missing-data states](docs/images/howlongtobeat.png) |
+| Linux / Steam Deck tiers with a clickable distribution chart | Completion times, match confidence, and why a time is missing |
 
-![ProtonDB page — tier distribution, filters, and compatibility table](docs/images/protondb.png)
+## Engineering highlights
+
+The interesting part is not the dashboard. It is turning six unreliable, rate-limited, mostly unofficial sources into one consistent library view, inside a single process that a person can run at home.
+
+```mermaid
+flowchart LR
+  U["Browser"] -->|"import / refresh"| API["Next.js API routes<br/>rate limit · Origin check"]
+  API -->|"upsert library"| DB[("SQLite (WAL)<br/>one file")]
+  API -->|"enqueue"| Q["enrichment_jobs<br/>one active job per profile + kind"]
+  W["In-process worker<br/>claims · resumes · retries"] --> Q
+  W --> R["Source registry<br/>app details · ProtonDB · HLTB · achievements"]
+  W --> S["Special steps<br/>anti-cheat · catalogs · wishlist"]
+  R & S -->|"store pages"| T["Shared store throttle<br/>+ circuit breaker (in SQLite)"]
+  T --> EXT["Steam · ProtonDB · HowLongToBeat<br/>AWACY · Levvvel · AppleGamingWiki"]
+  R & S -->|"results + 'no data' rows"| DB
+  SEED["Bundled seed<br/>~1500 top sellers"] -->|"hydrate on boot"| DB
+  DB --> UI["Dashboard pages<br/>+ Data Status"]
+```
+
+- **A store throttle that every process obeys.** Steam's storefront allows about 200 requests per 5 minutes per IP, and it bans abusers. The request budget and a circuit breaker live in a SQLite row, so the web server, the worker and CLI scripts all share one limit instead of each keeping its own. A cooldown pauses the job until `cooldownUntil` instead of burning retries.
+- **A resumable job queue without Redis.** Jobs are rows in `enrichment_jobs`:
+  - A partial unique index allows only one active job per profile and source.
+  - Workers claim jobs inside an `IMMEDIATE` transaction, so two processes never take the same job.
+  - Each step saves a cursor and stops at a time limit, so a 1,000-game library finishes in many short steps and survives restarts.
+  - Locks older than 10 minutes are released, and on boot the worker frees orphaned jobs and prunes old ones.
+  - Follow-up rounds for failed lookups stop after 3.
+- **Fuzzy cross-source matching with honest confidence.** Steam names rarely match community sites exactly ("Rome: Total War - Alexander", "… Definitive Edition").
+  - The HowLongToBeat matcher tries several query variants: the full name, the name without edition words, without the subtitle, and the base title.
+  - It scores every hit for similarity and accepts at 0.72 (0.62 for a base-title match). Anything under 0.55 is rejected.
+  - Low-confidence matches are flagged in the UI, not hidden.
+  - DLC stays searchable, so an expansion matches its own entry, not the base game's times.
+- **"No data" is data.** A confirmed "not on HowLongToBeat" or "no anti-cheat entry" is cached with a time limit, so the queue doesn't loop on it. Temporary failures (network, 429, 5xx, rotated tokens) are not cached and get retried. The UI says which case you're looking at: *N/A*, *Not on HLTB*, *Pending* or *Retrying*.
+- **Scrapers built to break loudly.** HowLongToBeat's search endpoint and token are discovered from its own JavaScript bundle at runtime. Levvvel is parsed from HTML and AWACY from its `games.json`, with saved fixtures in tests. When a site changes, the Data Status page shows that source's last run as failed, with the error. It doesn't silently serve stale data.
+- **Instant first load from a bundled seed.** About 1,500 top-selling games come pre-enriched in `data/seed/` and are loaded into SQLite on first start. A new profile shows most of its data right away while the worker fills in the rest.
+- **Hardened for a LAN app:**
+  - A nonce-based CSP with `strict-dynamic`, and an Origin check on every write route.
+  - A global rate limit that a spoofed `X-Forwarded-For` header can't reset.
+  - A Docker container with dropped capabilities that listens on loopback only.
+  - 416 tests, including real-SQLite tests for the job queue, migrations and import upserts, run in CI.
+
+### Decisions and trade-offs
+
+| Decision | Why | What it costs |
+| --- | --- | --- |
+| **SQLite, one file** instead of Postgres | Nothing to run or back up beyond one file. WAL mode handles one writer plus readers easily. | A single machine only. Concurrent writers need care, hence the `IMMEDIATE` claims and the shared throttle row. |
+| **In-process worker** instead of Redis / BullMQ | No extra service to deploy. The queue is plain rows, so the Data Status page can show it directly. | Throughput is tied to one process. `/api/cron/process-jobs` exists for running the worker from outside. |
+| **HTTP scraping, no headless browser** | Cheap, fast, and easy to test with fixtures. No Chromium in the image. | Fragile when sites redesign, so parsers are small, tested, and their health shows on Data Status. |
+| **Bundled seed data** | A new user sees results in seconds, not after an hour of throttled requests. | A larger repository, and the seed needs regenerating now and then (`pnpm seed:generate`). |
+| **Best effort, with confidence shown** | Community data is incomplete. Showing confidence and "why missing" is more useful than hiding uncertain matches. | Users sometimes see a wrong match, but it's labeled low confidence. |
+| **No login, LAN-first** | It's a personal tool. Accounts would add a lot of code for no benefit at home. | Not safe to expose to the internet as-is (see [docs/security.md](docs/security.md)). The open API is rate-limited and CSRF-protected. |
 
 ## Features
 
