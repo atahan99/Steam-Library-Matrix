@@ -55,13 +55,13 @@ export const DashboardHeader = () => {
     : "Never"
 
   return (
-    <header className="border-neon-bottom sticky top-0 z-40 grid h-(--header-height) shrink-0 grid-cols-[1fr_auto_1fr] items-center gap-3 border-b bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+    <header className="border-neon-bottom sticky top-0 z-40 grid h-(--header-height) shrink-0 grid-cols-[minmax(0,1fr)_auto] items-center sm:grid-cols-[1fr_auto_1fr] gap-3 border-b bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/80">
       <div className="flex min-w-0 items-center gap-3">
         <SidebarTrigger />
         <Link
           href={`/dashboard/${profile.steamid}`}
           aria-label="Go to overview"
-          className="rounded-full outline-none ring-offset-2 ring-offset-background transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-ring"
+          className="shrink-0 rounded-full outline-none ring-offset-2 ring-offset-background transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-ring"
         >
           <Avatar className="size-9 shrink-0 cursor-pointer">
             <AvatarImage src={profile.avatarUrl} alt={profile.personaName} />
@@ -70,9 +70,9 @@ export const DashboardHeader = () => {
             </AvatarFallback>
           </Avatar>
         </Link>
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <p className="truncate font-semibold">{profile.personaName}</p>
-          <p className="truncate font-mono text-xs tracking-wide text-muted-foreground">
+          <p className="hidden truncate font-mono text-xs tracking-wide text-muted-foreground sm:block">
             Last synced: {lastSynced}
           </p>
         </div>

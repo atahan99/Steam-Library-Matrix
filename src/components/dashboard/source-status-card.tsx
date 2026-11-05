@@ -77,6 +77,8 @@ const resolveStatusChip = (
   const completionCount = resolvedCount ?? withData
 
   if (totalGames === 0) return "empty"
+  // resolvedCount only counts fresh lookups; rows with data past the TTL are stale, not empty.
+  if (resolvedCount !== undefined && resolvedCount < withData) return "stale"
   if (completionCount === 0) return "empty"
   if (completionCount < totalGames) return "partial"
   if (ttlHours && lastChecked && !isCacheFresh(lastChecked, ttlHours)) {
@@ -125,7 +127,7 @@ export const SourceStatusCard = ({
   const missingTimes = Math.max(0, totalGames - withData)
   const pendingLookup =
     resolvedCount !== undefined
-      ? Math.max(0, totalGames - resolvedCount)
+      ? Math.max(0, totalGames - Math.max(resolvedCount, withData))
       : missingTimes
 
   const secondaryCoveragePercent =

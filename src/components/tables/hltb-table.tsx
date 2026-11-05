@@ -375,11 +375,15 @@ export const HltbTable = () => {
                     {g.playtimeForeverMinutes > 0 ? (
                       <PlaytimeBadge minutes={g.playtimeForeverMinutes} />
                     ) : (
-                      "Not played"
+                      <span className="text-muted-foreground">Not played</span>
                     )}
                   </TableCell>
                   <TableCell>
-                    {main ? formatPlaytime(main) : "No HLTB match"}
+                    {main ? (
+                      formatPlaytime(main)
+                    ) : (
+                      <span className="text-muted-foreground">No match</span>
+                    )}
                   </TableCell>
                   <TableCell>
                     {g.hltb?.mainExtraMinutes
