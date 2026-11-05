@@ -1,3 +1,4 @@
+import { sql } from "drizzle-orm"
 import { getDb } from "@/lib/db/client"
 import { steamGames } from "@/lib/db/schema"
 import { getSteamStoreUrl } from "@/lib/utils/steam-url"
@@ -25,10 +26,11 @@ export const upsertGames = async (games: SteamOwnedGame[]) => {
     await db.insert(steamGames).values(chunk).onConflictDoUpdate({
       target: steamGames.appid,
       set: {
-        name: steamGames.name,
-        iconUrl: steamGames.iconUrl,
-        logoUrl: steamGames.logoUrl,
-        storeUrl: steamGames.storeUrl,
+        name: sql`excluded.name`,
+        // Steam may omit icon/logo hashes; keep the stored URL then
+        iconUrl: sql`coalesce(excluded.icon_url, ${steamGames.iconUrl})`,
+        logoUrl: sql`coalesce(excluded.logo_url, ${steamGames.logoUrl})`,
+        storeUrl: sql`excluded.store_url`,
         updatedAt: now,
       },
     })

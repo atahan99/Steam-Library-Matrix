@@ -1,3 +1,4 @@
+import { sql } from "drizzle-orm"
 import { getDb } from "@/lib/db/client"
 import { profileGames } from "@/lib/db/schema"
 import type { SteamOwnedGame } from "@/types/steam"
@@ -22,8 +23,9 @@ export const upsertProfileGames = async (
     await db.insert(profileGames).values(chunk).onConflictDoUpdate({
       target: [profileGames.steamid, profileGames.appid],
       set: {
-        playtimeForeverMinutes: profileGames.playtimeForeverMinutes,
-        playtime2weeksMinutes: profileGames.playtime2weeksMinutes,
+        // excluded.* is the incoming row; a bare column ref would write the old value back
+        playtimeForeverMinutes: sql`excluded.playtime_forever_minutes`,
+        playtime2weeksMinutes: sql`excluded.playtime_2weeks_minutes`,
         lastSyncedAt: now,
       },
     })
