@@ -38,6 +38,7 @@ export const runRegisteredSourceStep = async (
   }
 
   const batch = await source.runBatch({
+    steamid: input.steamid,
     appids,
     gameNames,
     cursor,

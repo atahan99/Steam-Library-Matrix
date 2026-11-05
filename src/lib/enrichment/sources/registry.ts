@@ -10,9 +10,3 @@ export const registerSource = (source: EnrichmentSource): void => {
 export const getSource = (
   kind: EnrichmentJobKind
 ): EnrichmentSource | undefined => sources.get(kind)
-
-export const listSources = (): EnrichmentSource[] =>
-  [...sources.values()].sort((a, b) => a.priority - b.priority)
-
-export const isRegisteredKind = (kind: EnrichmentJobKind): boolean =>
-  sources.has(kind)

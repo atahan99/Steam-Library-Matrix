@@ -25,6 +25,7 @@ export type EnrichmentSourceResolveInput = {
 }
 
 export type EnrichmentSourceBatchInput = {
+  steamid: string
   appids: number[]
   gameNames?: Record<string, string>
   cursor: number
@@ -32,12 +33,10 @@ export type EnrichmentSourceBatchInput = {
   force: boolean
 }
 
-/** Internal per-appid enrichment source (ProtonDB, HLTB, …). */
+/** Internal per-appid enrichment source (app details, ProtonDB, achievements, HLTB). */
 export type EnrichmentSource = {
   kind: EnrichmentJobKind
   label: string
-  /** Lower number = higher claim priority (matches worker SQL). */
-  priority: number
   resolveTargets: (
     input: EnrichmentSourceResolveInput
   ) => Promise<ResolveTargetsResult>

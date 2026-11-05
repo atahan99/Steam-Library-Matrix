@@ -9,7 +9,6 @@ import { runProtonDbBatch } from "@/lib/jobs/steps/protondb-step"
 export const protondbSource: EnrichmentSource = {
   kind: "protondb",
   label: "ProtonDB",
-  priority: 4,
   resolveTargets: async ({ steamid, payload, force, missingOnly }) => {
     const appids = await resolveAppidsForSource("protondb", {
       steamid,

@@ -311,7 +311,9 @@ what makes it safe across processes — two workers can't grab the same row. A t
 **at most one job per kind**, so a 5,000-game ProtonDB job can't starve `app_details` —
 every kind gets a turn each tick.
 
-**Stepping — cursor + budget + concurrency** (`src/lib/jobs/run-step.ts`). A step doesn't
+**Stepping — cursor + budget + concurrency** (`src/lib/jobs/run-step.ts`; per-appid kinds
+`app_details`, `protondb`, `achievements`, `hltb` share one loop in
+`src/lib/enrichment/sources/run-registered-step.ts`). A step doesn't
 process a whole library; it processes a **slice**: from `cursor`, take `BATCH` items, and
 run them through `runConcurrentBatch` (`src/lib/jobs/run-concurrent-batch.ts`) — N
 concurrent workers, each checking the wall-clock deadline before starting another, with an
