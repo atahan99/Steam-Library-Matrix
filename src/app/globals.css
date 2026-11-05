@@ -234,10 +234,9 @@ html.dark[data-theme="cyberpunk"] {
     position: relative;
     isolation: isolate;
     background-color: var(--background);
-    background-image:
-      linear-gradient(var(--grid-line) 1px, transparent 1px),
-      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
-    background-size: 40px 40px;
+    /* Library shelves: faint game-case spines on shelf rules (echoes the logo). */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='112'%3E%3Crect y='104' width='480' height='1' fill='%23fff' fill-opacity='.06'/%3E%3Crect x='4' y='49' width='10' height='55' rx='1.5' fill='%23fff' fill-opacity='.028'/%3E%3Crect x='16' y='54' width='9' height='50' rx='1.5' fill='%23fff' fill-opacity='.028'/%3E%3Crect x='27' y='35' width='8' height='69' rx='1.5' fill='%23fff' fill-opacity='.028'/%3E%3Crect x='37' y='61' width='10' height='43' rx='1.5' fill='%23fff' fill-opacity='.028'/%3E%3Crect x='49' y='71' width='12' height='33' rx='1.5' fill='%23fff' fill-opacity='.028'/%3E%3Crect x='63' y='44' width='9' height='60' rx='1.5' fill='%237dd3fc' fill-opacity='.09'/%3E%3Crect x='74' y='53' width='11' height='51' rx='1.5' fill='%23fff' fill-opacity='.028'/%3E%3Crect x='87' y='33' width='7' height='71' rx='1.5' fill='%23fff' fill-opacity='.028'/%3E%3Crect x='110' y='54' width='8' height='50' rx='1.5' fill='%23fff' fill-opacity='.028'/%3E%3Crect x='134' y='56' width='8' height='48' rx='1.5' fill='%23fff' fill-opacity='.028'/%3E%3Crect x='144' y='62' width='12' height='42' rx='1.5' fill='%23fff' fill-opacity='.028'/%3E%3Crect x='158' y='54' width='14' height='50' rx='1.5' fill='%23fff' fill-opacity='.028'/%3E%3Crect x='174' y='59' width='11' height='45' rx='1.5' fill='%23fff' fill-opacity='.028'/%3E%3Crect x='187' y='59' width='12' height='45' rx='1.5' fill='%23fff' fill-opacity='.028'/%3E%3Crect x='201' y='33' width='8' height='71' rx='1.5' fill='%23fff' fill-opacity='.028'/%3E%3Crect x='211' y='53' width='13' height='51' rx='1.5' fill='%23fff' fill-opacity='.028'/%3E%3Crect x='226' y='56' width='11' height='48' rx='1.5' fill='%23fff' fill-opacity='.028'/%3E%3Crect x='239' y='68' width='12' height='36' rx='1.5' fill='%23c4b5fd' fill-opacity='.09'/%3E%3Crect x='253' y='70' width='10' height='34' rx='1.5' fill='%23fff' fill-opacity='.028'/%3E%3Crect x='265' y='44' width='10' height='60' rx='1.5' fill='%23fff' fill-opacity='.028'/%3E%3Crect x='277' y='60' width='14' height='44' rx='1.5' fill='%23fff' fill-opacity='.028'/%3E%3Crect x='293' y='55' width='10' height='49' rx='1.5' fill='%23fff' fill-opacity='.028'/%3E%3Crect x='319' y='55' width='10' height='49' rx='1.5' fill='%23fff' fill-opacity='.028'/%3E%3Crect x='331' y='41' width='9' height='63' rx='1.5' fill='%23fff' fill-opacity='.028'/%3E%3Crect x='342' y='40' width='9' height='64' rx='1.5' fill='%23fff' fill-opacity='.028'/%3E%3Crect x='367' y='33' width='14' height='71' rx='1.5' fill='%23fff' fill-opacity='.028'/%3E%3Crect x='397' y='46' width='12' height='58' rx='1.5' fill='%23e879f9' fill-opacity='.09'/%3E%3Crect x='411' y='60' width='7' height='44' rx='1.5' fill='%23fff' fill-opacity='.028'/%3E%3Crect x='420' y='57' width='9' height='47' rx='1.5' fill='%23fff' fill-opacity='.028'/%3E%3Crect x='431' y='62' width='12' height='42' rx='1.5' fill='%23fff' fill-opacity='.028'/%3E%3Crect x='459' y='58' width='7' height='46' rx='1.5' fill='%23fff' fill-opacity='.028'/%3E%3C/svg%3E");
+    background-size: 480px 112px;
     background-attachment: fixed;
   }
 
@@ -373,24 +372,52 @@ html.dark[data-theme="cyberpunk"] {
     opacity: 0.35;
   }
 
-  .landing-grid-depth {
-    background-image:
-      linear-gradient(
-        color-mix(in oklch, var(--primary) 10%, transparent) 1px,
-        transparent 1px
-      ),
-      linear-gradient(
-        90deg,
-        color-mix(in oklch, var(--primary) 10%, transparent) 1px,
-        transparent 1px
-      );
-    background-size: 72px 72px;
-    mask-image: radial-gradient(
-      ellipse 75% 65% at 50% 42%,
-      black 15%,
-      transparent 78%
+  /* Landing backdrop: dimmed, purple-tinted wall of real capsule art, faded away from the hero. */
+  .capsule-mosaic {
+    mask-image: radial-gradient(ellipse 90% 80% at 50% 45%, transparent 22%, black 70%);
+    animation: capsule-mosaic-in 1.4s ease-out both;
+  }
+
+  .capsule-mosaic::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: color-mix(in oklch, var(--background) 35%, transparent);
+    background-image: linear-gradient(
+      160deg,
+      color-mix(in oklch, var(--primary) 14%, transparent),
+      transparent 60%
     );
-    opacity: 0.45;
+  }
+
+  .capsule-mosaic__grid {
+    position: absolute;
+    inset: -12%;
+    display: grid;
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    gap: 10px;
+    transform: rotate(-8deg);
+    opacity: 0.5;
+  }
+
+  .capsule-mosaic__grid img {
+    width: 100%;
+    aspect-ratio: 231 / 87;
+    object-fit: cover;
+    border-radius: 6px;
+    filter: saturate(0.7) brightness(0.8);
+  }
+
+  @keyframes capsule-mosaic-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .capsule-mosaic {
+      animation: none;
+    }
   }
 
   .glass-panel {
