@@ -26,6 +26,8 @@ Docker files: [`docker/`](../docker/) (`Dockerfile`, `compose.yml`, `entrypoint.
 
 4. Import a public Steam profile at http://localhost:3001.
 
+The port is published on `127.0.0.1` only. To reach it from other LAN devices, change the mapping in [`docker/compose.yml`](../docker/compose.yml) to `"3001:3000"` or put a reverse proxy in front.
+
 [`docker/compose.yml`](../docker/compose.yml) stores the live DB in the named volume `matrix_db` at `/app/data/db`. Configure secrets in `docker/.env` only for a self-contained deploy. Compose also loads repo-root `.env` if present (root wins on duplicate keys) — avoid a blank `STEAM_API_KEY=` in `docker/.env` if the key lives in root. Worker env: [env.md § Background jobs](./env.md#background-jobs).
 
 Check readiness: `curl -s http://localhost:3001/api/health` — `steamApiKey` should be `"ok"` before importing.
