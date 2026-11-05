@@ -1,5 +1,6 @@
-import { afterEach, describe, expect, it, vi } from "vitest"
-import { checkRateLimit } from "@/lib/api/rate-limit"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
+
+let checkRateLimit: typeof import("@/lib/api/rate-limit").checkRateLimit
 
 const requestForIp = (ip: string): Request =>
   new Request("http://localhost/api/test", {
@@ -7,11 +8,18 @@ const requestForIp = (ip: string): Request =>
   })
 
 describe("checkRateLimit", () => {
+  beforeEach(async () => {
+    // fresh module = empty in-memory windows per test
+    vi.resetModules()
+    ;({ checkRateLimit } = await import("@/lib/api/rate-limit"))
+  })
+
   afterEach(() => {
+    vi.useRealTimers()
     vi.unstubAllEnvs()
   })
 
-  it("drops window keys after the rate window expires", () => {
+  it("frees the window after the rate window expires", () => {
     vi.useFakeTimers()
     vi.stubEnv("SLM_RATE_LIMIT_PER_MIN", "2")
 
@@ -23,6 +31,15 @@ describe("checkRateLimit", () => {
     vi.advanceTimersByTime(60_001)
 
     expect(checkRateLimit(request)).toBeNull()
-    vi.useRealTimers()
+  })
+
+  it("ignores spoofed X-Forwarded-For (one bucket per tier)", () => {
+    vi.useFakeTimers()
+    vi.stubEnv("SLM_RATE_LIMIT_PER_MIN", "2")
+
+    expect(checkRateLimit(requestForIp("198.51.100.1"))).toBeNull()
+    expect(checkRateLimit(requestForIp("198.51.100.2"))).toBeNull()
+    expect(checkRateLimit(requestForIp("198.51.100.3"))?.status).toBe(429)
+    expect(checkRateLimit(requestForIp("198.51.100.4"), "expensive")).toBeNull()
   })
 })

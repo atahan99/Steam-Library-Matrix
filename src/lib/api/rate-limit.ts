@@ -7,22 +7,11 @@ type WindowEntry = {
   timestamps: number[]
 }
 
-const windows = new Map<string, WindowEntry>()
+const windows = new Map<RateLimitTier, WindowEntry>()
 
 const DEFAULT_LIMIT = 60
 const EXPENSIVE_LIMIT = 10
 const WINDOW_MS = 60_000
-
-export const getClientIp = (request: Request): string => {
-  const forwarded = request.headers.get("x-forwarded-for")
-  if (forwarded) {
-    const first = forwarded.split(",")[0]?.trim()
-    if (first) return first
-  }
-  const realIp = request.headers.get("x-real-ip")?.trim()
-  if (realIp) return realIp
-  return "unknown"
-}
 
 const getLimitForTier = (tier: RateLimitTier): number => {
   const envLimit = getRuntimeEnv("SLM_RATE_LIMIT_PER_MIN")
@@ -39,24 +28,15 @@ const pruneWindow = (entry: WindowEntry, now: number): void => {
 }
 
 export const checkRateLimit = (
-  request: Request,
+  _request: Request,
   tier: RateLimitTier = "default"
 ): NextResponse | null => {
-  const ip = getClientIp(request)
-  const key = `${tier}:${ip}`
   const limit = getLimitForTier(tier)
   const now = Date.now()
 
-  let entry = windows.get(key)
-  if (!entry) {
-    entry = { timestamps: [] }
-    windows.set(key, entry)
-  }
-
+  // single-user app: one global bucket per tier (X-Forwarded-For is client-spoofable)
+  const entry = windows.get(tier) ?? { timestamps: [] }
   pruneWindow(entry, now)
-  if (entry.timestamps.length === 0) {
-    windows.delete(key)
-  }
 
   if (entry.timestamps.length >= limit) {
     const retryAfterSec = Math.ceil(
@@ -74,6 +54,6 @@ export const checkRateLimit = (
   }
 
   entry.timestamps.push(now)
-  windows.set(key, entry)
+  windows.set(tier, entry)
   return null
 }

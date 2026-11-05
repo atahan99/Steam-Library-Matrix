@@ -8,7 +8,7 @@ export const POST = async (
   _request: Request,
   context: { params: Promise<{ steamid: string }> }
 ) =>
-  runApiRoute(_request, { tier: "default" }, async () => {
+  runApiRoute(_request, { tier: "expensive" }, async () => {
     const { steamid: raw } = await context.params
     const parsed = parseSteamId(raw)
     if (!parsed.ok) return parsed.response
