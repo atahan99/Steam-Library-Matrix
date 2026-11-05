@@ -70,6 +70,13 @@ export const register = async () => {
   )
   const intervalMs = getEmbedWorkerIntervalMs()
 
+  try {
+    const { prepareWorkerOnBoot } = await import("@/lib/jobs/worker")
+    await prepareWorkerOnBoot()
+  } catch (error) {
+    console.error("[instrumentation] worker boot cleanup failed", error)
+  }
+
   scheduleEnrichmentWorkerTick()
   setInterval(() => scheduleEnrichmentWorkerTick(), intervalMs)
   console.log(

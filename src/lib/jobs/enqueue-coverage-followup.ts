@@ -10,6 +10,8 @@ const BATCHED_PROFILE_KINDS: EnrichmentJobKind[] = [
   "anticheat",
 ]
 
+const MAX_FOLLOW_UP_ROUNDS = 3
+
 export const enqueueCoverageFollowUpIfNeeded = async (input: {
   steamid: string
   kind: EnrichmentJobKind
@@ -29,6 +31,10 @@ export const enqueueCoverageFollowUpIfNeeded = async (input: {
 
   if (!BATCHED_PROFILE_KINDS.includes(input.kind)) return
 
+  const followUpRound = (input.payload.followUpRound ?? 0) + 1
+  // Cap retries so permanently failing appids do not requeue forever.
+  if (followUpRound > MAX_FOLLOW_UP_ROUNDS) return
+
   const failed = input.progress.failed ?? 0
   const scopeAppids = input.payload.scopeAppids
 
@@ -40,6 +46,7 @@ export const enqueueCoverageFollowUpIfNeeded = async (input: {
         missingOnly: true,
         force: false,
         scopeAppids,
+        followUpRound,
       },
     })
     if (enqueued.status === "created") {
@@ -66,6 +73,7 @@ export const enqueueCoverageFollowUpIfNeeded = async (input: {
           missingOnly: true,
           force: false,
           scopeAppids,
+          followUpRound,
         },
       })
       if (enqueued.status === "created") {
