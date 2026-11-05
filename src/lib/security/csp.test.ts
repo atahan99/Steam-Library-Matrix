@@ -9,6 +9,8 @@ describe("buildContentSecurityPolicy", () => {
     expect(csp).not.toContain("unsafe-eval")
     expect(csp).toContain("style-src 'self' 'nonce-abc123'")
     expect(csp).toContain("style-src-attr 'unsafe-inline'")
+    // plain-HTTP LAN access must not have assets upgraded to https
+    expect(csp).not.toContain("upgrade-insecure-requests")
   })
 
   it("allows unsafe-eval and unsafe-inline styles in development", () => {

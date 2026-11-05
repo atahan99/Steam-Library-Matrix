@@ -38,7 +38,6 @@ export const buildContentSecurityPolicy = (
     "img-src 'self' https: data: blob:",
     "font-src 'self' https: data:",
     "connect-src 'self' https:",
-    ...(isDev ? [] : ["upgrade-insecure-requests"]),
   ]
 
   return directives.join("; ")
