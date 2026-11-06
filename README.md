@@ -4,6 +4,8 @@ Import a public Steam profile and get one dashboard for the whole library: Linux
 
 It runs on your own machine as one Next.js process with one SQLite file. [docs/architecture.md](docs/architecture.md) covers the internals.
 
+![Demo: landing page, then the Overview, Library, Backlog, ProtonDB and HowLongToBeat pages of an imported library](docs/images/demo.gif)
+
 ## Screenshots
 
 | Landing | Overview |
