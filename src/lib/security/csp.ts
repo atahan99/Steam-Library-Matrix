@@ -7,6 +7,15 @@ export const CSP_NONCE_HEADER = "x-nonce"
 export const createCspNonce = (): string =>
   Buffer.from(crypto.randomUUID()).toString("base64")
 
+/**
+ * Sonner injects its CSS via a nonce-less <style> at import (empty tag, then the CSS text).
+ * Allow exactly those two hashes; csp.test.ts recomputes them from the installed sonner.
+ */
+export const SONNER_STYLE_HASHES = [
+  "sha256-47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=",
+  "sha256-CIxDM5jnsGiKqXs2v7NKCY5MzdR9gu6TtiMJrDw29AY=",
+]
+
 export const buildContentSecurityPolicy = (
   nonce: string,
   options?: { isDev?: boolean }
@@ -23,7 +32,7 @@ export const buildContentSecurityPolicy = (
   // Production: nonce on <style> tags; allow style="" from React (orbit, charts, neon card).
   const styleSrc = isDev
     ? "'self' 'unsafe-inline'"
-    : `'self' 'nonce-${nonce}'`
+    : [`'self'`, `'nonce-${nonce}'`, ...SONNER_STYLE_HASHES.map((h) => `'${h}'`)].join(" ")
   const styleSrcAttr = isDev ? null : "'unsafe-inline'"
 
   const directives = [
@@ -38,7 +47,6 @@ export const buildContentSecurityPolicy = (
     "img-src 'self' https: data: blob:",
     "font-src 'self' https: data:",
     "connect-src 'self' https:",
-    ...(isDev ? [] : ["upgrade-insecure-requests"]),
   ]
 
   return directives.join("; ")

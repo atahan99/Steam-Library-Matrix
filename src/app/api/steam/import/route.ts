@@ -9,7 +9,7 @@ import { privateLibraryErrorResponse, zodErrorResponse } from "@/lib/api/guard"
 import { runApiRoute } from "@/lib/api/with-api-route"
 
 export const POST = async (request: Request) =>
-  runApiRoute(request, { tier: "default" }, async () => {
+  runApiRoute(request, { tier: "expensive" }, async () => {
     const body = await request.json()
     const parsed = steamImportBodySchema.safeParse(body)
     if (!parsed.success) {

@@ -55,7 +55,7 @@ export const POST = async (
   request: Request,
   context: { params: Promise<{ steamid: string }> }
 ) =>
-  runApiRoute(request, { tier: "default" }, async () => {
+  runApiRoute(request, { tier: "expensive" }, async () => {
     const dbGuard = await requireDbConfigured()
     if (dbGuard) return dbGuard
 

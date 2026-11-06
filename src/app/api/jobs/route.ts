@@ -12,7 +12,6 @@ const bodySchema = z.object({
   kind: z.enum(ENRICHMENT_JOB_KINDS),
   force: z.boolean().optional(),
   missingOnly: z.boolean().optional(),
-  countryCode: z.string().optional(),
 })
 
 export const POST = async (request: Request) =>
@@ -32,7 +31,6 @@ export const POST = async (request: Request) =>
       payload: {
         force: parsed.data.force,
         missingOnly: parsed.data.missingOnly,
-        countryCode: parsed.data.countryCode,
       },
     })
 

@@ -8,8 +8,11 @@ import { getErrorMessage } from "@/lib/utils/get-error-message"
 import { toApiErrorResponse } from "@/lib/api/api-error"
 
 export const secretsEqual = (a: string, b: string): boolean => {
-  if (a.length !== b.length) return false
-  return timingSafeEqual(Buffer.from(a), Buffer.from(b))
+  const bufA = Buffer.from(a)
+  const bufB = Buffer.from(b)
+  // byte length, not char length: timingSafeEqual throws on mismatched buffers
+  if (bufA.length !== bufB.length) return false
+  return timingSafeEqual(bufA, bufB)
 }
 
 const verifyBearerSecret = (

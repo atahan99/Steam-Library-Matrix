@@ -11,8 +11,15 @@ services:
     env_file:
       - .env
       - ../.env
+    # Loopback only by default; use "3001:3000" or a reverse proxy to expose on your LAN
     ports:
-      - "3001:3000"
+      - "127.0.0.1:3001:3000"
+    # Entrypoint runs as root: CHOWN/FOWNER for chown/chmod of the DB dir, DAC_OVERRIDE to write
+    # nextjs-owned files and /app/.env*, SETUID/SETGID for su-exec to drop to nextjs
+    cap_drop: [ALL]
+    cap_add: [CHOWN, DAC_OVERRIDE, FOWNER, SETUID, SETGID]
+    # su-exec only drops privileges, so no-new-privileges does not block it
+    security_opt: ["no-new-privileges:true"]
     environment:
       APP_ROOT: /app
       DATABASE_URL: file:/app/data/db/matrix.db

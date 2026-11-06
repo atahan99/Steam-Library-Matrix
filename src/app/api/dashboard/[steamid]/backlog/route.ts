@@ -76,6 +76,9 @@ export const PATCH = async (request: Request, context: RouteContext) =>
           ? body.note
           : undefined
 
+    if (typeof note === "string" && note.length > 2000) {
+      return badRequest("Note is too long (max 2000 characters)")
+    }
     if (status === undefined && note === undefined) {
       return badRequest("Nothing to update")
     }

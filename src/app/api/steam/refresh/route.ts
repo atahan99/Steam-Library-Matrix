@@ -24,7 +24,7 @@ const finishLibraryImport = async (steamid: string) => {
 }
 
 export const POST = async (request: Request) =>
-  runApiRoute(request, { tier: "default" }, async () => {
+  runApiRoute(request, { tier: "expensive" }, async () => {
     const url = new URL(request.url)
     const force = url.searchParams.get("force") === "true"
     const body = await request.json()
