@@ -15,9 +15,10 @@ const macCompatGame = game({
   appid: 1,
   name: "Mac Game",
   macosCompat: {
-    native: "playable",
+    native: "perfect",
     rosetta2: "unknown",
     crossover: "unknown",
+    parallels: "unknown",
     lastCheckedAt: "2026-01-01T00:00:00.000Z",
   },
   steamDetails: {
@@ -52,9 +53,10 @@ describe("filterMacTableGames", () => {
       appid: 5,
       name: "Mac RPG",
       macosCompat: {
-        native: "playable",
+        native: "perfect",
         rosetta2: "unknown",
         crossover: "unknown",
+        parallels: "unknown",
         lastCheckedAt: "2026-01-01T00:00:00.000Z",
       },
       steamDetails: {

@@ -161,7 +161,15 @@ describe("filterAntiCheatTableGames", () => {
       antiCheat: {
         denuvoAntiTamper: true,
         denuvoConfidence: "high",
-        denuvoDisplay: { kind: "detected" as const, label: "Denuvo detected" },
+        denuvoDisplay: {
+          kind: "detected" as const,
+          label: "Denuvo detected",
+          confidence: "high",
+          source: null,
+          checkedAt: null,
+          tooltip: "",
+          variant: "destructive" as const,
+        },
         lastCheckedAt: "2026-01-01T00:00:00.000Z",
       },
     })
@@ -196,7 +204,15 @@ describe("getDisplayAntiCheatSoftwareNames", () => {
         antiCheat: {
           denuvoAntiTamper: true,
           denuvoConfidence: "high",
-          denuvoDisplay: { kind: "detected" as const, label: "Denuvo detected" },
+          denuvoDisplay: {
+          kind: "detected" as const,
+          label: "Denuvo detected",
+          confidence: "high",
+          source: null,
+          checkedAt: null,
+          tooltip: "",
+          variant: "destructive" as const,
+        },
           lastCheckedAt: "2026-01-01T00:00:00.000Z",
         },
       })

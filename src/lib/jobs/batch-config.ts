@@ -71,10 +71,6 @@ export const getDevCronMs = (): number => readEnvInt("SLM_DEV_CRON_MS", 5_000)
 export const getEmbedWorkerIntervalMs = (): number =>
   readEnvInt("SLM_EMBED_WORKER_MS", 60_000)
 
-/** Optional delay before deferred HLTB enqueue (0 = immediate with import tier). */
-export const getHltbFullSyncDelayMs = (): number =>
-  readEnvInt("SLM_HLTB_SYNC_DELAY_MS", 0)
-
 /** Denuvo store-page batch size per anticheat denuvo phase step. */
 export const getDenuvoStoreBatch = (): number =>
   readEnvInt("SLM_DENUVO_STORE_BATCH", 8)

@@ -29,7 +29,7 @@
 - **Mac & VR** — Apple Silicon (native), Rosetta 2, and CrossOver compatibility from AppleGamingWiki plus native macOS support; VR support / VR-only
 - **Compare** — line up multiple profiles (intersection of libraries)
 - **Backlog** — pile-of-shame stats, curated picks (quick wins, almost-there, gathering dust), a hand-picked queue with a monthly goal, and a random picker
-- **Pluggable enrichment registry** — ProtonDB and HowLongToBeat run behind a shared `EnrichmentSource` contract ([docs/scraping.md](docs/scraping.md)); other sources still use legacy job steps
+- **Enrichment source registry** — app details, ProtonDB, achievements and HowLongToBeat run behind a shared `EnrichmentSource` contract ([docs/scraping.md](docs/scraping.md)); wishlist, catalog sync and two-phase anti-cheat keep bespoke steps
 - **Global search** (⌘K / Ctrl+K), theme selector, and an About page with data sources & attribution
 
 Enrichment fills in over time via a background worker; **Data Status** shows per-source progress and health.

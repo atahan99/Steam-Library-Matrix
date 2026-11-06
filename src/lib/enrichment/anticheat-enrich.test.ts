@@ -29,7 +29,7 @@ const mockedGetDb = vi.mocked(getDb)
 const context = {
   indexes: {
     awacy: { bySteamAppId: new Map(), byName: new Map(), entries: [] },
-    levvvel: { byName: new Map(), rows: [] },
+    levvvel: { byName: new Map(), rows: [], complete: true },
   },
   denuvoCatalogAppids: new Set<number>(),
   denuvoCatalogComplete: true,

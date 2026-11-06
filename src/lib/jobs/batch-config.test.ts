@@ -11,7 +11,6 @@ import {
   getAppDetailsConcurrency,
   getEmbedWorkerIntervalMs,
   getHltbBatch,
-  getHltbFullSyncDelayMs,
   getHltbStaggerMs,
   getProtonDbBatch,
   getWorkerMaxJobsPerTick,
@@ -45,9 +44,6 @@ describe("batch-config", () => {
     expect(getWorkerStepBudgetMs()).toBe(50_000)
   })
 
-  it("getHltbFullSyncDelayMs defaults to 0", () => {
-    expect(getHltbFullSyncDelayMs()).toBe(0)
-  })
 
   it("getHltbStaggerMs defaults to 300", () => {
     expect(getHltbStaggerMs()).toBe(300)

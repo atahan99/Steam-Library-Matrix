@@ -79,7 +79,7 @@ describe("syncProfileWishlist", () => {
   it("persists wishlist links and steam_games for new appids", async () => {
     await syncProfileWishlist(
       STEAMID,
-      [{ appid: UNRELEASED_APPID, name: "Half-Life 3", addedAt: null }],
+      [{ appid: UNRELEASED_APPID, name: "Half-Life 3" }],
       [{ appid: UNRELEASED_APPID, name: "Half-Life 3" }]
     )
 
@@ -108,7 +108,7 @@ describe("syncProfileWishlist", () => {
     await syncProfileWishlist(STEAMID, [
       { appid: 570, name: "Dota 2", addedAt: 100 },
       { appid: 570, name: "Duplicate", addedAt: 200 },
-      { appid: 730, name: "Counter-Strike 2", addedAt: null },
+      { appid: 730, name: "Counter-Strike 2" },
     ])
 
     const wishlistRows = await db
@@ -129,7 +129,7 @@ describe("syncProfileWishlist", () => {
 
     await syncProfileWishlist(
       STEAMID,
-      [{ appid: UNRELEASED_APPID, name: "Half-Life 3", addedAt: null }],
+      [{ appid: UNRELEASED_APPID, name: "Half-Life 3" }],
       [{ appid: UNRELEASED_APPID, name: "Half-Life 3" }]
     )
 

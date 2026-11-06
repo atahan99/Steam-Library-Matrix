@@ -87,7 +87,7 @@ Refresh top sellers: `pnpm seed:fetch-top-appids`. Regenerate (includes live Pro
 
 ### GetItems spike (future bulk appdetails)
 
-Investigation script: `pnpm tsx --env-file=.env scripts/spike-store-getitems.ts` → [`docs/getitems-spike-report.md`](./getitems-spike-report.md).
+A June 2026 spike found the plain `STEAM_API_KEY` gets HTTP 405 on `IStoreBrowseService/GetItems/v1/`; it likely needs a store session `access_token`.
 
 `IStoreBrowseService/GetItems` on `api.steampowered.com` is batchable and keyed — a possible replacement for per-app storefront `appdetails` during seed generation. **Not migrated yet.** Deck compatibility and Denuvo store-page HTML have **no** keyed equivalent and must stay on the throttled storefront path.
 
@@ -142,7 +142,7 @@ Compare shows games in **every** selected profile (intersection). Columns read S
 
 ## Add a source (EnrichmentSource registry)
 
-Per-appid batch sources (ProtonDB, HowLongToBeat today) register under [`src/lib/enrichment/sources/`](../src/lib/enrichment/sources/). Wishlist, catalog sync, and multi-phase anti-cheat stay on the legacy switch in [`run-step.ts`](../src/lib/jobs/run-step.ts).
+Per-appid batch sources (app details, ProtonDB, achievements, HowLongToBeat) register under [`src/lib/enrichment/sources/`](../src/lib/enrichment/sources/) and share one cursor/deadline/progress loop. Three kinds stay on the switch in [`run-step.ts`](../src/lib/jobs/run-step.ts) because they don't fit that loop: `wishlist` and `anticheat_catalog` / `denuvo_catalog` are one-shot syncs with no appid list, and `anticheat` runs two phases (catalog, then a re-sorted Denuvo pass) with a catalog readiness gate and schema-error exit.
 
 Checklist for a new registered source:
 
@@ -155,7 +155,7 @@ Checklist for a new registered source:
 7. **Data Status** — coverage row in sync-status builders when the UI should show progress.
 8. **Optional UI** — dashboard column/page only if users need to browse the data (not required for the registry itself).
 
-`runEnrichmentJobStep` dispatches registered kinds via `getSource` → `runRegisteredSourceStep`; unregistered kinds keep using the legacy switch.
+`runEnrichmentJobStep` dispatches registered kinds via `getSource` → `runRegisteredSourceStep`; the four bespoke kinds above use the switch.
 
 ## Scripts
 

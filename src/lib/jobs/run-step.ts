@@ -15,18 +15,8 @@ import {
   runRegisteredSourceStep,
 } from "@/lib/enrichment/sources"
 import { enrichLog } from "@/lib/jobs/enrich-logger"
-import { runAchievementsBatch } from "@/lib/jobs/steps/achievements-step"
 import { runAnticheatBatch } from "@/lib/jobs/steps/anticheat-step"
-import { runAppDetailsBatch } from "@/lib/jobs/steps/app-details-step"
-import {
-  getAppDetailsBatch,
-  getAppDetailsConcurrency,
-  getAnticheatBatch,
-  getAchievementsBatch,
-  getAchievementsConcurrency,
-  getDenuvoStoreBatch,
-} from "@/lib/jobs/batch-config"
-import { resolveAppDetailsAppids } from "@/lib/jobs/steps/resolve-appids"
+import { getAnticheatBatch, getDenuvoStoreBatch } from "@/lib/jobs/batch-config"
 import type { JobPayload, JobProgress } from "@/lib/jobs/types"
 import { syncSteamWishlist } from "@/lib/steam/sync-wishlist"
 import type { EnrichmentJobKind } from "@/lib/jobs/types"
@@ -133,57 +123,6 @@ export const runEnrichmentJobStep = async (input: {
               "Denuvo catalog sync incomplete",
         },
         error: denuvoDone ? undefined : denuvoResult.denuvoAntiTamperError,
-      }
-    }
-    case "achievements": {
-      let appids = input.payload.appids
-      if (!appids?.length) {
-        appids = await resolveAppidsForSource(
-          "achievements",
-          resolveOptions(input.steamid, scopedPayload, force, missingOnly)
-        )
-      }
-      const cursor = input.payload.cursor ?? 0
-      const total = appids.length
-      if (total === 0) {
-        return {
-          done: true,
-          payload: { ...input.payload, appids, cursor: 0, stats },
-          progress: { ...stats, total: 0, message: "Nothing to refresh" },
-        }
-      }
-
-      const batch = await runAchievementsBatch(
-        input.steamid,
-        appids,
-        cursor,
-        getAchievementsBatch(),
-        input.deadlineMs,
-        force,
-        getAchievementsConcurrency()
-      )
-      const nextCursor = cursor + batch.processed
-      const nextStats = mergeProgress({
-        checked: batch.checked,
-        updated: batch.updated,
-        failed: batch.failed,
-        total,
-      })
-      const done = nextCursor >= total
-      return {
-        done,
-        payload: {
-          ...input.payload,
-          appids,
-          cursor: nextCursor,
-          stats: nextStats,
-        },
-        progress: {
-          ...nextStats,
-          message: done
-            ? "Achievements refresh completed"
-            : `Achievements ${nextCursor}/${total}`,
-        },
       }
     }
     case "anticheat": {
@@ -330,58 +269,6 @@ export const runEnrichmentJobStep = async (input: {
           message: done
             ? "Anti-cheat refresh completed"
             : `Anti-cheat ${phase} ${nextCursor}/${total}`,
-        },
-      }
-    }
-    case "app_details": {
-      let appids = input.payload.appids
-      if (!appids?.length) {
-        appids = await resolveAppDetailsAppids(
-          input.steamid,
-          force,
-          input.payload.scopeAppids
-        )
-      }
-      const cursor = input.payload.cursor ?? 0
-      const total = appids.length
-      if (total === 0) {
-        return {
-          done: true,
-          payload: { ...input.payload, appids, cursor: 0, stats },
-          progress: { ...stats, total: 0, message: "Nothing to refresh" },
-        }
-      }
-
-      const batch = await runAppDetailsBatch(
-        input.steamid,
-        appids,
-        cursor,
-        getAppDetailsBatch(),
-        input.deadlineMs,
-        force,
-        getAppDetailsConcurrency()
-      )
-      const nextCursor = cursor + batch.processed
-      const nextStats = mergeProgress({
-        checked: batch.checked,
-        updated: batch.updated,
-        failed: batch.failed,
-        total,
-      })
-      const done = nextCursor >= total
-      return {
-        done,
-        payload: {
-          ...input.payload,
-          appids,
-          cursor: nextCursor,
-          stats: nextStats,
-        },
-        progress: {
-          ...nextStats,
-          message: done
-            ? "App details refresh completed"
-            : `App details ${nextCursor}/${total}`,
         },
       }
     }
