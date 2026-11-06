@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { formatOwnersRange, steamReviewScore } from "@/lib/utils/steam-review-score"
+import { formatOwnersRange, libraryReviewAverage, steamReviewScore } from "@/lib/utils/steam-review-score"
 
 describe("steamReviewScore", () => {
   it.each([
@@ -33,5 +33,19 @@ describe("formatOwnersRange", () => {
     expect(formatOwnersRange(undefined)).toBeNull()
     expect(formatOwnersRange("0 .. 0")).toBeNull()
     expect(formatOwnersRange("unknown")).toBeNull()
+  })
+})
+
+describe("libraryReviewAverage", () => {
+  it("averages each rated game once, ignoring unrated ones", () => {
+    expect(
+      libraryReviewAverage([
+        { steamspy: { positive: 9_000_000, negative: 1_000_000 } }, // 90%, huge
+        { steamspy: { positive: 70, negative: 30 } }, // 70%
+        { steamspy: { positive: 3, negative: 1 } }, // under 10 reviews: unrated
+        {},
+      ])
+    ).toEqual({ percent: 80, rated: 2 })
+    expect(libraryReviewAverage([{}])).toBeNull()
   })
 })

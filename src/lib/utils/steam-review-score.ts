@@ -46,3 +46,21 @@ export const formatOwnersRange = (owners: string | undefined): string | null => 
   if (high === 0) return null
   return `${compact.format(low)} – ${compact.format(high)}`
 }
+
+/**
+ * Average positive % across games with a Steam review summary. Unweighted, so each game
+ * counts once and a few hugely reviewed games don't dominate the library's score.
+ */
+export const libraryReviewAverage = (
+  games: { steamspy?: { positive?: number; negative?: number } }[]
+): { percent: number; rated: number } | null => {
+  let sum = 0
+  let rated = 0
+  for (const game of games) {
+    const score = steamReviewScore(game.steamspy?.positive, game.steamspy?.negative)
+    if (!score) continue
+    sum += score.percent
+    rated += 1
+  }
+  return rated > 0 ? { percent: Math.round(sum / rated), rated } : null
+}
