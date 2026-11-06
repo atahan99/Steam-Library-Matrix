@@ -2,6 +2,7 @@ import {
   getReleaseTimestamp,
   isCompletedForRandomPicker,
 } from "@/lib/dashboard/random-game-picker"
+import { steamReviewScore } from "@/lib/utils/steam-review-score"
 import type { DashboardGame } from "@/types/dashboard"
 
 /** A game with zero lifetime playtime — the core of the backlog. */
@@ -120,3 +121,25 @@ export const getOldestUnplayed = (
     .filter((game) => isNeverPlayed(game) && !isCompletedForRandomPicker(game))
     .sort((a, b) => getReleaseTimestamp(a) - getReleaseTimestamp(b))
     .slice(0, limit)
+
+/** Hidden gems need enough reviews that the score means something. */
+const HIDDEN_GEM_MIN_REVIEWS = 200
+const HIDDEN_GEM_MIN_PERCENT = 85
+
+/** Unplayed, not-completed, well-reviewed games: the best of what you already own. */
+export const getHiddenGems = (
+  games: DashboardGame[],
+  limit = 6
+): DashboardGame[] =>
+  games
+    .flatMap((game) => {
+      if (!isNeverPlayed(game) || isCompletedForRandomPicker(game)) return []
+      const score = steamReviewScore(game.steamspy?.positive, game.steamspy?.negative)
+      if (!score || score.total < HIDDEN_GEM_MIN_REVIEWS || score.percent < HIDDEN_GEM_MIN_PERCENT) {
+        return []
+      }
+      return [{ game, score }]
+    })
+    .sort((a, b) => b.score.percent - a.score.percent || b.score.total - a.score.total)
+    .slice(0, limit)
+    .map(({ game }) => game)
