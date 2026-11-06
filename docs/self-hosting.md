@@ -20,14 +20,14 @@ The live database is in the `matrix_db` named volume, so `up --build` keeps your
 
 ## LAN access
 
-Compose publishes the port on `127.0.0.1:3001`, so only the host machine can reach it. To open it to other devices on your network, change the mapping in [`docker/compose.yml`](../docker/compose.yml):
+Compose publishes port 3001 on every interface, so other devices on your network can open `http://<host>:3001`. To keep it on the host machine only, change the mapping in [`docker/compose.yml`](../docker/compose.yml):
 
 ```yaml
 ports:
-  - "3001:3000"
+  - "127.0.0.1:3001:3000"
 ```
 
-Or keep the loopback binding and put a reverse proxy in front. The app has no login ([security.md](./security.md)), so don't expose it beyond your LAN.
+You can also bind to loopback and put a reverse proxy in front. The app has no login ([security.md](./security.md)), so don't expose it beyond your LAN. Docker's port publishing bypasses host firewalls like ufw.
 
 ## Configuration
 

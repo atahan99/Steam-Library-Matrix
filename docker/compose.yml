@@ -12,9 +12,9 @@ services:
       - .env
       - path: ../.env
         required: false
-    # Loopback only by default; use "3001:3000" or a reverse proxy to expose on your LAN
+    # Reachable from your LAN; use "127.0.0.1:3001:3000" to keep it on this machine only
     ports:
-      - "127.0.0.1:3001:3000"
+      - "3001:3000"
     # Entrypoint runs as root: CHOWN/FOWNER for chown/chmod of the DB dir, DAC_OVERRIDE to write
     # nextjs-owned files and /app/.env*, SETUID/SETGID for su-exec to drop to nextjs
     cap_drop: [ALL]
