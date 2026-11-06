@@ -34,7 +34,6 @@ html.dark[data-theme="cyberpunk"] {
   --sidebar-accent-foreground: oklch(0.1649 0.0352 281.8285);
   --sidebar-border: oklch(0.3279 0.0832 280.7890);
   --sidebar-ring: oklch(0.6726 0.2904 341.4084);
-  --grid-line: color-mix(in oklch, oklch(0.6726 0.2904 341.4084) 12%, transparent);
   --neon-glow: color-mix(in oklch, oklch(0.6726 0.2904 341.4084) 35%, transparent);
   --neon-glow-accent: color-mix(in oklch, oklch(0.8903 0.1739 171.2690) 28%, transparent);
 }
@@ -73,7 +72,6 @@ html.dark[data-theme="catppuccin"] {
   --sidebar-accent-foreground: oklch(0.2429 0.0304 283.9110);
   --sidebar-border: oklch(0.4037 0.0320 280.1520);
   --sidebar-ring: oklch(0.7871 0.1187 304.7693);
-  --grid-line: color-mix(in oklch, oklch(0.7871 0.1187 304.7693) 12%, transparent);
   --neon-glow: color-mix(in oklch, oklch(0.7871 0.1187 304.7693) 35%, transparent);
   --neon-glow-accent: color-mix(in oklch, oklch(0.8467 0.0833 210.2545) 28%, transparent);
 }
@@ -112,7 +110,6 @@ html.dark[data-theme="soft-pop"] {
   --sidebar-accent-foreground: oklch(0 0 0);
   --sidebar-border: oklch(1.0000 0 0);
   --sidebar-ring: oklch(0.6801 0.1583 276.9349);
-  --grid-line: color-mix(in oklch, oklch(0.6801 0.1583 276.9349) 12%, transparent);
   --neon-glow: color-mix(in oklch, oklch(0.6801 0.1583 276.9349) 35%, transparent);
   --neon-glow-accent: color-mix(in oklch, oklch(0.8790 0.1534 91.6054) 28%, transparent);
 }
@@ -151,7 +148,6 @@ html.dark[data-theme="caffeine"] {
   --sidebar-accent-foreground: oklch(0.9674 0.0013 286.3752);
   --sidebar-border: oklch(0.2739 0.0055 286.0326);
   --sidebar-ring: oklch(0.8711 0.0055 286.2860);
-  --grid-line: color-mix(in oklch, oklch(0.9247 0.0524 66.1732) 12%, transparent);
   --neon-glow: color-mix(in oklch, oklch(0.9247 0.0524 66.1732) 35%, transparent);
   --neon-glow-accent: color-mix(in oklch, oklch(0.2850 0 0) 28%, transparent);
 }
@@ -190,7 +186,6 @@ html.dark[data-theme="wild-party"] {
   --sidebar-accent-foreground: oklch(0 0 0);
   --sidebar-border: oklch(0.1942 0.0797 297.6503);
   --sidebar-ring: oklch(0.6182 0.2788 321.6143);
-  --grid-line: color-mix(in oklch, oklch(0.6182 0.2788 321.6143) 12%, transparent);
   --neon-glow: color-mix(in oklch, oklch(0.6182 0.2788 321.6143) 35%, transparent);
   --neon-glow-accent: color-mix(in oklch, oklch(0.7786 0.1489 226.0174) 28%, transparent);
 }
@@ -229,7 +224,6 @@ html.dark[data-theme="apotheosis-mint-midnight"] {
   --sidebar-accent-foreground: oklch(0.8871 0.1828 166.5465);
   --sidebar-border: oklch(0.3451 0.2089 279.9220);
   --sidebar-ring: oklch(0.8871 0.1828 166.5465);
-  --grid-line: color-mix(in oklch, oklch(0.5038 0.2937 285.3753) 12%, transparent);
   --neon-glow: color-mix(in oklch, oklch(0.5038 0.2937 285.3753) 35%, transparent);
   --neon-glow-accent: color-mix(in oklch, oklch(0.3451 0.2089 279.9220) 28%, transparent);
 }
@@ -268,7 +262,6 @@ html.dark[data-theme="jarvis"] {
   --sidebar-accent-foreground: oklch(0.1194 0.0134 247.6089);
   --sidebar-border: oklch(0.8622 0.1218 211.1140);
   --sidebar-ring: oklch(0.8622 0.1218 211.1140);
-  --grid-line: color-mix(in oklch, oklch(0.8622 0.1218 211.1140) 12%, transparent);
   --neon-glow: color-mix(in oklch, oklch(0.8622 0.1218 211.1140) 35%, transparent);
   --neon-glow-accent: color-mix(in oklch, oklch(0.7283 0.1643 59.9830) 28%, transparent);
 }
@@ -307,7 +300,6 @@ html.dark[data-theme="terminal"] {
   --sidebar-accent-foreground: oklch(0.8686 0.2776 144.4661);
   --sidebar-border: oklch(0.3053 0.1039 142.4953);
   --sidebar-ring: oklch(0.8686 0.2776 144.4661);
-  --grid-line: color-mix(in oklch, oklch(0.8686 0.2776 144.4661) 12%, transparent);
   --neon-glow: color-mix(in oklch, oklch(0.8686 0.2776 144.4661) 35%, transparent);
   --neon-glow-accent: color-mix(in oklch, oklch(0.8686 0.2776 144.4661) 28%, transparent);
 }
@@ -346,7 +338,6 @@ html.dark[data-theme="son-of-anton"] {
   --sidebar-accent-foreground: oklch(0.9701 0.0041 91.4464);
   --sidebar-border: oklch(0.3186 0.0544 147.4977);
   --sidebar-ring: oklch(0.8449 0.2108 148.3467);
-  --grid-line: color-mix(in oklch, oklch(0.8449 0.2108 148.3467) 12%, transparent);
   --neon-glow: color-mix(in oklch, oklch(0.8449 0.2108 148.3467) 35%, transparent);
   --neon-glow-accent: color-mix(in oklch, oklch(0.3875 0.1266 25.3421) 28%, transparent);
 }

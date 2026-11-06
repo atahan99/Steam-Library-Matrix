@@ -215,7 +215,6 @@ html.dark[data-theme="cyberpunk"] {
   --sidebar-accent-foreground: oklch(0.94 0.02 260);
   --sidebar-border: oklch(0.38 0.09 284);
   --sidebar-ring: oklch(0.72 0.31 341);
-  --grid-line: oklch(0.72 0.2 341 / 0.06);
   --neon-glow: oklch(0.72 0.31 341 / 0.35);
   --neon-glow-accent: oklch(0.82 0.19 195 / 0.28);
 }

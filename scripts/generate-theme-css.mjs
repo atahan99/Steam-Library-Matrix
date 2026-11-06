@@ -138,7 +138,6 @@ const main = async () => {
     blocks.push(`html.dark[data-theme="${theme.id}"] {`)
     blocks.push(emitVars(dark))
     blocks.push(
-      `  --grid-line: color-mix(in oklch, ${primary} 12%, transparent);`,
       `  --neon-glow: color-mix(in oklch, ${primary} 35%, transparent);`,
       `  --neon-glow-accent: color-mix(in oklch, ${accent} 28%, transparent);`,
       "}",
