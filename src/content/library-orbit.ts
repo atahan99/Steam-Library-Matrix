@@ -59,4 +59,10 @@ export const libraryOrbitNodes: LibraryOrbitNode[] = [
     url: "https://www.steamdeck.com/en/verified",
     icon: SOURCE_ICON["steam-deck"],
   },
+  {
+    id: "steamspy",
+    label: "SteamSpy",
+    url: "https://steamspy.com",
+    icon: SOURCE_ICON.steamspy,
+  },
 ]

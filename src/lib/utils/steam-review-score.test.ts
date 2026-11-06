@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { steamReviewScore } from "@/lib/utils/steam-review-score"
+import { formatOwnersRange, steamReviewScore } from "@/lib/utils/steam-review-score"
 
 describe("steamReviewScore", () => {
   it.each([
@@ -19,5 +19,19 @@ describe("steamReviewScore", () => {
   it("shows nothing under 10 reviews or without data", () => {
     expect(steamReviewScore(5, 4)).toBeNull()
     expect(steamReviewScore(undefined, undefined)).toBeNull()
+  })
+})
+
+describe("formatOwnersRange", () => {
+  it("compacts SteamSpy owner ranges", () => {
+    expect(formatOwnersRange("5,000,000 .. 10,000,000")).toBe("5M – 10M")
+    expect(formatOwnersRange("100,000 .. 200,000")).toBe("100K – 200K")
+    expect(formatOwnersRange("0 .. 20,000")).toBe("0 – 20K")
+  })
+
+  it("returns null for missing or empty ranges", () => {
+    expect(formatOwnersRange(undefined)).toBeNull()
+    expect(formatOwnersRange("0 .. 0")).toBeNull()
+    expect(formatOwnersRange("unknown")).toBeNull()
   })
 })

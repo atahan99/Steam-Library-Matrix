@@ -39,6 +39,7 @@ import { formatPlaytime } from "@/lib/utils/format-playtime"
 import { getSteamStoreUrl } from "@/lib/utils/steam-url"
 import type { DashboardGame } from "@/types/dashboard"
 import { ReviewScoreBadge } from "@/components/badges/review-score-badge"
+import { formatOwnersRange } from "@/lib/utils/steam-review-score"
 
 const DetailRow = ({
   label,
@@ -51,12 +52,13 @@ const DetailRow = ({
     <dt className="shrink-0 text-xs font-medium uppercase tracking-wide text-muted-foreground sm:w-32">
       {label}
     </dt>
-    <dd className="text-sm">{children}</dd>
+    <dd className="min-w-0 break-words text-sm">{children}</dd>
   </div>
 )
 
 const GameDetailBody = ({ game, steamid }: { game: DashboardGame; steamid: string }) => {
   const storeHref = game.storeUrl ?? getSteamStoreUrl(game.appid)
+  const owners = formatOwnersRange(game.steamspy?.owners)
   const { closeGameDetail } = useGameDetail()
   const { games, wishlistGames } = useDashboard()
   const tableNavItems = filterTableNavItemsForGame(
@@ -186,17 +188,14 @@ const GameDetailBody = ({ game, steamid }: { game: DashboardGame; steamid: strin
           <ReviewScoreBadge
             positive={game.steamspy?.positive}
             negative={game.steamspy?.negative}
-            showCount
+            stacked
           />
         </DetailRow>
-        {game.steamspy?.owners || game.steamspy?.ccu ? (
-          <DetailRow label="Players">
-            {game.steamspy.owners ? <p>{game.steamspy.owners} owners</p> : null}
-            {game.steamspy.ccu ? (
-              <p className="text-muted-foreground">
-                {game.steamspy.ccu.toLocaleString("en-US")} playing yesterday at peak
-              </p>
-            ) : null}
+        {owners ? <DetailRow label="Owners">{owners}</DetailRow> : null}
+        {game.steamspy?.ccu ? (
+          <DetailRow label="Peak players">
+            {game.steamspy.ccu.toLocaleString("en-US")}
+            <span className="text-muted-foreground"> yesterday</span>
           </DetailRow>
         ) : null}
         {game.steamspy?.tags?.length ? (

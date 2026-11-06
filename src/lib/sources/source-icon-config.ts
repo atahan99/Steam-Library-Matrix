@@ -10,6 +10,7 @@ export type SourceSlug =
   | "awacy"
   | "levvvel"
   | "hltb"
+  | "steamspy"
 
 export const SOURCE_ICON: Record<SourceSlug, SourceIconConfig> = {
   apple: { type: "brand", brand: "apple" },
@@ -21,4 +22,5 @@ export const SOURCE_ICON: Record<SourceSlug, SourceIconConfig> = {
   awacy: { type: "favicon", src: "/icons/sites/awacy.webp" },
   levvvel: { type: "favicon", src: "/icons/sites/levvvel.svg" },
   hltb: { type: "favicon", src: "/icons/sites/hltb.png" },
+  steamspy: { type: "favicon", src: "/icons/sites/steamspy.png" },
 }
