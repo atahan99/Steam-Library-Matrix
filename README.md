@@ -251,6 +251,7 @@ More tuning: [docs/env.md](docs/env.md).
 Not implemented yet — rough order, may change.
 
 - [ ] Richer DLC — parent appid linkage and complete-edition views beyond the library game/DLC filter
+  Limit: Steam's public Web API doesn't expose owned DLC (`GetOwnedGames` lists games only; owned DLC comes from the logged-in store `dynamicstore/userdata` endpoint, and this app deliberately has no Steam login), so linkage would cover Steam's DLC catalog and wishlisted DLC only.
 - [ ] Publish a prebuilt image to GHCR
 
 Intentionally external (not planned in-app): SteamDB calculator (Overview link only) and price/deals data.
