@@ -2,48 +2,15 @@
 
 import { Badge } from "@/components/ui/badge"
 import type { DashboardGame } from "@/types/dashboard"
-import { cn } from "@/lib/utils"
-
-const DENUVO_BADGE_CLASS =
-  "h-auto min-h-5 max-w-[4.75rem] shrink overflow-visible px-1.5 py-0.5 text-center leading-tight !whitespace-normal"
 
 type DenuvoKind = "detected" | "possible" | "unknown" | "confirmed_absent"
 
-const DenuvoBadgeLabel = ({ kind }: { kind: DenuvoKind }) => {
-  switch (kind) {
-    case "detected":
-      return (
-        <>
-          Denuvo
-          <br />
-          detected
-        </>
-      )
-    case "possible":
-      return (
-        <>
-          Possible
-          <br />
-          Denuvo
-        </>
-      )
-    case "confirmed_absent":
-      return (
-        <>
-          No active
-          <br />
-          Denuvo confirmed
-        </>
-      )
-    default:
-      return (
-        <>
-          DRM status
-          <br />
-          unknown
-        </>
-      )
-  }
+// The column header already says "Denuvo / DRM"; the full wording stays in the tooltip.
+const SHORT_LABEL: Record<DenuvoKind, string> = {
+  detected: "Detected",
+  possible: "Possible",
+  confirmed_absent: "None",
+  unknown: "Unknown",
 }
 
 type DenuvoStatusBadgeProps = {
@@ -57,10 +24,9 @@ export const DenuvoStatusBadge = ({ antiCheat }: DenuvoStatusBadgeProps) => {
     return (
       <Badge
         variant="outline"
-        title="Steam does not reliably expose third-party DRM through appdetails."
-        className={DENUVO_BADGE_CLASS}
+        title="DRM status unknown: Steam does not reliably expose third-party DRM through appdetails."
       >
-        <DenuvoBadgeLabel kind="unknown" />
+        {SHORT_LABEL.unknown}
       </Badge>
     )
   }
@@ -68,10 +34,9 @@ export const DenuvoStatusBadge = ({ antiCheat }: DenuvoStatusBadgeProps) => {
   return (
     <Badge
       variant={display.variant}
-      title={display.tooltip}
-      className={cn(DENUVO_BADGE_CLASS)}
+      title={display.tooltip ? `${display.label}: ${display.tooltip}` : display.label}
     >
-      <DenuvoBadgeLabel kind={display.kind} />
+      {SHORT_LABEL[display.kind]}
     </Badge>
   )
 }
