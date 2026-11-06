@@ -217,8 +217,7 @@ export const estimateEtaFromActiveJobs = (
     payload?: { cursor?: number; appids?: number[]; stats?: JobProgress }
   }>
 ): number | null => {
-  let totalRemaining = 0
-  let hasProgress = false
+  let slowestSeconds = 0
 
   for (const job of activeJobs) {
     const stats = job.payload?.stats
@@ -230,12 +229,18 @@ export const estimateEtaFromActiveJobs = (
 
     if (checked == null || total == null || total <= checked) continue
 
-    hasProgress = true
-    totalRemaining += total - checked
+    const secondsPerItem = SECONDS_PER_ITEM[job.kind] ?? DEFAULT_SECONDS_PER_ITEM
+    slowestSeconds = Math.max(slowestSeconds, (total - checked) * secondsPerItem)
   }
 
-  if (!hasProgress || totalRemaining <= 0) return null
-
-  const secondsPerItem = 0.35
-  return totalRemaining * secondsPerItem
+  // Jobs run in parallel, so the slowest one sets the finish time.
+  return slowestSeconds > 0 ? slowestSeconds : null
 }
+
+// shortcut: measured on a live run (Nov 2026); storefront-throttled kinds are far slower
+// than Web API ones. Revisit if the store throttle or batch sizes change.
+const SECONDS_PER_ITEM: Record<string, number> = {
+  app_details: 4,
+  anticheat: 16,
+}
+const DEFAULT_SECONDS_PER_ITEM = 0.35

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest"
 import type { EnrichmentCoverage } from "@/lib/enrichment/coverage-for-appids"
 import {
   computeSyncProgress,
+  estimateEtaFromActiveJobs,
   estimateSecondsRemaining,
   formatEtaSeconds,
   processedCountForSource,
@@ -116,5 +117,19 @@ describe("estimateSecondsRemaining", () => {
         { processedUnits: 10, totalUnits: 100, atMs: 5000 }
       )
     ).toBeNull()
+  })
+})
+
+describe("estimateEtaFromActiveJobs", () => {
+  it("uses the slowest parallel job, with storefront kinds slower per item", () => {
+    const eta = estimateEtaFromActiveJobs([
+      { kind: "protondb", progress: { checked: 0, total: 100 } },
+      { kind: "app_details", progress: { checked: 900, total: 1000 } },
+    ] as never)
+    expect(eta).toBe(400) // 100 app_details items at 4s beat 100 protondb items at 0.35s
+  })
+
+  it("returns null when no job has remaining work", () => {
+    expect(estimateEtaFromActiveJobs([{ kind: "hltb", progress: { checked: 5, total: 5 } }] as never)).toBeNull()
   })
 })

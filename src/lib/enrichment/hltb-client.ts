@@ -2,7 +2,7 @@ import * as cheerio from "cheerio"
 import { fetchWithTimeout } from "@/lib/utils/fetch-with-timeout"
 
 const BASE_URL = "https://howlongtobeat.com/"
-const DEFAULT_SEARCH_API = "api/s"
+const DEFAULT_SEARCH_API = "api/search/site"
 const DETAIL_URL = `${BASE_URL}game?id=`
 const IMAGE_BASE = `${BASE_URL}games/`
 const SESSION_TTL_MS = 5 * 60 * 1000
@@ -12,8 +12,9 @@ const USER_AGENT =
 
 type HltbAuth = {
   token: string
-  hpKey: string
-  hpVal: string
+  // Older HLTB builds also returned a key/value pair that had to be echoed back.
+  hpKey?: string
+  hpVal?: string
 }
 
 type HltbSearchSession = {
@@ -23,6 +24,7 @@ type HltbSearchSession = {
 }
 
 let cachedSession: HltbSearchSession | null = null
+let sessionRefresh: Promise<HltbSearchSession> | null = null
 
 export type HltbSearchHit = {
   gameId: string
@@ -109,14 +111,11 @@ const hltbFetch = async (url: string, init?: RequestInit) => {
   return res
 }
 
-const extractSearchApiPath = (scriptContent: string): string | null => {
-  const pattern =
-    /fetch\s*\(\s*["']\/api\/([a-zA-Z0-9_/]+)[^"']*["']\s*,\s*\{[^}]*method:\s*["']POST["'][^}]*}/i
-  const match = pattern.exec(scriptContent)
-  if (!match?.[1]) return null
-  const suffix = match[1]
-  const base = suffix.includes("/") ? suffix.split("/")[0] : suffix
-  return `api/${base}`
+// The search endpoint is the one whose auth token comes from `<path>/init?t=…`;
+// anchoring on that avoids matching other POST endpoints such as /api/error.
+export const extractSearchApiPath = (scriptContent: string): string | null => {
+  const match = /["'`]\/api\/([A-Za-z0-9_/]+?)\/init\?/.exec(scriptContent)
+  return match?.[1] ? `api/${match[1]}` : null
 }
 
 const discoverSearchApiPath = async (): Promise<string> => {
@@ -153,10 +152,10 @@ const parseAuthJson = (json: Record<string, unknown>): HltbAuth => {
     if (/key/i.test(field)) hpKey = String(value)
     if (/val/i.test(field)) hpVal = String(value)
   }
-  if (!token || !hpKey || !hpVal) {
-    throw new Error("HLTB auth response missing token fields")
+  if (!token) {
+    throw new Error("HLTB auth response missing token")
   }
-  return { token, hpKey, hpVal }
+  return hpKey && hpVal ? { token, hpKey, hpVal } : { token }
 }
 
 const fetchSearchAuth = async (apiPath: string): Promise<HltbAuth> => {
@@ -171,11 +170,20 @@ const getSearchSession = async (): Promise<HltbSearchSession> => {
     return cachedSession
   }
 
-  const apiPath = await discoverSearchApiPath()
-  const auth = await fetchSearchAuth(apiPath)
-  cachedSession = { apiPath, auth, fetchedAt: Date.now() }
-  return cachedSession
+  // Single-flight: concurrent callers share one homepage/script scrape.
+  sessionRefresh ??= (async () => {
+    const apiPath = await discoverSearchApiPath()
+    const auth = await fetchSearchAuth(apiPath)
+    cachedSession = { apiPath, auth, fetchedAt: Date.now() }
+    return cachedSession
+  })().finally(() => {
+    sessionRefresh = null
+  })
+  return sessionRefresh
 }
+
+const isAuthRejection = (err: unknown) =>
+  err instanceof Error && /^HLTB HTTP 40[13]$/.test(err.message)
 
 const buildSearchPayload = (terms: string[], auth: HltbAuth) => {
   const body: Record<string, unknown> = {
@@ -197,7 +205,8 @@ const buildSearchPayload = (terms: string[], auth: HltbAuth) => {
           difficulty: "",
         },
         rangeYear: { max: "", min: "" },
-        modifier: "hide_dlc",
+        // Steam lists expansions as their own apps, so DLC must be searchable
+        modifier: "",
       },
       users: { sortCategory: "postcount" },
       lists: { sortCategory: "follows" },
@@ -207,7 +216,7 @@ const buildSearchPayload = (terms: string[], auth: HltbAuth) => {
     },
     useCache: true,
   }
-  body[auth.hpKey] = auth.hpVal
+  if (auth.hpKey) body[auth.hpKey] = auth.hpVal
   return body
 }
 
@@ -231,21 +240,31 @@ export const searchHltbGames = async (
   const terms = query.trim().split(/\s+/).filter(Boolean)
   if (!terms.length) return []
 
-  const session = await getSearchSession()
-  const searchUrl = new URL(session.apiPath, BASE_URL).toString()
-  const body = buildSearchPayload(terms, session.auth)
+  const postSearch = async () => {
+    const session = await getSearchSession()
+    return hltbFetch(new URL(session.apiPath, BASE_URL).toString(), {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        accept: "*/*",
+        "x-auth-token": session.auth.token,
+        ...(session.auth.hpKey
+          ? { "x-hp-key": session.auth.hpKey, "x-hp-val": session.auth.hpVal ?? "" }
+          : {}),
+      },
+      body: JSON.stringify(buildSearchPayload(terms, session.auth)),
+    })
+  }
 
-  const res = await hltbFetch(searchUrl, {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-      accept: "*/*",
-      "x-auth-token": session.auth.token,
-      "x-hp-key": session.auth.hpKey,
-      "x-hp-val": session.auth.hpVal,
-    },
-    body: JSON.stringify(body),
-  })
+  let res
+  try {
+    res = await postSearch()
+  } catch (err) {
+    if (!isAuthRejection(err)) throw err
+    // Token rotated: drop the stale session and retry once with a fresh one.
+    cachedSession = null
+    res = await postSearch()
+  }
 
   const json = (await res.json()) as {
     data?: RawSearchRow[]

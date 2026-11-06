@@ -2,6 +2,7 @@ process.env.SLM_CLI = "1"
 
 import { scheduleEnrichmentWorkerTick } from "@/lib/jobs/worker-tick-scheduler"
 import { getWorkerMaxParallelTicks } from "@/lib/jobs/batch-config"
+import { prepareWorkerOnBoot } from "@/lib/jobs/worker"
 
 if (!process.env.SLM_ENRICH_VERBOSE?.trim()) {
   process.env.SLM_ENRICH_VERBOSE = "true"
@@ -57,7 +58,9 @@ const handleShutdown = () => {
 process.on("SIGINT", handleShutdown)
 process.on("SIGTERM", handleShutdown)
 
-poll()
+void (useHttp ? Promise.resolve() : prepareWorkerOnBoot())
+  .catch((error) => console.error("[dev:jobs] worker boot cleanup failed", error))
+  .then(poll)
 intervalId = setInterval(poll, DEV_CRON_MS)
 
 const mode = useHttp ? "HTTP cron" : "inline worker"

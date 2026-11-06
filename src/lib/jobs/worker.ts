@@ -1,4 +1,4 @@
-import { and, asc, eq, lte, lt, notInArray, sql } from "drizzle-orm"
+import { and, asc, eq, inArray, lte, lt, notInArray, sql } from "drizzle-orm"
 import { getDb } from "@/lib/db/client"
 import { enrichmentJobs } from "@/lib/db/schema"
 import {
@@ -13,9 +13,12 @@ import {
 import { enqueueCoverageFollowUpIfNeeded } from "@/lib/jobs/enqueue-coverage-followup"
 import { runEnrichmentJobStep } from "@/lib/jobs/run-step"
 import type { EnrichmentJobKind, JobPayload } from "@/lib/jobs/types"
+import { SteamStoreCooldownError } from "@/lib/steam/steam-store-throttle-db"
 
 const WORKER_ID = `worker-${process.pid}`
 const STALE_LOCK_MS = 10 * 60_000
+const FINISHED_JOB_RETENTION_MS = 7 * 24 * 60 * 60_000
+const CATALOG_RETRY_MS = 5 * 60_000
 
 /** Lower number = higher priority when claiming pending jobs. */
 const JOB_KIND_PRIORITY_SQL = sql`CASE ${enrichmentJobs.kind}
@@ -87,7 +90,9 @@ const claimNextPendingJob = (
         startedAt: next.startedAt ?? now,
         attempts: next.attempts + 1,
       })
-      .where(eq(enrichmentJobs.id, next.id))
+      .where(
+        and(eq(enrichmentJobs.id, next.id), eq(enrichmentJobs.status, "pending"))
+      )
       .returning({ id: enrichmentJobs.id })
       .all()
 
@@ -100,7 +105,7 @@ const claimNextPendingJob = (
       payload: (next.payload ?? {}) as JobPayload,
       attempts: next.attempts + 1,
     }
-  })
+  }, { behavior: "immediate" })
 }
 
 /** One step per job kind per tick so ProtonDB/HLTB do not starve app_details. */
@@ -177,10 +182,12 @@ const processClaimedJob = async (
         status: "pending",
         payload: step.payload,
         progress: step.progress,
-        error: null,
+        error: step.error ?? null,
+        // attempts count consecutive failures, not successful steps
+        attempts: 0,
         lockedAt: null,
         lockedBy: null,
-        runAfter: new Date(),
+        runAfter: new Date(step.error ? Date.now() + CATALOG_RETRY_MS : Date.now()),
       })
       .where(eq(enrichmentJobs.id, job.id))
     enrichLogJob("continue", {
@@ -192,16 +199,19 @@ const processClaimedJob = async (
     return "continued"
   } catch (error) {
     const message = error instanceof Error ? error.message : "Job failed"
-    const terminal = job.attempts >= 3
+    // A store cooldown is not the job's fault: wait it out without spending an attempt.
+    const cooldown = error instanceof SteamStoreCooldownError
+    const terminal = !cooldown && job.attempts >= 3
     await db
       .update(enrichmentJobs)
       .set({
         status: terminal ? "failed" : "pending",
         error: message,
+        attempts: cooldown ? job.attempts - 1 : job.attempts,
         finishedAt: terminal ? new Date() : null,
         lockedAt: null,
         lockedBy: null,
-        runAfter: new Date(Date.now() + 60_000),
+        runAfter: new Date(cooldown ? error.cooldownUntil : Date.now() + 60_000),
       })
       .where(eq(enrichmentJobs.id, job.id))
     enrichLogJob("fail", {
@@ -246,8 +256,11 @@ export const processEnrichmentJobsTick = async (): Promise<WorkerTickResult> => 
   return result
 }
 
-const releaseStaleRunningJobs = async (db: ReturnType<typeof getDb>) => {
-  const staleBefore = new Date(Date.now() - STALE_LOCK_MS)
+const releaseStaleRunningJobs = async (
+  db: ReturnType<typeof getDb>,
+  staleMs = STALE_LOCK_MS
+) => {
+  const staleBefore = new Date(Date.now() - staleMs)
   await db
     .update(enrichmentJobs)
     .set({
@@ -259,6 +272,20 @@ const releaseStaleRunningJobs = async (db: ReturnType<typeof getDb>) => {
       and(
         eq(enrichmentJobs.status, "running"),
         lt(enrichmentJobs.lockedAt, staleBefore)
+      )
+    )
+}
+
+/** Call once when the (single) worker process starts: frees jobs left running by a crash and prunes old finished jobs. */
+export const prepareWorkerOnBoot = async (): Promise<void> => {
+  const db = getDb()
+  await releaseStaleRunningJobs(db, 0)
+  await db
+    .delete(enrichmentJobs)
+    .where(
+      and(
+        inArray(enrichmentJobs.status, ["completed", "failed", "cancelled"]),
+        lt(enrichmentJobs.finishedAt, new Date(Date.now() - FINISHED_JOB_RETENTION_MS))
       )
     )
 }

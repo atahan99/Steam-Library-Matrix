@@ -434,13 +434,19 @@ export const getPlayerAchievementStats = async (
     // re-resolves on the next TTL refresh. Rate limits / gateway errors / network
     // failures (429/403/502/503/504/timeouts) stay null so they retry soon.
     const message = error instanceof Error ? error.message : ""
-    if (/Steam API error: (400|500)/.test(message)) {
-      return {
-        hasAchievements: false,
-        unlockedCount: 0,
-        totalCount: 0,
-        completionPercent: 0,
-      }
+    const noAchievements = {
+      hasAchievements: false,
+      unlockedCount: 0,
+      totalCount: 0,
+      completionPercent: 0,
+    }
+    if (/Steam API error: (400|500)/.test(message)) return noAchievements
+    // Playtests and other stat-less apps answer 403 "Profile is not public" even for
+    // public profiles. Only treat it as terminal when the game has no achievement schema,
+    // so a genuinely private profile keeps retrying instead of wiping real data.
+    if (/Steam API error: 403/.test(message)) {
+      const schema = await getGameAchievementSchema(appid)
+      return schema.length === 0 ? noAchievements : null
     }
     return null
   }

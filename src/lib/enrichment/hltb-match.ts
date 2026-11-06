@@ -200,12 +200,22 @@ const scoreHltbHit = (
 
   let score = nameConfidence * 0.65 + overlap * 0.35 + baseBoost
 
-  if (hit.profileSteam && hit.profileSteam !== steamAppid) {
-    score *= 0.4
-  }
-
   if (overlap < 0.45 && nameConfidence < 0.9) {
     score *= 0.75
+  }
+
+  // "WRC 7" vs "WRC 7: World Rally Championship"; one bare word ("Doom") is too ambiguous to trust.
+  const hitTitle = cleanDisplayName(hit.gameName).match(/^(.+?)(?::|\s[-–—]\s)/)?.[1]
+  if (
+    hitTitle &&
+    normalizeGameName(hitTitle) === normalizedSteam &&
+    (normalizedSteam.includes(" ") || /\d/.test(normalizedSteam))
+  ) {
+    score = Math.max(score, HLTB_NAME_ACCEPT_CONFIDENCE)
+  }
+
+  if (hit.profileSteam && hit.profileSteam !== steamAppid) {
+    score *= 0.4
   }
 
   return score

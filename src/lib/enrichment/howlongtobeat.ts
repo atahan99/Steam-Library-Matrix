@@ -115,12 +115,23 @@ const upsertHltbNegativeCache = async (
     })
 }
 
+// Network errors, 401/403, 429 and 5xx are transient; other HTTP 4xx are treated as definitive.
+const isTransientHltbError = (err: unknown) => {
+  const status = err instanceof Error ? /^HLTB HTTP (\d+)$/.exec(err.message)?.[1] : undefined
+  return !status || ["401", "403", "429"].includes(status) || status.startsWith("5")
+}
+
+const thrownHltbFailure = (err: unknown, fallback: string) => ({
+  status: isTransientHltbError(err) ? ("retryable" as const) : ("failed" as const),
+  reason: err instanceof Error ? err.message : fallback,
+})
+
 const enrichOneGame = async (
   appid: number,
   gameName: string
 ): Promise<
   | { status: "updated"; row: HltbUpsertRow }
-  | { status: "failed" | "skipped"; reason: string }
+  | { status: "failed" | "skipped" | "retryable"; reason: string }
 > => {
   const query = buildSearchQuery(gameName)
   if (!query) {
@@ -136,8 +147,7 @@ const enrichOneGame = async (
       if (match.ok) break
     }
   } catch (err) {
-    const message = err instanceof Error ? err.message : "search failed"
-    return { status: "failed", reason: message }
+    return thrownHltbFailure(err, "search failed")
   }
 
   if (!match?.ok) {
@@ -154,8 +164,7 @@ const enrichOneGame = async (
   try {
     detail = await fetchHltbDetail(match.hit.gameId)
   } catch (err) {
-    const message = err instanceof Error ? err.message : "detail failed"
-    return { status: "failed", reason: message }
+    return thrownHltbFailure(err, "detail failed")
   }
 
   const mainStoryMinutes = hoursToMinutes(detail.mainStoryHours)
@@ -247,6 +256,13 @@ export const enrichSingleHowLongToBeatGame = async (
     }
     await maybeDelay()
     return { checked: 1, updated: 0, failed: 0, skippedLowConfidence: 1 }
+  }
+
+  if (result.status === "retryable") {
+    // No row: a transient error must neither negative-cache nor clobber an existing match.
+    console.warn(`[hltb] transient failure appid=${appid}: ${result.reason}`)
+    await maybeDelay()
+    return { checked: 1, updated: 0, failed: 1, skippedLowConfidence: 0 }
   }
 
   try {

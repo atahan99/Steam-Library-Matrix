@@ -36,8 +36,11 @@ export const runMigrations = async () => {
 
     const filePath = path.join(migrationsDir, filename)
     const contents = await readFile(filePath, "utf8")
-    sqlite.exec(contents)
-    insertMigration.run(filename)
+    // atomic so a failing migration is not left half-applied and unrecorded
+    sqlite.transaction(() => {
+      sqlite.exec(contents)
+      insertMigration.run(filename)
+    })()
     console.log(`[db:migrate] applied ${filename}`)
   }
 

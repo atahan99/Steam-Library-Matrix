@@ -31,6 +31,8 @@ export type JobPayload = {
   stats?: JobProgress
   /** Anti-cheat job: catalog match first, then optional Denuvo store pass. */
   anticheatPhase?: "catalog" | "denuvo"
+  /** Coverage follow-up depth; capped in enqueue-coverage-followup. */
+  followUpRound?: number
 }
 
 export type JobRecord = {

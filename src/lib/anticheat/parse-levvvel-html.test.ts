@@ -4,7 +4,6 @@ import { fileURLToPath } from "node:url"
 import { describe, expect, it } from "vitest"
 import { LEVVVEL_PARTIAL_ROW_THRESHOLD } from "@/lib/anticheat/anticheatTypes"
 import {
-  extractLevvvelNonce,
   parseLevvvelHtml,
   parseLevvvelTableRows,
   splitAntiCheatNames,
@@ -32,13 +31,6 @@ describe("splitAntiCheatNames", () => {
   })
 })
 
-describe("extractLevvvelNonce", () => {
-  it("reads nonce when name attribute appears before value", () => {
-    const html = `<input type="hidden" id="wdtNonceFrontendServerSide_20" name="wdtNonceFrontendServerSide_20" value="7e303fed52" />`
-    expect(extractLevvvelNonce(html)).toBe("7e303fed52")
-  })
-})
-
 describe("parseLevvvelTableRows", () => {
   it("parses enough rows to exceed the partial-load threshold", () => {
     const headers = ["wdt_ID", "Game", "Software", "Developer", "Publisher"]
@@ -55,6 +47,21 @@ describe("parseLevvvelTableRows", () => {
 })
 
 describe("parseLevvvelHtml", () => {
+  it("parses the redesigned kernel-table-grid layout", () => {
+    const html = readFileSync(
+      join(fixtureDir, "__fixtures__/levvvel-kernel-grid-snippet.html"),
+      "utf8"
+    )
+    const rows = parseLevvvelHtml(html)
+    expect(rows.map((r) => r.name)).toEqual([
+      "2XKO",
+      "3on3 FreeStyle",
+      "3on3 FreeStyle: Rebound",
+    ])
+    expect(rows[0]?.antiCheats).toEqual(["Vanguard"])
+    expect(rows[0]?.publisher).toBe("Riot Games")
+  })
+
   it("parses known kernel anti-cheat rows", () => {
     const rows = parseLevvvelHtml(fixtureHtml)
     expect(rows).toHaveLength(4)
