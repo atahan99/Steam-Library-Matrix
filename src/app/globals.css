@@ -365,6 +365,93 @@ html.dark[data-theme="cyberpunk"] {
     );
   }
 
+  /* 404 scene (game-over-scene.tsx): CRT flicker, glitching 404, blinking GG, live controller. */
+  .nf-flicker {
+    animation: nf-flicker 5s ease-in-out infinite;
+  }
+
+  .nf-glitch {
+    animation: nf-glitch 3.6s steps(1) infinite;
+  }
+
+  .nf-blink {
+    animation: nf-blink 1.2s steps(1) infinite;
+  }
+
+  .nf-sweep {
+    animation: nf-sweep 4s linear infinite;
+  }
+
+  .nf-led {
+    animation: nf-blink 2.4s steps(1) infinite;
+  }
+
+  .nf-pad {
+    animation: nf-bob 3.2s ease-in-out infinite;
+  }
+
+  .nf-btn {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: nf-press 2.4s ease-in-out infinite;
+  }
+
+  .nf-signal {
+    stroke-dasharray: 5 14;
+    animation: nf-signal 1.1s linear infinite;
+  }
+
+  @keyframes nf-flicker {
+    0%, 100% { opacity: 1; }
+    48% { opacity: 1; }
+    50% { opacity: 0.82; }
+    52% { opacity: 1; }
+  }
+
+  @keyframes nf-glitch {
+    0%, 100% { transform: translate(0, 0); }
+    92% { transform: translate(-3px, 1px); }
+    94% { transform: translate(3px, -1px); }
+    96% { transform: translate(0, 0); }
+  }
+
+  @keyframes nf-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.15; }
+  }
+
+  @keyframes nf-sweep {
+    from { transform: translateY(-20px); }
+    to { transform: translateY(150px); }
+  }
+
+  @keyframes nf-bob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+  }
+
+  @keyframes nf-press {
+    0%, 70%, 100% { transform: scale(1); opacity: 0.55; }
+    80% { transform: scale(0.82); opacity: 1; }
+  }
+
+  @keyframes nf-signal {
+    to { stroke-dashoffset: -19; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nf-flicker,
+    .nf-glitch,
+    .nf-blink,
+    .nf-sweep,
+    .nf-led,
+    .nf-pad,
+    .nf-btn,
+    .nf-signal {
+      animation: none;
+    }
+  }
+
   /* Landing backdrop: slowly scrolling portrait covers at the far edges. */
   .cover-columns {
     display: none;
