@@ -3,7 +3,6 @@ import { LEVVVEL_KERNEL_URL } from "@/lib/anticheat/anticheatTypes"
 export type AboutFeature = {
   title: string
   description: string
-  pathPattern: string
   highlights?: string[]
 }
 
@@ -32,18 +31,17 @@ export type AboutAttribution = {
 
 export const aboutHero = {
   eyebrow: "Steam Library Matrix",
-  title: "Your library, decoded",
+  title: "Your Steam library in one place",
   subtitle:
-    "Import a public Steam profile, enrich each title from community and third-party sources, and explore everything in one dashboard.",
+    "Import a public Steam profile and see compatibility, anti-cheat, completion times and reviews for every game you own.",
 }
 
 export const aboutMission = {
   title: "Why this exists",
   paragraphs: [
-    "Steam's own library view shows playtime and tags, but not Proton/Linux compatibility, anti-cheat blockers, completion times, or cross-platform support in one place.",
-    "Linux, Steam Deck, and Mac gamers often bounce between ProtonDB, Are We Anti-Cheat Yet, HowLongToBeat, SteamDB, and the Steam store — manually, game by game.",
-    "Steam Library Matrix imports your public library and wishlist, enriches each title from those sources, and surfaces everything in filterable tables under one roof.",
-    "Pick a dashboard theme from the sidebar, use Random Game Picker when you want a backlog nudge, and jump back to Overview from the header avatar.",
+    "Steam shows your playtime and tags. It doesn't tell you whether a game runs on Linux, Steam Deck or Mac, whether its anti-cheat blocks Proton, or how long it takes to finish.",
+    "Finding that out usually means checking ProtonDB, Are We Anti-Cheat Yet, HowLongToBeat and the Steam store one game at a time. This app looks it all up for your whole library and wishlist and puts it in tables you can filter and sort.",
+    "You can change the color theme from the sidebar, and the avatar in the header takes you back to Overview.",
   ],
 }
 
@@ -51,115 +49,107 @@ export const aboutFeatures: AboutFeature[] = [
   {
     title: "Overview",
     description:
-      "Top played games, recent activity, playtime chart, SteamDB calculator link, and missing-enrichment summary.",
-    pathPattern: "/dashboard/[steamid]",
+      "Your most played and recently played games, playtime charts, and a count of games still missing data.",
     highlights: [
-      "Wishlist-aware missing ProtonDB and enrichment counts",
-      "Global game search (⌘K / Ctrl+K) across library and wishlist",
+      "Library rating: the average share of positive Steam reviews across your games",
+      "Link to the SteamDB calculator for your account value",
+      "Search your library and wishlist with ⌘K or Ctrl+K",
     ],
   },
   {
     title: "Library",
     description:
-      "Full owned-games table with OS support icons, playtime, search, filter, and sort.",
-    pathPattern: "/dashboard/[steamid]/library",
+      "Every game you own, with Windows, Linux and Mac support, playtime and Steam reviews.",
+    highlights: ["Sort by review score"],
+  },
+  {
+    title: "Achievements",
+    description:
+      "Your achievement progress in each game, from untouched to 100%.",
+  },
+  {
+    title: "Backlog",
+    description:
+      "How many games you haven't played, and how long the pile would take to clear at your recent pace.",
     highlights: [
-      "OS column: Windows, Linux, and Mac icons (colorful when supported)",
-      "Mac icon when Steam app details report platforms.mac",
+      "Quick wins: unplayed games you can finish in an evening",
+      "Almost there: games with 50 to 99% of achievements",
+      "Hidden gems: your best-reviewed unplayed games",
+      "Gathering dust: your oldest unplayed games",
+      "A playing-next queue with a monthly goal",
+      "Surprise me: random picks that skip your most played, recent and finished games",
     ],
   },
   {
     title: "Compare",
     description:
-      "Side-by-side library intersection across multiple Steam profiles.",
-    pathPattern: "/dashboard/[steamid]/compare",
+      "Add other public Steam profiles and see the games you all own.",
   },
   {
     title: "HowLongToBeat",
     description:
-      "Main story, extra, and completionist time estimates per game.",
-    pathPattern: "/dashboard/[steamid]/howlongtobeat",
+      "Main story, main plus extras, and completionist times for each game.",
+    highlights: [
+      "N/A: the game is on HowLongToBeat but nobody has submitted a time",
+      "Not on HLTB: no entry found, with a link to search the site",
+      "Pending: not looked up yet",
+      "Retrying: the last lookup failed and will run again",
+    ],
   },
   {
     title: "Anti-Cheat",
     description:
-      "Anti-cheat software names, Linux anti-cheat status from AWACY, kernel-level anti-cheat from Levvvel, and Denuvo Anti-Tamper signals.",
-    pathPattern: "/dashboard/[steamid]/anticheat",
+      "Which anti-cheat each game uses, whether it works on Linux, whether it runs at kernel level, and whether the game uses Denuvo.",
     highlights: [
-      "Table defaults to games with meaningful anti-cheat data",
-      "Filters: Linux status, search, sort, played-only",
-      "Compact library summary with AWACY status counts",
-      "Denuvo Anti-Tamper from store DRM + Denuvo Watch curator catalog",
+      "Filter by Linux status or anti-cheat software",
+      "Denuvo column shows Detected, Possible, None or Unknown",
     ],
   },
   {
     title: "ProtonDB",
     description:
-      "Proton/Linux tier ratings, confidence, report counts, and tier charts with click-to-filter sync.",
-    pathPattern: "/dashboard/[steamid]/protondb",
+      "How well each game runs on Linux through Proton, with charts you can click to filter the table.",
     highlights: [
-      "Steam Deck Verified / Playable column and filter (Valve store categories)",
-      "“Not yet released” tier for coming-soon wishlist titles",
-      "Library vs wishlist chart labels",
+      "Steam Deck Verified and Playable column",
+      "Wishlist games that aren't out yet show as Not yet released",
     ],
+  },
+  {
+    title: "Genres",
+    description:
+      "Your library grouped by Steam store genres or by community tags, with game counts and playtime.",
   },
   {
     title: "Mac Support",
     description:
-      "Apple Silicon (native), Rosetta 2, and CrossOver compatibility from AppleGamingWiki, matched to your library — alongside Steam's native Mac flag.",
-    pathPattern: "/dashboard/[steamid]/mac",
+      "Whether each game runs on Apple Silicon natively, through Rosetta 2, or through CrossOver, next to Steam's own Mac flag.",
     highlights: [
-      "Per-game Apple Silicon / Rosetta 2 / CrossOver ratings (Perfect → Unplayable)",
-      "macOS compatibility dropdown filter (Apple Silicon native, CrossOver playable, …)",
-      "Includes Windows games playable via CrossOver, not only native Mac titles",
-      "Refresh the AppleGamingWiki data from Data Status",
+      "Ratings from Perfect to Unplayable",
+      "Includes Windows games that run through CrossOver",
     ],
   },
   {
     title: "VR",
-    description:
-      "VR-supported and VR-only titles parsed from Steam categories.",
-    pathPattern: "/dashboard/[steamid]/vr",
-    highlights: [
-      "VR support and VR-only shown as yes/no indicators",
-    ],
-  },
-  {
-    title: "Backlog",
-    description:
-      "Your pile of shame, quantified: never-played count, hours and years to clear at your recent pace, curated picks, a hand-picked queue with a monthly goal, and a random picker.",
-    pathPattern: "/dashboard/[steamid]/random",
-    highlights: [
-      "Quick wins, Almost there (50–99% achievements), and Gathering dust lists",
-      "Add games to a Playing-next queue and track a monthly finish goal",
-      "Random picks exclude top-30 played, recent activity, and completed titles",
-    ],
+    description: "Games that support VR, and games that need it.",
   },
   {
     title: "Data Status",
     description:
-      "Operational hub: coverage summary, grouped refresh cards, global catalog sync, and searchable AWACY/Levvvel/Denuvo catalog browse.",
-    pathPattern: "/dashboard/[steamid]/data-status",
+      "How much of your library each source covers, with buttons to refresh any of them.",
     highlights: [
-      "Steam core, compatibility, anti-cheat, and HLTB sections",
-      "HowLongToBeat Missing only refresh for incremental runs",
+      "Browse the full anti-cheat and Denuvo lists",
+      "Refresh only the HowLongToBeat games that are still missing",
     ],
   },
   {
-    title: "Library / Wishlist toggle",
+    title: "Library and wishlist",
     description:
-      "Switch between owned games and wishlist on enrichment tables (ProtonDB, Anti-Cheat, HLTB, Mac, VR).",
-    pathPattern: "/dashboard/[steamid]/*",
+      "Most tables have a switch between the games you own and your wishlist.",
   },
   {
-    title: "Theme selector",
+    title: "Themes",
     description:
-      "Swap dashboard color palettes from the sidebar (TweakCN presets). Layout and typography stay consistent; only colors change.",
-    pathPattern: "/dashboard/[steamid]/*",
-    highlights: [
-      "Catppuccin default plus community palettes (Cyberpunk, Terminal, and others)",
-      "Preference stored in the browser",
-    ],
+      "Pick a color palette from the sidebar. Catppuccin is the default. Your choice is saved in this browser.",
   },
 ]
 
@@ -167,233 +157,234 @@ export const aboutDataSources: AboutDataSource[] = [
   {
     name: "Steam Web API",
     url: "https://api.steampowered.com",
-    provides: "Owned games, playtime, wishlist",
-    usedIn: "Import, all sections",
-    fetchMethod:
-      "POST /api/steam/import, POST /api/steam/refresh; wishlist via POST /api/jobs (kind: wishlist)",
-    refreshCadence: "On import or manual refresh",
+    provides: "Owned games, playtime, wishlist, achievements",
+    usedIn: "Every page",
+    fetchMethod: "Steam's official API",
+    refreshCadence: "When you import or refresh",
   },
   {
-    name: "Steam Store API",
-    url: "https://store.steampowered.com/api/appdetails",
+    name: "Steam storefront",
+    url: "https://store.steampowered.com",
     provides:
-      "Platforms, genres, categories, release date, header image",
-    usedIn:
-      "Library OS column, Mac Support, VR, ProtonDB Deck column (Steam Deck compatibility API), wishlist name resolution",
-    fetchMethod:
-      "POST /api/jobs (kind: app_details) — store appdetails + Deck compatibility report",
-    refreshCadence: "7-day TTL per game unless forced",
+      "Platforms, genres, categories, release dates, images, Steam Deck status, DRM notices",
+    usedIn: "Library, Mac Support, VR, Genres, ProtonDB (Deck column), Anti-Cheat (Denuvo)",
+    fetchMethod: "Steam store pages and app details",
+    refreshCadence: "Every 7 days per game",
     matchingMethod: "Steam app ID",
   },
   {
     name: "ProtonDB",
     url: "https://www.protondb.com",
-    provides:
-      "Linux/Proton compatibility tier, confidence, report count",
-    usedIn: "ProtonDB section",
-    fetchMethod: "POST /api/jobs (kind: protondb)",
-    refreshCadence: "7-day TTL per game unless forced",
+    provides: "Linux compatibility tier, confidence, report count",
+    usedIn: "ProtonDB",
+    fetchMethod: "ProtonDB's public summaries",
+    refreshCadence: "Every 7 days per game",
     matchingMethod: "Steam app ID",
     limitations:
-      "Community reports — not an official Valve rating. Unreleased titles are skipped and labeled “Not yet released”.",
-  },
-  {
-    name: "Are We Anti-Cheat Yet (AWACY)",
-    url: "https://areweanticheatyet.com",
-    provides:
-      "Linux anti-cheat status, software names, native Linux flag",
-    usedIn: "Anti-Cheat section (Linux anti-cheat status column)",
-    fetchMethod:
-      "POST /api/jobs (kind: anticheat_catalog for global AWACY JSON; kind: anticheat for profile link)",
-    refreshCadence: "Catalog: 7-day TTL; profile link: 7-day TTL per game unless forced",
-    matchingMethod: "Steam app ID first, then fuzzy title match",
-    limitations:
-      "Only lists games with known anti-cheat. “Linux anti-cheat status” is AWACY compatibility — not Valve’s Steam Deck Verified badge.",
-  },
-  {
-    name: "Levvvel",
-    url: LEVVVEL_KERNEL_URL,
-    provides: "Kernel-level anti-cheat list",
-    usedIn: "Anti-Cheat section (kernel column)",
-    fetchMethod:
-      "POST /api/jobs (kind: anticheat_catalog) — HTML + AJAX scrape, stored globally",
-    refreshCadence: "Catalog: 7-day TTL unless forced from Data Status",
-    limitations:
-      "HTML scrape — partial fetches are tracked on the catalog card; kernel=no is only set when the catalog is complete.",
-  },
-  {
-    name: "Denuvo Watch (Steam curator)",
-    url: "https://store.steampowered.com/curator/26095454-Denuvo-Watch/",
-    provides: "Denuvo Anti-Tamper game list (app IDs)",
-    usedIn: "Anti-Cheat section (software filter and Anti-cheat software column)",
-    fetchMethod:
-      "POST /api/jobs (kind: anticheat_catalog, denuvo_catalog) — Denuvo via Steam curator API",
-    refreshCadence: "7-day TTL unless forced from Data Status",
-    matchingMethod: "Steam app ID",
-    limitations:
-      "Community-maintained Steam curator — secondary signal after store page DRM notices. Separate from Denuvo Anti-Cheat (kernel), which comes from AWACY/Levvvel software names.",
-  },
-  {
-    name: "AppleGamingWiki",
-    url: "https://www.applegamingwiki.com",
-    provides:
-      "Apple Silicon (native), Rosetta 2, and CrossOver macOS compatibility ratings",
-    usedIn: "Mac Support section (Apple Silicon / Rosetta / CrossOver column)",
-    fetchMethod:
-      "Cargo API (Compatibility_macOS table); bundled in the seed, re-matched on import, refreshable from Data Status",
-    refreshCadence: "Bundled global catalog (seed); manual refresh from Data Status",
-    matchingMethod: "Normalized title, then fuzzy title match",
-    limitations:
-      "Community-sourced with no Steam app IDs — coverage is partial and untested entries show as Unknown.",
+      "Player reports, not a Valve rating. Unreleased games are skipped.",
   },
   {
     name: "HowLongToBeat",
     url: "https://howlongtobeat.com",
-    provides: "Completion time estimates",
-    usedIn: "HowLongToBeat section",
-    fetchMethod:
-      "POST /api/jobs (kind: hltb; optional missingOnly; parallel batches)",
-    refreshCadence:
-      "30-day TTL per game unless forced; failed/skipped lookups cached to avoid repeat scrapes",
-    matchingMethod: "Fuzzy title match against HLTB search",
+    provides: "Completion times",
+    usedIn: "HowLongToBeat, Backlog",
+    fetchMethod: "HowLongToBeat search",
+    refreshCadence: "Every 30 days per game",
+    matchingMethod: "Game title",
     limitations:
-      "Unofficial site API — run scripts/verify-hltb.mts after outages. Full libraries can take several minutes.",
+      "Unofficial, so lookups can fail when the site changes. A large library can take several minutes.",
+  },
+  {
+    name: "Are We Anti-Cheat Yet",
+    url: "https://areweanticheatyet.com",
+    provides: "Anti-cheat software and whether it works on Linux",
+    usedIn: "Anti-Cheat",
+    fetchMethod: "The site's public game list",
+    refreshCadence: "Every 7 days",
+    matchingMethod: "Steam app ID, then game title",
+    limitations: "Only covers games known to use anti-cheat.",
+  },
+  {
+    name: "Levvvel",
+    url: LEVVVEL_KERNEL_URL,
+    provides: "Games with kernel-level anti-cheat",
+    usedIn: "Anti-Cheat (kernel column)",
+    fetchMethod: "Read from Levvvel's table",
+    refreshCadence: "Every 7 days",
+  },
+  {
+    name: "Denuvo Watch (Steam curator)",
+    url: "https://store.steampowered.com/curator/26095454-Denuvo-Watch/",
+    provides: "Games that use Denuvo Anti-Tamper",
+    usedIn: "Anti-Cheat (Denuvo column)",
+    fetchMethod: "The curator's Steam list",
+    refreshCadence: "Every 7 days",
+    matchingMethod: "Steam app ID",
+    limitations:
+      "Community list, used alongside the DRM notice on the Steam store page.",
+  },
+  {
+    name: "AppleGamingWiki",
+    url: "https://www.applegamingwiki.com",
+    provides: "Apple Silicon, Rosetta 2 and CrossOver ratings",
+    usedIn: "Mac Support",
+    fetchMethod: "AppleGamingWiki's compatibility table",
+    refreshCadence: "Included with the app; refresh from Data Status",
+    matchingMethod: "Game title",
+    limitations:
+      "Has no Steam app IDs, so some games won't match. Untested games show as Unknown.",
   },
   {
     name: "SteamSpy",
     url: "https://steamspy.com",
-    provides: "Steam review counts (shown as Steam's review summary), owner estimates, yesterday's peak players, top user tags",
-    usedIn: "Library (Reviews column, review-score sort), game detail popover",
-    fetchMethod: "POST /api/jobs (kind: steamspy)",
-    refreshCadence: "7-day TTL per game unless forced; games SteamSpy doesn't know are cached as 'no data'",
+    provides:
+      "Review counts (shown with Steam's review labels), owner estimates, yesterday's peak players, top tags",
+    usedIn: "Library (Reviews column), Overview (Library rating), Backlog (Hidden gems), Genres (community tags), game details",
+    fetchMethod: "SteamSpy's public API",
+    refreshCadence: "Every 7 days per game",
     matchingMethod: "Steam app ID",
     limitations:
-      "Third-party estimates, not official Valve numbers. ~1 request per second, so a large library fills in over a while.",
+      "Estimates, not Valve's numbers. SteamSpy allows about one request per second, so a large library fills in slowly.",
   },
   {
     name: "SteamDB",
     url: "https://steamdb.info",
-    provides: "Account value and regional price calculator (external site)",
-    usedIn: "Overview profile card — opens SteamDB in a new tab",
-    fetchMethod: "External link only; not scraped or cached by this app",
-    refreshCadence: "N/A — view live data on steamdb.info",
-    limitations:
-      "Account value and prices are shown on SteamDB, not stored in Steam Library Matrix.",
+    provides: "Account value and price calculator",
+    usedIn: "Overview (opens SteamDB in a new tab)",
+    fetchMethod: "Link only, nothing is fetched",
+    refreshCadence: "Live on SteamDB",
   },
 ]
 
 export const aboutDataProvenance = {
-  title: "Data provenance",
+  title: "Where the data comes from",
   paragraphs: [
-    "Bundled files under data/seed/ are cached, derived metadata shipped with this repo for first-run performance — not original data owned by Steam Library Matrix.",
-    "They are built from live sources (Steam Web API and storefront, ProtonDB, HowLongToBeat, Are We Anti-Cheat Yet, Levvvel, and the Denuvo Watch Steam curator) and refreshed over time as you import profiles and run enrichment.",
-    "All rights in game names, compatibility reports, completion times, anti-cheat lists, and store metadata remain with Valve, ProtonDB, HowLongToBeat, AWACY, Levvvel, and the respective curators and communities.",
+    "The app ships with a cached copy of data from these sources so the first import is fast. It updates as you import profiles and refresh.",
+    "Game names, reports, completion times, anti-cheat lists and store data belong to Valve and to each source and its community.",
   ],
   bundledSources: [
-    "Steam Web API & Steam storefront",
+    "Steam",
     "ProtonDB",
     "HowLongToBeat",
-    "Are We Anti-Cheat Yet (AWACY)",
+    "Are We Anti-Cheat Yet",
     "Levvvel",
-    "Denuvo Watch (Steam curator)",
-    "AppleGamingWiki (macOS compatibility)",
+    "Denuvo Watch",
+    "AppleGamingWiki",
   ],
 }
 
 export const aboutHowItWorks = {
   title: "How it works",
-  intro:
-    "Data flows from your public Steam profile into SQLite, then through on-demand enrichment into dashboard tables and charts.",
+  intro: "You give it a public profile. It fetches the rest in the background.",
   steps: [
     {
       step: 1,
       title: "Enter a public profile",
       description:
-        "Paste a public Steam profile URL or Steam ID on the landing page. No Steam login is required.",
+        "Paste a Steam profile URL or Steam ID on the home page. You don't sign in to Steam.",
     },
     {
       step: 2,
-      title: "Sync library and wishlist",
-      description:
-        "Owned games and wishlist titles are stored in SQLite (steam_games, profile_games, profile_wishlist).",
+      title: "Import your library and wishlist",
+      description: "The app saves the games you own and the games on your wishlist.",
     },
     {
       step: 3,
-      title: "Enrich on demand",
+      title: "Fill in the details",
       description:
-        "After import, enrichment runs in the background (ProtonDB, HLTB, achievements, anti-cheat, app details). Data Status can force a full refresh of every source.",
+        "Compatibility, anti-cheat, completion times, achievements, reviews and store details load in the background. Data Status shows progress and lets you refresh any source.",
     },
     {
       step: 4,
-      title: "Explore the dashboard",
+      title: "Explore",
       description:
-        "Each section reads cached enrichment joined to your games. Filter, sort, and toggle between library and wishlist.",
+        "Filter and sort each page, and switch between your library and wishlist.",
     },
   ] satisfies AboutStep[],
 }
 
 export const aboutTerminology = {
-  title: "Terminology",
+  title: "Terms",
   items: [
     {
       term: "Linux anti-cheat status",
       definition:
-        "AWACY compatibility for anti-cheat on Linux/Proton (Supported, Running, Broken, etc.). Shown on the Anti-Cheat page — separate from Valve’s Deck badge.",
+        "Are We Anti-Cheat Yet's verdict on whether a game's anti-cheat works on Linux (Supported, Running, Broken and so on). It's separate from Valve's Steam Deck rating.",
     },
     {
       term: "Steam Deck Verified",
       definition:
-        "Valve’s official Verified or Playable store category from Steam app details. Shown as the Deck column on the ProtonDB page.",
+        "Valve's own Verified or Playable rating from the Steam store, shown in the Deck column on the ProtonDB page.",
     },
     {
       term: "Not yet released",
       definition:
-        "Wishlist or library titles with a coming-soon release date. ProtonDB is not queried; charts and filters use this tier instead of “Not enriched”.",
+        "A game with a coming-soon release date. ProtonDB has no reports for it yet, so it isn't looked up.",
     },
     {
       term: "Not checked",
       definition:
-        "Anti-cheat enrichment has not run for this game yet — distinct from AWACY “Unknown” after a refresh.",
+        "Anti-cheat data hasn't loaded for this game yet. Unknown means it loaded and the source has no answer.",
     },
     {
       term: "Denuvo Anti-Tamper",
       definition:
-        "DRM / anti-tamper protection (not kernel anti-cheat). Detected from the Steam store page DRM notices (primary) and the Denuvo Watch curator list (secondary), matched by Steam app ID.",
+        "Copy protection (DRM), not anti-cheat. Found from the DRM notice on the Steam store page and the Denuvo Watch curator list.",
     },
     {
       term: "Denuvo Anti-Cheat",
       definition:
-        "Kernel-level multiplayer anti-cheat product from Denuvo, distinct from Anti-Tamper. Detected from AWACY/Levvvel software names when listed as “Denuvo Anti-Cheat”.",
+        "Denuvo's kernel-level anti-cheat for multiplayer games, a different product from Anti-Tamper. Found when Are We Anti-Cheat Yet or Levvvel lists it.",
     },
   ],
 }
 
 export const aboutPrivacy = {
-  title: "Privacy & disclaimers",
+  title: "Privacy and disclaimers",
   items: [
-    "Only public Steam profiles can be imported; no Steam account login is required.",
-    "Data is stored server-side in SQLite. Enrichment calls third-party APIs and community-maintained lists.",
-    "ProtonDB ratings are community-sourced. AWACY and Levvvel are curated or scraped lists — not official Valve or Steam guarantees.",
-    "Linux anti-cheat status and kernel-level detection are separate signals. A game can use kernel anti-cheat and still show Supported on AWACY.",
-    "Compatibility and completion data may be outdated or incomplete. Use refresh controls on Data Status to update.",
+    "Only public Steam profiles can be imported, and you never sign in to Steam.",
+    "Imported libraries are stored on the server that runs this app. Looking up details sends game IDs and titles to the sources listed above.",
+    "ProtonDB, Are We Anti-Cheat Yet and Levvvel are community lists, not guarantees from Valve.",
+    "Linux anti-cheat status and kernel-level anti-cheat are separate. A game can use kernel anti-cheat and still be Supported on Linux.",
+    "Any of this data can be out of date or incomplete. Refresh it from Data Status.",
   ],
 }
 
 export const aboutAttributions: AboutAttribution[] = [
   {
-    name: "ProtonDB",
-    url: "https://www.protondb.com",
-    credit: "Linux/Proton compatibility reports and tier summaries",
+    name: "Valve / Steam",
+    url: "https://store.steampowered.com",
+    credit: "Library, wishlist, achievements and store data",
   },
   {
-    name: "Are We Anti-Cheat Yet",
-    url: "https://areweanticheatyet.com",
-    credit: "Linux anti-cheat status and software names",
+    name: "ProtonDB",
+    url: "https://www.protondb.com",
+    credit: "Linux compatibility reports",
   },
   {
     name: "HowLongToBeat",
     url: "https://howlongtobeat.com",
-    credit: "Completion time estimates",
+    credit: "Completion times",
+  },
+  {
+    name: "Are We Anti-Cheat Yet",
+    url: "https://areweanticheatyet.com",
+    credit: "Anti-cheat software and Linux status",
+  },
+  {
+    name: "Levvvel",
+    url: LEVVVEL_KERNEL_URL,
+    credit: "Kernel-level anti-cheat list",
+  },
+  {
+    name: "Denuvo Watch",
+    url: "https://store.steampowered.com/curator/26095454-Denuvo-Watch/",
+    credit: "Denuvo Anti-Tamper list",
+  },
+  {
+    name: "AppleGamingWiki",
+    url: "https://www.applegamingwiki.com",
+    credit: "macOS compatibility ratings",
   },
   {
     name: "SteamSpy",
@@ -403,29 +394,9 @@ export const aboutAttributions: AboutAttribution[] = [
   {
     name: "SteamDB",
     url: "https://steamdb.info",
-    credit: "Account calculator (external link)",
-  },
-  {
-    name: "Levvvel",
-    url: LEVVVEL_KERNEL_URL,
-    credit: "Kernel-level anti-cheat reference list",
-  },
-  {
-    name: "Denuvo Watch",
-    url: "https://store.steampowered.com/curator/26095454-Denuvo-Watch/",
-    credit: "Denuvo Anti-Tamper curator list (Steam app IDs)",
-  },
-  {
-    name: "AppleGamingWiki",
-    url: "https://www.applegamingwiki.com",
-    credit: "Apple Silicon, Rosetta 2, and CrossOver macOS compatibility ratings",
-  },
-  {
-    name: "Valve / Steam",
-    url: "https://store.steampowered.com",
-    credit: "Game metadata, library, and wishlist via public APIs",
+    credit: "Account value calculator (link)",
   },
 ]
 
 export const aboutAffiliation =
-  "Steam Library Matrix is an independent project. It is not affiliated with Valve, ProtonDB, AWACY, HowLongToBeat, SteamDB, Levvvel, or AppleGamingWiki."
+  "Steam Library Matrix is an independent project. It isn't affiliated with Valve, ProtonDB, HowLongToBeat, Are We Anti-Cheat Yet, Levvvel, AppleGamingWiki, SteamSpy or SteamDB."

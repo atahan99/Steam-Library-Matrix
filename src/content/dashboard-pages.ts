@@ -17,9 +17,9 @@ export const dashboardPageIntros: Record<DashboardPageSegment, string> = {
   achievements:
     "How far you've got with achievements in each game, from untouched to 100%.",
   random:
-    "Games you haven't played yet, with a few picks to help you choose the next one.",
+    "Games you haven't played yet, with a few lists and random picks to help you choose the next one.",
   compare:
-    "See which games you share with other public Steam profiles and how your playtime compares.",
+    "See which games you share with other public Steam profiles.",
   howlongtobeat:
     "How long each game takes to beat, according to HowLongToBeat.",
   anticheat:
@@ -27,7 +27,7 @@ export const dashboardPageIntros: Record<DashboardPageSegment, string> = {
   protondb:
     "How well your games run on Linux and Steam Deck, according to ProtonDB.",
   genres:
-    "Your library broken down by Steam genre, with game counts and playtime.",
+    "Your library broken down by Steam genre or community tag, with game counts and playtime.",
   mac:
     "Which of your games run on macOS, natively or through Rosetta or CrossOver.",
   vr:

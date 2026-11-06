@@ -90,13 +90,6 @@ export const AboutPageContent = ({ embedded = false }: AboutPageContentProps) =>
           >
             Dashboard features
           </h2>
-          <p className="flex flex-wrap items-center justify-center gap-x-1 gap-y-1 text-center text-sm text-muted-foreground">
-            <span>Replace</span>
-            <Badge variant="outline" className="font-mono">
-              [steamid]
-            </Badge>
-            <span>with your Steam ID after import.</span>
-          </p>
         </div>
         <ul className="grid gap-4 sm:grid-cols-2">
           {aboutFeatures.map((feature) => (
@@ -109,12 +102,6 @@ export const AboutPageContent = ({ embedded = false }: AboutPageContentProps) =>
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <Badge
-                    variant="secondary"
-                    className="block max-w-full break-all font-mono text-[11px]"
-                  >
-                    {feature.pathPattern}
-                  </Badge>
                   {feature.highlights?.length ? (
                     <ul className="space-y-1.5 text-xs text-muted-foreground">
                       {feature.highlights.map((highlight) => (
@@ -143,8 +130,8 @@ export const AboutPageContent = ({ embedded = false }: AboutPageContentProps) =>
             Data sources
           </h2>
           <p className="text-sm text-muted-foreground">
-            External services that power enrichment. Refresh cadence is typically
-            seven days per game unless forced from Data Status.
+            Where each piece of data comes from and how often it updates. You can
+            refresh any source early from Data Status.
           </p>
         </div>
         <Card {...aboutCardProps}>
@@ -162,7 +149,7 @@ export const AboutPageContent = ({ embedded = false }: AboutPageContentProps) =>
                   <TableHead
                     className={`hidden lg:table-cell ${aboutTableCell}`}
                   >
-                    Fetch
+                    How
                   </TableHead>
                 </TableRow>
               </TableHeader>
@@ -279,7 +266,7 @@ export const AboutPageContent = ({ embedded = false }: AboutPageContentProps) =>
               {aboutTerminology.title}
             </CardTitle>
             <CardDescription>
-              Post-fix labels used across Anti-Cheat and ProtonDB sections.
+              Labels used on the Anti-Cheat and ProtonDB pages.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -327,7 +314,7 @@ export const AboutPageContent = ({ embedded = false }: AboutPageContentProps) =>
                     target="_blank"
                     rel="noopener noreferrer"
                     className="group flex flex-col gap-0.5 rounded-lg border border-border/60 p-3 transition-colors hover:border-primary/40 hover:bg-muted/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                    aria-label={`${item.name} — ${item.credit} (opens in new tab)`}
+                    aria-label={`${item.name}: ${item.credit} (opens in new tab)`}
                   >
                     <span className="inline-flex items-center gap-1 font-medium text-primary">
                       {item.name}
