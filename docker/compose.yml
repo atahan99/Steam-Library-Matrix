@@ -2,7 +2,8 @@ name: steam-library-matrix
 
 services:
   app:
-    image: steam-library-matrix:latest
+    # Prebuilt by .github/workflows/docker-publish.yml; `up --build` builds it from source instead
+    image: ghcr.io/atahan99/steam-library-matrix:latest
     build:
       context: ..
       dockerfile: docker/Dockerfile

@@ -107,11 +107,14 @@ cd Steam-Library-Matrix
 cp docker/.env.example docker/.env
 ```
 
-Set `STEAM_API_KEY` in `docker/.env`, and `CRON_SECRET` to the output of `openssl rand -hex 32`. Then start it:
+Set `STEAM_API_KEY` in `docker/.env`, and `CRON_SECRET` to the output of `openssl rand -hex 32`. Then pull the prebuilt image and start it:
 
 ```bash
-docker compose -f docker/compose.yml up --build -d
+docker compose -f docker/compose.yml pull
+docker compose -f docker/compose.yml up -d
 ```
+
+The image (`ghcr.io/atahan99/steam-library-matrix`) is rebuilt for amd64 and arm64 on every push to `main`. To build from your checkout instead, run `up --build -d`.
 
 Open [http://localhost:3001](http://localhost:3001). The first start creates the database from a bundled template, and data stays in the `matrix_db` volume across rebuilds. Other devices on your network can reach it at `http://<this-machine>:3001`; [docs/self-hosting.md](docs/self-hosting.md) shows how to keep it on this machine only, put it behind a proxy, and back it up.
 
@@ -163,7 +166,6 @@ The app is built for one person on a home machine or LAN, not as a public servic
 ## Planned
 
 - Richer DLC: parent links and complete-edition views. Steam's public API doesn't list owned DLC (only the logged-in store `dynamicstore/userdata` endpoint does, and the app has no Steam login), so this would cover Steam's DLC catalog and wishlisted DLC only.
-- A prebuilt image on GHCR.
 
 Prices and deals stay out of scope; the Overview links to the SteamDB calculator instead.
 

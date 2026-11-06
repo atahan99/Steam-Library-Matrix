@@ -16,7 +16,7 @@ The image is a single container: the Next.js standalone server, SQLite, and the 
 
 Migrations and bootstrap run from precompiled `dist/docker/*.cjs` files, so the runtime image needs no `tsx`.
 
-The live database is in the `matrix_db` named volume, so `up --build` keeps your data.
+The live database is in the `matrix_db` named volume, so pulling a new image or rebuilding keeps your data.
 
 ## LAN access
 
@@ -50,7 +50,7 @@ curl -X POST http://localhost:3001/api/jobs \
 ## Upgrades
 
 1. Back up the database ([database.md](./database.md#backup-and-restore)).
-2. `docker compose -f docker/compose.yml up --build -d`. Migrations run on start.
+2. `docker compose -f docker/compose.yml pull` and then `up -d` (or `up --build -d` to build from source). Migrations run on start.
 3. Check `curl -s http://localhost:3001/api/health`.
 
 Stop the stack with `docker compose -f docker/compose.yml down`. `pnpm docker:up` and `pnpm docker:down` run the same commands.
