@@ -174,8 +174,9 @@ export const DashboardStatusButton = ({
                     {source.percent}%
                   </span>
                   <span className="col-span-2 text-right text-[11px] tabular-nums text-muted-foreground">
-                    {source.processed}/{source.total} processed
-                    {source.scope === "library" ? " (library)" : ""}
+                    {source.refreshing
+                      ? `Refreshing ${source.refreshing.done}/${source.refreshing.total}`
+                      : `${source.processed}/${source.total} processed${source.scope === "library" ? " (library)" : ""}`}
                   </span>
                 </div>
               ))}

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest"
 import type { EnrichmentCoverage } from "@/lib/enrichment/coverage-for-appids"
 import {
   computeSyncProgress,
+  computeSyncProgressFromSources,
   estimateEtaFromActiveJobs,
   estimateSecondsRemaining,
   formatEtaSeconds,
@@ -131,5 +132,54 @@ describe("estimateEtaFromActiveJobs", () => {
 
   it("returns null when no job has remaining work", () => {
     expect(estimateEtaFromActiveJobs([{ kind: "hltb", progress: { checked: 5, total: 5 } }] as never)).toBeNull()
+  })
+})
+
+describe("computeSyncProgressFromSources with running jobs", () => {
+  const row = (key: string, total: number, processed: number) => ({
+    key,
+    label: key,
+    total,
+    withData: processed,
+    processed,
+    missing: total - processed,
+    percent: total > 0 ? Math.round((processed / total) * 100) : 100,
+  })
+
+  it("shows a refresh pass instead of 100% and never reports 100% overall while a job works", () => {
+    const result = computeSyncProgressFromSources({
+      sources: [row("app_details", 100, 100), row("anticheat", 100, 100)],
+      enrichTotal: 100,
+      activeJobs: [
+        { kind: "anticheat", status: "running", position: { done: 70, total: 100 } },
+      ],
+    })
+    const anticheat = result.sources.find((s) => s.key === "anticheat")!
+    expect(anticheat.percent).toBe(70)
+    expect(anticheat.refreshing).toEqual({ done: 70, total: 100 })
+    expect(result.percent).toBe(85)
+    expect(result.isComplete).toBe(false)
+    expect(result.activeJobCount).toBe(1)
+  })
+
+  it("treats a failed job waiting to retry as idle, so the sync can complete", () => {
+    const result = computeSyncProgressFromSources({
+      sources: [row("app_details", 10, 10)],
+      enrichTotal: 10,
+      activeJobs: [{ kind: "anticheat_catalog", status: "pending", error: "Levvvel list incomplete" }],
+    })
+    expect(result.activeJobCount).toBe(0)
+    expect(result.isComplete).toBe(true)
+    expect(result.percent).toBe(100)
+  })
+
+  it("caps at 99% when coverage is full but a job is still running", () => {
+    const result = computeSyncProgressFromSources({
+      sources: [row("protondb", 10, 10)],
+      enrichTotal: 10,
+      activeJobs: [{ kind: "protondb", status: "running" }],
+    })
+    expect(result.percent).toBe(99)
+    expect(result.isComplete).toBe(false)
   })
 })
