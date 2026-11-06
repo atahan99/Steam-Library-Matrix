@@ -81,4 +81,47 @@ describe("hltb-match", () => {
 
     expect(acceptance.ok).toBe(true)
   })
+
+  it("accepts an HLTB title that adds a subtitle to the full Steam name", () => {
+    const match = pickBestHltbHit(
+      [hit({ gameId: "20", gameName: "WRC 7: World Rally Championship", similarity: 0.4 })],
+      621830,
+      "WRC 7"
+    )
+    expect(match.ok).toBe(true)
+    if (!match.ok) return
+
+    const acceptance = evaluateHltbDetailAcceptance(621830, "WRC 7", match, {
+      gameId: "20",
+      gameName: "WRC 7: World Rally Championship",
+      profileSteam: null,
+      platforms: [],
+      mainStoryHours: 10,
+      mainExtraHours: 20,
+      completionistHours: 40,
+      allStylesHours: 15,
+    })
+    expect(acceptance.ok).toBe(true)
+  })
+
+  it("does not boost a subtitle match for a single bare word", () => {
+    const result = pickBestHltbHit(
+      [hit({ gameId: "21", gameName: "Doom: The Dark Ages", similarity: 0.4 })],
+      379720,
+      "Doom"
+    )
+    expect(result.ok ? result.confidence : 0).toBeLessThan(0.72)
+  })
+
+  it("still prefers an exact name over a subtitle match", () => {
+    const result = pickBestHltbHit(
+      [
+        hit({ gameId: "22", gameName: "WRC 7: World Rally Championship", similarity: 0.9 }),
+        hit({ gameId: "23", gameName: "WRC 7", similarity: 0.4 }),
+      ],
+      621830,
+      "WRC 7"
+    )
+    expect(result.ok && result.hit.gameId).toBe("23")
+  })
 })
