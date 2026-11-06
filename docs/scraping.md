@@ -59,7 +59,7 @@ Jobs only target appids from imported profiles (or the Compare selection); the a
 
 [`data/seed/`](../data/seed/) ships precomputed rows, so a new install shows metadata before any scraping finishes. Startup order: migrate, load seed, bootstrap catalogs, then background jobs fill whatever is missing or stale. Files and commands are in [data/seed/README.md](../data/seed/README.md).
 
-Seed data comes from Steam, ProtonDB, HowLongToBeat, AppleGamingWiki and the Denuvo Watch curator. The rights stay with those sources, and the About page lists them.
+Seed data comes from Steam, ProtonDB, HowLongToBeat, SteamSpy, AppleGamingWiki and the Denuvo Watch curator. SteamSpy rows carry reviews, owners and tags but no player count, which is only useful live. The rights stay with those sources, and the About page lists them.
 
 Generating the seed is slow because of the storefront limit: a full run over about 2,200 appids takes hours. If Steam starts a cooldown, `seed:generate` stops cleanly and keeps what it fetched; run it again later and fresh rows are skipped. Names come from the keyed `GetAppList`, with storefront `appdetails` only as a fallback.
 
