@@ -29,11 +29,19 @@ export const GET = async (
     const activeJobRows = await fetchActiveEnrichmentJobs(steamid)
 
     const activeJobResponses = activeJobRows.map(toJobResponse)
-    const activeJobs: ActiveJobSummary[] = activeJobRows.map((row) => ({
-      kind: row.kind,
-      status: row.status,
-      progress: row.progress as JobProgress | undefined,
-    }))
+    const activeJobs: ActiveJobSummary[] = activeJobRows.map((row) => {
+      const payload = row.payload as { cursor?: number; appids?: unknown[] } | null
+      return {
+        kind: row.kind,
+        status: row.status,
+        progress: row.progress as JobProgress | undefined,
+        position:
+          Array.isArray(payload?.appids) && typeof payload.cursor === "number"
+            ? { done: payload.cursor, total: payload.appids.length }
+            : undefined,
+        error: row.error,
+      }
+    })
     const progress = await buildDashboardSyncStatus(steamid, activeJobs)
 
     if (!progress) {

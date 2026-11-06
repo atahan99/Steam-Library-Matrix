@@ -31,6 +31,8 @@ const ENRICHMENT_JOB_KINDS = new Set([
 export type SyncStatusSourceRow = {
   key: string
   label: string
+  /** Set while this source's job is re-checking games: its position in that pass. */
+  refreshing?: { done: number; total: number }
   total: number
   withData: number
   processed: number
@@ -70,6 +72,35 @@ export type ActiveJobSummary = {
   kind: string
   status: string
   progress?: JobProgress
+  /** Position in the job's current pass (its saved cursor over its appid list). */
+  position?: { done: number; total: number }
+  error?: string | null
+}
+
+// Which job refreshes which progress row (app details also carries Steam Deck status).
+const SOURCE_JOB_KIND: Record<string, string> = {
+  steam_wishlist: "wishlist",
+  app_details: "app_details",
+  steam_achievements: "achievements",
+  steam_deck: "app_details",
+  protondb: "protondb",
+  anticheat: "anticheat",
+  hltb: "hltb",
+  steamspy: "steamspy",
+}
+
+/** A pending job that failed and is backing off is waiting, not working. */
+const isWaitingToRetry = (job: ActiveJobSummary) => job.status === "pending" && Boolean(job.error)
+
+/** While a job re-checks a source, the row reflects that pass instead of counting old data as done. */
+const applyRunningJob = (
+  source: SyncStatusSourceRow,
+  running: ActiveJobSummary[]
+): SyncStatusSourceRow => {
+  const pos = running.find((job) => job.kind === SOURCE_JOB_KIND[source.key])?.position
+  if (!pos || pos.total <= 0 || pos.done >= pos.total) return source
+  const jobPercent = Math.floor((pos.done / pos.total) * 100)
+  return { ...source, percent: Math.min(source.percent, jobPercent), refreshing: pos }
 }
 
 export const processedCountForSource = (source: SourceCoverage): number => {
@@ -92,24 +123,26 @@ export const computeSyncProgressFromSources = (input: {
   backgroundRemainingCount?: number
   activeJobs: ActiveJobSummary[]
 }): SyncProgressSnapshot => {
-  const totalUnits = input.sources.reduce((sum, source) => sum + source.total, 0)
-  const processedUnits = input.sources.reduce(
-    (sum, source) => sum + source.processed,
-    0
+  const activeEnrichmentJobs = input.activeJobs.filter(
+    (job) => ENRICHMENT_JOB_KINDS.has(job.kind) && !isWaitingToRetry(job)
   )
-  const percent =
-    totalUnits > 0 ? Math.round((processedUnits / totalUnits) * 100) : 100
+  const sources = input.sources.map((source) => applyRunningJob(source, activeEnrichmentJobs))
 
-  const activeEnrichmentJobs = input.activeJobs.filter((job) =>
-    ENRICHMENT_JOB_KINDS.has(job.kind)
-  )
+  const totalUnits = sources.reduce((sum, source) => sum + source.total, 0)
+  const processedUnits = sources.reduce((sum, source) => sum + source.processed, 0)
+  const weightedPercent =
+    totalUnits > 0
+      ? Math.round(sources.reduce((sum, s) => sum + s.percent * s.total, 0) / totalUnits)
+      : 100
+  // Never claim 100% while a job still has work in hand.
+  const percent = activeEnrichmentJobs.length > 0 ? Math.min(weightedPercent, 99) : weightedPercent
 
-  const allMissingDone = input.sources.every((source) => source.missing === 0)
+  const allMissingDone = sources.every((source) => source.missing === 0)
   const isComplete = allMissingDone && activeEnrichmentJobs.length === 0
   const isActive =
     input.enrichTotal > 0 &&
     (activeEnrichmentJobs.length > 0 || !allMissingDone)
-  const incompleteSourceCount = input.sources.filter(
+  const incompleteSourceCount = sources.filter(
     (source) => source.percent < 100
   ).length
   const idleIncomplete =
@@ -130,7 +163,7 @@ export const computeSyncProgressFromSources = (input: {
     activeJobCount: activeEnrichmentJobs.length,
     idleIncomplete,
     incompleteSourceCount,
-    sources: input.sources,
+    sources,
   }
 }
 
