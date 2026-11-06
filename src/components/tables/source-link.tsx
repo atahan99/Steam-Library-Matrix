@@ -32,7 +32,7 @@ export const SourceLink = ({
 }: SourceLinkProps) => {
   if (!href) return null
 
-  const icon = resolveSourceIcon(source ?? brand, href)
+  const icon = resolveSourceIcon(source ?? brand)
   const sizeClass = SOURCE_LINK_SIZE_CLASS[size]
 
   return (

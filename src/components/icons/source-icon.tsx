@@ -1,6 +1,5 @@
 import { BrandIcon } from "@/components/icons/brand-icon"
 import {
-  faviconUrlFromHref,
   SOURCE_ICON,
   type SourceIconConfig,
   type SourceSlug,
@@ -34,7 +33,7 @@ export const SourceIconFromConfig = ({
         iconClass
       )}
     >
-      {/* eslint-disable-next-line @next/next/no-img-element -- external source favicon; avoids next.config remotePatterns */}
+      {/* eslint-disable-next-line @next/next/no-img-element -- bundled source favicon; avoids next.config remotePatterns */}
       <img
         src={icon.src}
         alt=""
@@ -51,14 +50,6 @@ export const SourceIcon = ({ source, className }: SourceIconProps) => (
   <SourceIconFromConfig icon={SOURCE_ICON[source]} className={className} />
 )
 
-export const resolveSourceIcon = (
-  source?: SourceSlug,
-  href?: string
-): SourceIconConfig | null => {
-  if (source && SOURCE_ICON[source]) {
-    return SOURCE_ICON[source]
-  }
-  if (!href) return null
-  const favicon = faviconUrlFromHref(href)
-  return favicon ? { type: "favicon", src: favicon } : null
-}
+// Unknown sources get no icon: a third-party favicon service would leak every link domain.
+export const resolveSourceIcon = (source?: SourceSlug): SourceIconConfig | null =>
+  (source && SOURCE_ICON[source]) || null

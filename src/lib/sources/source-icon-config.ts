@@ -22,13 +22,3 @@ export const SOURCE_ICON: Record<SourceSlug, SourceIconConfig> = {
   levvvel: { type: "favicon", src: "/icons/sites/levvvel.svg" },
   hltb: { type: "favicon", src: "/icons/sites/hltb.png" },
 }
-
-export const faviconUrlFromHref = (href: string): string | null => {
-  try {
-    const { hostname } = new URL(href)
-    if (!hostname) return null
-    return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(hostname)}&sz=32`
-  } catch {
-    return null
-  }
-}
