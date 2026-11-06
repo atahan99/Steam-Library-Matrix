@@ -51,3 +51,7 @@ docker/db/.build-matrix.db*
 docker/db/matrix.db.template*
 !docker/db/matrix.db.example
 !docker/db/README.md
+
+# Playwright
+/test-results/
+/playwright-report/

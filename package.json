@@ -37,7 +37,8 @@
     "db:studio": "drizzle-kit studio",
     "store:throttle": "tsx --env-file=.env scripts/reset-steam-store-throttle.ts",
     "store:reset-throttle": "tsx --env-file=.env scripts/reset-steam-store-throttle.ts --reset",
-    "test:wishlist": "vitest run src/lib/steam/fetch-wishlist.test.ts"
+    "test:wishlist": "vitest run src/lib/steam/fetch-wishlist.test.ts",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
@@ -58,6 +59,7 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@playwright/test": "^1.64.1",
     "@tailwindcss/postcss": "^4.3.3",
     "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^25.9.5",
