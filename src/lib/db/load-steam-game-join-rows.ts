@@ -13,6 +13,7 @@ import {
   anticheatEntries,
   howlongtobeatEntries,
   protondbEntries,
+  steamspyEntries,
   steamAppDetails,
   steamGames,
 } from "@/lib/db/schema"
@@ -117,6 +118,7 @@ export const loadSteamGameJoinRowsByAppids = async (
         hltb: howlongtobeatEntries,
         anticheat: anticheatEntries,
         proton: protondbEntries,
+        steamspy: steamspyEntries,
       })
       .from(steamGames)
       .leftJoin(steamAppDetails, eq(steamAppDetails.appid, steamGames.appid))
@@ -126,6 +128,7 @@ export const loadSteamGameJoinRowsByAppids = async (
       )
       .leftJoin(anticheatEntries, eq(anticheatEntries.appid, steamGames.appid))
       .leftJoin(protondbEntries, eq(protondbEntries.appid, steamGames.appid))
+      .leftJoin(steamspyEntries, eq(steamspyEntries.appid, steamGames.appid))
       .where(inArray(steamGames.appid, chunk))
 
     for (const row of rows) {
@@ -140,6 +143,9 @@ export const loadSteamGameJoinRowsByAppids = async (
         howlongtobeatEntry: mapHltb(row.hltb),
         anticheatEntry: mapAnticheat(row.anticheat),
         protondbEntry: mapProton(row.proton),
+        steamspyEntry: row.steamspy
+          ? { ...row.steamspy, lastCheckedAt: toIsoString(row.steamspy.lastCheckedAt) }
+          : null,
       })
     }
   }

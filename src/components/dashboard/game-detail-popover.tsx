@@ -38,6 +38,7 @@ import { filterTableNavItemsForGame } from "@/lib/dashboard/game-table-membershi
 import { formatPlaytime } from "@/lib/utils/format-playtime"
 import { getSteamStoreUrl } from "@/lib/utils/steam-url"
 import type { DashboardGame } from "@/types/dashboard"
+import { ReviewScoreBadge } from "@/components/badges/review-score-badge"
 
 const DetailRow = ({
   label,
@@ -181,6 +182,34 @@ const GameDetailBody = ({ game, steamid }: { game: DashboardGame; steamid: strin
           )}
         </DetailRow>
         <DetailRow label="Release">{release}</DetailRow>
+        <DetailRow label="Reviews">
+          <ReviewScoreBadge
+            positive={game.steamspy?.positive}
+            negative={game.steamspy?.negative}
+            showCount
+          />
+        </DetailRow>
+        {game.steamspy?.owners || game.steamspy?.ccu ? (
+          <DetailRow label="Players">
+            {game.steamspy.owners ? <p>{game.steamspy.owners} owners</p> : null}
+            {game.steamspy.ccu ? (
+              <p className="text-muted-foreground">
+                {game.steamspy.ccu.toLocaleString("en-US")} playing yesterday at peak
+              </p>
+            ) : null}
+          </DetailRow>
+        ) : null}
+        {game.steamspy?.tags?.length ? (
+          <DetailRow label="Tags">
+            <ul className="flex list-none flex-wrap gap-1">
+              {game.steamspy.tags.map((tag) => (
+                <li key={tag} className="rounded-md bg-muted px-1.5 py-0.5 text-xs text-muted-foreground">
+                  {tag}
+                </li>
+              ))}
+            </ul>
+          </DetailRow>
+        ) : null}
       </dl>
 
       <footer className="flex flex-col gap-3 border-t border-border pt-4">

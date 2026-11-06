@@ -40,6 +40,9 @@ export const getAppDetailsConcurrency = (): number =>
 /** ProtonDB batch size per job step. */
 export const getProtonDbBatch = (): number => readEnvInt("SLM_PROTONDB_BATCH", 50)
 
+/** SteamSpy allows ~1 request/s, so a step of 30 takes about 30 seconds. */
+export const getSteamSpyBatch = (): number => readEnvInt("SLM_STEAMSPY_BATCH", 30)
+
 /** HLTB batch size per job step. */
 export const getHltbBatch = (): number => readEnvInt("SLM_HLTB_BATCH", 16)
 

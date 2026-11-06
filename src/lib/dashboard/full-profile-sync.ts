@@ -17,6 +17,7 @@ export const FAST_SYNC_JOB_ORDER: EnrichmentJobKind[] = [
   "protondb",
   "hltb",
   "app_details",
+  "steamspy",
 ]
 
 const MISSING_ONLY_ON_IMPORT = [
@@ -24,6 +25,7 @@ const MISSING_ONLY_ON_IMPORT = [
   "protondb",
   "hltb",
   "app_details",
+  "steamspy",
 ] as const satisfies readonly EnrichmentResolveSource[]
 
 type MissingOnlyImportKind = (typeof MISSING_ONLY_ON_IMPORT)[number]

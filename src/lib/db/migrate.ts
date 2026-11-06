@@ -8,6 +8,7 @@ export const MIGRATION_FILES_ORDERED = [
   "003_steam_store_throttle.sql",
   "004_profile_backlog.sql",
   "005_macos_compat.sql",
+  "006_steamspy.sql",
 ] as const
 
 const migrationsDir = path.join(process.cwd(), "db", "migrations")

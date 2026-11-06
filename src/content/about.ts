@@ -260,6 +260,17 @@ export const aboutDataSources: AboutDataSource[] = [
       "Unofficial site API — run scripts/verify-hltb.mts after outages. Full libraries can take several minutes.",
   },
   {
+    name: "SteamSpy",
+    url: "https://steamspy.com",
+    provides: "Steam review counts (shown as Steam's review summary), owner estimates, yesterday's peak players, top user tags",
+    usedIn: "Library (Reviews column, review-score sort), game detail popover",
+    fetchMethod: "POST /api/jobs (kind: steamspy)",
+    refreshCadence: "7-day TTL per game unless forced; games SteamSpy doesn't know are cached as 'no data'",
+    matchingMethod: "Steam app ID",
+    limitations:
+      "Third-party estimates, not official Valve numbers. ~1 request per second, so a large library fills in over a while.",
+  },
+  {
     name: "SteamDB",
     url: "https://steamdb.info",
     provides: "Account value and regional price calculator (external site)",
@@ -383,6 +394,11 @@ export const aboutAttributions: AboutAttribution[] = [
     name: "HowLongToBeat",
     url: "https://howlongtobeat.com",
     credit: "Completion time estimates",
+  },
+  {
+    name: "SteamSpy",
+    url: "https://steamspy.com",
+    credit: "Review counts, owner estimates, player counts and tags",
   },
   {
     name: "SteamDB",

@@ -25,6 +25,7 @@ import {
 import { isUnreleasedGame } from "@/lib/utils/parse-release-date"
 import { hasMacCompatData, hasPlatformData } from "@/lib/utils/platform-support"
 import type { DashboardGame } from "@/types/dashboard"
+import { hasSteamSpyData, isSteamSpyResolved } from "@/lib/enrichment/steamspy-coverage"
 
 const hasProtonCoverage = (g: DashboardGame) => {
   if (isUnreleasedGame(g.steamDetails?.releaseDate)) return true
@@ -198,7 +199,10 @@ export default function DataStatusPage() {
         <AnticheatCatalogBrowseCard />
       </DataStatusSection>
 
-      <DataStatusSection title="Other" description="Completion time estimates from HowLongToBeat.">
+      <DataStatusSection
+        title="Other"
+        description="Completion time estimates from HowLongToBeat, and Steam review scores, owners and tags from SteamSpy."
+      >
         <SourceStatusCard
           title="HowLongToBeat"
           source="howlongtobeat"
@@ -214,6 +218,17 @@ export default function DataStatusPage() {
               ? `${enrichTotal - hltbEnriched} titles have no HowLongToBeat listing — lookup complete`
               : "Global cache from bundled top sellers — pending = not yet resolved for your library"
           }
+        />
+        <SourceStatusCard
+          title="SteamSpy"
+          source="steamspy"
+          jobKind="steamspy"
+          lastChecked={maxChecked((g) => g.steamspy?.lastCheckedAt)}
+          totalGames={libraryTotal}
+          withData={games.filter(hasSteamSpyData).length}
+          resolvedCount={games.filter(isSteamSpyResolved).length}
+          ttlHours={168}
+          coverageNote="Review counts, owner estimates, peak players and tags · ~1 request per second, so a large library takes a while"
         />
       </DataStatusSection>
     </div>

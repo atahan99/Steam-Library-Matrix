@@ -22,6 +22,7 @@ describe("profile sync job tiers", () => {
       "protondb",
       "hltb",
       "app_details",
+      "steamspy",
     ])
   })
 

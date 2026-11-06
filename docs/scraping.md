@@ -8,6 +8,7 @@ Server-side data uses public APIs, `fetch`, and HTML parsing where needed. **No 
 | --- | --- | --- | --- | --- |
 | **Steam Web API** | `api.steampowered.com` | Keyed (`STEAM_API_KEY`) | ~100k calls/day per key | Owned games, profiles, achievements, wishlist, **GetAppList** name lookup |
 | **Steam storefront** | `store.steampowered.com` | **Unkeyed** (no `key=` param) | ~200 req / 5 min **per IP**; 403 = ban | `appdetails`, Deck compat AJAX, store HTML (Denuvo) |
+| **SteamSpy** | `steamspy.com/api.php` | Unkeyed | ~1 req/s for `appdetails` (their guidance) | Review counts, owner estimates, peak players, top tags |
 
 Attaching `STEAM_API_KEY` to storefront URLs does nothing. Storefront calls share a **SQLite-backed rate gate** (`steam_store_throttle`) so every process (dev server, `dev:jobs`, `seed:generate`) coordinates on one gap and one circuit breaker. Tune gap with `SLM_STEAM_STORE_GAP_MS` (default ~2000ms). A 403 or exhausted 429 trips a persistent cooldown (30m → 60m → 120m); all storefront work stops until it expires.
 
@@ -32,6 +33,7 @@ Stop dev server / `dev:jobs` while bulk-generating so only one process hits the 
 | macOS: Apple Silicon / Rosetta 2 / CrossOver | AppleGamingWiki Cargo API (fuzzy name match) |
 | ProtonDB | ProtonDB API |
 | HowLongToBeat | HLTB client |
+| Review score, owners, tags | SteamSpy `appdetails` (by app ID) |
 | AWACY anti-cheat | Public JSON |
 | Levvvel kernel list | `fetch` + HTML parse |
 | Denuvo anti-tamper catalog | Steam Store curator AJAX |
@@ -142,7 +144,7 @@ Compare shows games in **every** selected profile (intersection). Columns read S
 
 ## Add a source (EnrichmentSource registry)
 
-Per-appid batch sources (app details, ProtonDB, achievements, HowLongToBeat) register under [`src/lib/enrichment/sources/`](../src/lib/enrichment/sources/) and share one cursor/deadline/progress loop. Three kinds stay on the switch in [`run-step.ts`](../src/lib/jobs/run-step.ts) because they don't fit that loop: `wishlist` and `anticheat_catalog` / `denuvo_catalog` are one-shot syncs with no appid list, and `anticheat` runs two phases (catalog, then a re-sorted Denuvo pass) with a catalog readiness gate and schema-error exit.
+Per-appid batch sources (app details, ProtonDB, achievements, HowLongToBeat, SteamSpy) register under [`src/lib/enrichment/sources/`](../src/lib/enrichment/sources/) and share one cursor/deadline/progress loop. Three kinds stay on the switch in [`run-step.ts`](../src/lib/jobs/run-step.ts) because they don't fit that loop: `wishlist` and `anticheat_catalog` / `denuvo_catalog` are one-shot syncs with no appid list, and `anticheat` runs two phases (catalog, then a re-sorted Denuvo pass) with a catalog readiness gate and schema-error exit.
 
 Checklist for a new registered source:
 
@@ -156,6 +158,8 @@ Checklist for a new registered source:
 8. **Optional UI** — dashboard column/page only if users need to browse the data (not required for the registry itself).
 
 `runEnrichmentJobStep` dispatches registered kinds via `getSource` → `runRegisteredSourceStep`; the four bespoke kinds above use the switch.
+
+SteamSpy ([`sources/steamspy.ts`](../src/lib/enrichment/sources/steamspy.ts)) is the worked example of this checklist: one table, a small client, ~40 lines of source glue, and the queue, retries, TTL filtering and Data Status come from the registry. (PCGamingWiki was the first candidate, but it now rejects bulk Cargo queries, so it can't be used without scraping individual pages.)
 
 ## Scripts
 

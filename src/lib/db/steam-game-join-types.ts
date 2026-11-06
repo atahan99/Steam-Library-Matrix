@@ -70,6 +70,16 @@ export type SteamGameJoinRow = {
   howlongtobeatEntry: HowlongtobeatJoin | null
   anticheatEntry: AnticheatJoin | null
   protondbEntry: ProtondbJoin | null
+  steamspyEntry?: SteamSpyJoin | null
+}
+
+export type SteamSpyJoin = {
+  positive: number | null
+  negative: number | null
+  owners: string | null
+  ccu: number | null
+  tags: string[] | null
+  lastCheckedAt?: string
 }
 
 export type AchievementJoinInput = {

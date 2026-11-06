@@ -20,7 +20,7 @@
 
 ## Engineering highlights
 
-The interesting part is not the dashboard. It is turning six unreliable, rate-limited, mostly unofficial sources into one consistent library view, inside a single process that a person can run at home.
+The interesting part is not the dashboard. It is turning seven unreliable, rate-limited, mostly unofficial sources into one consistent library view, inside a single process that a person can run at home.
 
 ```mermaid
 flowchart LR
@@ -28,10 +28,10 @@ flowchart LR
   API -->|"upsert library"| DB[("SQLite (WAL)<br/>one file")]
   API -->|"enqueue"| Q["enrichment_jobs<br/>one active job per profile + kind"]
   W["In-process worker<br/>claims · resumes · retries"] --> Q
-  W --> R["Source registry<br/>app details · ProtonDB · HLTB · achievements"]
+  W --> R["Source registry<br/>app details · ProtonDB · HLTB<br/>achievements · SteamSpy"]
   W --> S["Special steps<br/>anti-cheat · catalogs · wishlist"]
   R & S -->|"store pages"| T["Shared store throttle<br/>+ circuit breaker (in SQLite)"]
-  T --> EXT["Steam · ProtonDB · HowLongToBeat<br/>AWACY · Levvvel · AppleGamingWiki"]
+  T --> EXT["Steam · ProtonDB · HowLongToBeat · SteamSpy<br/>AWACY · Levvvel · AppleGamingWiki"]
   R & S -->|"results + 'no data' rows"| DB
   SEED["Bundled seed<br/>~1500 top sellers"] -->|"hydrate on boot"| DB
   DB --> UI["Dashboard pages<br/>+ Data Status"]
@@ -72,7 +72,7 @@ flowchart LR
 ## Features
 
 - **Overview** — playtime, completion, and top-played / recently-played charts (plus an external SteamDB calculator link)
-- **Library** — every owned game with OS-support icons, lifetime & recent playtime, search, filters (genre / OS / played / game vs DLC), sort, pagination, and CSV export
+- **Library** — every owned game with OS-support icons, lifetime & recent playtime, Steam review score (via SteamSpy), search, filters (genre / OS / played / game vs DLC), sort, pagination, and CSV export
 - **Achievements** — library-wide achievement progress with completion %, near-100%, and never-started filters
 - **Genres** — store genre analytics: game counts and lifetime playtime per tag
 - **ProtonDB** — Linux & Steam Deck compatibility tiers with a clickable distribution chart
@@ -81,7 +81,7 @@ flowchart LR
 - **Mac & VR** — Apple Silicon (native), Rosetta 2, and CrossOver compatibility from AppleGamingWiki plus native macOS support; VR support / VR-only
 - **Compare** — line up multiple profiles (intersection of libraries)
 - **Backlog** — pile-of-shame stats, curated picks (quick wins, almost-there, gathering dust), a hand-picked queue with a monthly goal, and a random picker
-- **Enrichment source registry** — app details, ProtonDB, achievements and HowLongToBeat run behind a shared `EnrichmentSource` contract ([docs/scraping.md](docs/scraping.md)); wishlist, catalog sync and two-phase anti-cheat keep bespoke steps
+- **Enrichment source registry** — app details, ProtonDB, achievements, HowLongToBeat and SteamSpy run behind a shared `EnrichmentSource` contract ([docs/scraping.md](docs/scraping.md)); wishlist, catalog sync and two-phase anti-cheat keep bespoke steps
 - **Global search** (⌘K / Ctrl+K), theme selector, and an About page with data sources & attribution
 
 Enrichment fills in over time via a background worker; **Data Status** shows per-source progress and health.
@@ -251,7 +251,6 @@ More tuning: [docs/env.md](docs/env.md).
 Not implemented yet — rough order, may change.
 
 - [ ] Richer DLC — parent appid linkage and complete-edition views beyond the library game/DLC filter
-- [ ] First *new* source on the enrichment registry (e.g. PCGamingWiki, player counts, or review scores)
 - [ ] Publish a prebuilt image to GHCR
 
 Intentionally external (not planned in-app): SteamDB calculator (Overview link only) and price/deals data.

@@ -1,3 +1,4 @@
+import { hasSteamSpyData, isSteamSpyResolved } from "@/lib/enrichment/steamspy-coverage"
 import { hasMeaningfulAntiCheatData } from "@/lib/anticheat/stats"
 import {
   hasAuthoritativeSteamDeckStatus,
@@ -219,6 +220,8 @@ export const buildDashboardSyncStatus = async (
   const hltbWithData = libraryGames.filter(
     (game) => Boolean(game.hltb?.mainStoryMinutes)
   ).length
+  const steamspyResolved = libraryGames.filter(isSteamSpyResolved).length
+  const steamspyWithData = libraryGames.filter(hasSteamSpyData).length
 
   const anticheatCatalog = await getAnticheatCatalogStatsSafe()
   const denuvoCatalog = await getDenuvoCatalogStatsSafe()
@@ -250,7 +253,8 @@ export const buildDashboardSyncStatus = async (
     coverage.app_details.missing +
     coverage.protondb.missing +
     coverage.hltb.missing +
-    Math.max(0, libraryTotal - achievementsResolved)
+    Math.max(0, libraryTotal - achievementsResolved) +
+    Math.max(0, libraryTotal - steamspyResolved)
 
   const sources: SyncStatusSourceRow[] = [
     buildCountSource(
@@ -293,6 +297,7 @@ export const buildDashboardSyncStatus = async (
       anticheatWithData
     ),
     mapEnrichmentSource("hltb", "HowLongToBeat", coverage.hltb, hltbWithData),
+    buildCountSource("steamspy", "SteamSpy", libraryTotal, steamspyResolved, steamspyWithData),
   ]
 
   return computeSyncProgressFromSources({

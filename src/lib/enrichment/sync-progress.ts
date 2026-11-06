@@ -242,5 +242,6 @@ export const estimateEtaFromActiveJobs = (
 const SECONDS_PER_ITEM: Record<string, number> = {
   app_details: 4,
   anticheat: 16,
+  steamspy: 1.1,
 }
 const DEFAULT_SECONDS_PER_ITEM = 0.35
