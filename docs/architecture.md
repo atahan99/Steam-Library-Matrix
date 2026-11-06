@@ -34,7 +34,7 @@ For setup and operations see [`README.md`](../README.md) and the other files in
 | Database | SQLite (`better-sqlite3`), Drizzle ORM, hand-written SQL migrations in `db/migrations/` |
 | Background work | In-process enrichment worker (embedded in Docker, driven by a poller locally) |
 | External data | Steam Web API, Steam storefront, ProtonDB, HowLongToBeat, SteamSpy, AWACY, Levvvel, Denuvo curator, AppleGamingWiki |
-| Testing | Vitest (network tests isolated as `*.live.test.ts`) |
+| Testing | Vitest (network tests isolated as `*.live.test.ts`), Playwright smoke test in CI |
 | Packaging | Node 22 + pnpm (local), Docker + Docker Compose (self-host) |
 
 ## 3. System overview
@@ -426,8 +426,8 @@ before the worker catches up and every install does not re-scrape the same games
 `src/lib/seed/resolve-target-appids.ts` takes the appids from `--appids-file` if given,
 otherwise merges `data/seed/top-appids.json` (Steam top sellers) and
 `profile-appids.json` (real libraries), and falls back to every appid already in the
-local DB. `pnpm seed:generate` (`scripts/generate-seed-metadata.ts`) fetches ProtonDB and
-HLTB data into the local DB with throttling (`src/lib/seed/prefetch-seed-enrichment.ts`),
+local DB. `pnpm seed:generate` (`scripts/generate-seed-metadata.ts`) fetches ProtonDB,
+HLTB and SteamSpy data into the local DB with throttling (`src/lib/seed/prefetch-seed-enrichment.ts`),
 then exports what the local DB knows. The seed is a snapshot of a well-enriched local
 database. The file list is in [`docs/scraping.md`](./scraping.md#bundled-seed-metadata).
 

@@ -18,6 +18,11 @@ It runs on your own machine as one Next.js process and one SQLite file. There is
 | ![ProtonDB page with tier distribution, filters and compatibility table](docs/images/protondb.png) | ![HowLongToBeat page with completion times, match confidence and missing-data states](docs/images/howlongtobeat.png) |
 | Linux and Steam Deck tiers with a clickable chart | Completion times, match confidence, and why a time is missing |
 
+| Library | Backlog |
+| :---: | :---: |
+| ![Library table with OS icons, playtime and Steam review scores](docs/images/library.png) | ![Backlog page with quick wins, almost there, hidden gems and gathering dust lists](docs/images/backlog.png) |
+| Every owned game with filters, review scores and CSV export | Unplayed stats and lists for picking the next game |
+
 ## How it works
 
 Most of the work is turning seven rate-limited, mostly unofficial sources into one consistent view of a library, inside a single process someone can run at home.
@@ -33,7 +38,7 @@ flowchart LR
   R & S -->|"Steam store pages"| T["Shared store throttle<br/>+ circuit breaker (in SQLite)"]
   R & S --> EXT["ProtonDB · HowLongToBeat · SteamSpy<br/>AWACY · Levvvel · AppleGamingWiki"]
   R & S -->|"results + 'no data' rows"| DB
-  SEED["Bundled seed<br/>~1,500 top sellers"] -->|"hydrate on boot"| DB
+  SEED["Bundled seed<br/>~2,200 popular games"] -->|"hydrate on boot"| DB
   DB --> UI["Dashboard pages<br/>+ Data Status"]
 ```
 
@@ -42,8 +47,8 @@ flowchart LR
 - **Fuzzy matching with visible confidence.** Steam names rarely match community sites exactly ("Rome: Total War - Alexander", "... Definitive Edition"). The HowLongToBeat matcher tries several query variants, scores each hit, and accepts at 0.72 (0.62 for a base-title match). Low-confidence matches are labeled in the UI. DLC stays searchable, so an expansion gets its own times instead of the base game's.
 - **"No data" is cached, errors are retried.** A confirmed "not on HowLongToBeat" or "no anti-cheat entry" is stored with a time limit, so the queue stops asking. Network errors, 429s, 5xx responses and rotated tokens are retried later. The UI shows which case applies: *N/A*, *Not on HLTB*, *Pending* or *Retrying*.
 - **Scrapers that fail visibly.** The HowLongToBeat client finds its search endpoint and token in the site's own JavaScript at runtime. Levvvel is parsed from HTML and AWACY from its `games.json`, with saved fixtures in tests. When a site changes, Data Status shows that source's last run as failed, with the error.
-- **A bundled seed for a fast first load.** About 1,500 top-selling games ship pre-enriched in `data/seed/` and load into SQLite on first start, so a new profile shows most of its data right away.
-- **Hardening for a LAN app.** A nonce-based CSP with `strict-dynamic`, an Origin check on every write route, a global rate limit that a spoofed `X-Forwarded-For` can't reset, and a Docker container that drops capabilities. More than 400 tests cover it, including real-SQLite tests for the job queue, migrations and import upserts.
+- **A bundled seed for a fast first load.** About 2,200 popular games ship pre-enriched in `data/seed/` (store details, ProtonDB, HowLongToBeat, Mac support, Denuvo, and SteamSpy reviews, owners and tags) and load into SQLite on first start, so a new profile shows most of its data right away. Live-only values such as current player counts are fetched after import.
+- **Hardening for a LAN app.** A nonce-based CSP with `strict-dynamic`, an Origin check on every write route, a global rate limit that a spoofed `X-Forwarded-For` can't reset, and a Docker container that drops capabilities. More than 400 unit tests cover it, including real-SQLite tests for the job queue, migrations and import upserts. CI also builds the app and loads each main page in Chromium, failing on any console or hydration error.
 
 ### Decisions and trade-offs
 
@@ -79,7 +84,7 @@ flowchart LR
 | Data | SQLite ([better-sqlite3](https://github.com/WiseLibs/better-sqlite3)), [Drizzle ORM](https://orm.drizzle.team/), SQL migrations in `db/migrations/` |
 | Sources | Steam Web API and storefront, ProtonDB, HowLongToBeat, SteamSpy, AWACY, Levvvel, Steam curator (Denuvo), AppleGamingWiki |
 | Jobs | In-process worker (embedded in Docker, `dev:jobs` poller in local dev) |
-| Testing | Vitest, GitHub Actions |
+| Testing | Vitest, Playwright (smoke test), GitHub Actions |
 | Deploy | Docker Compose, or Node 22 and pnpm |
 
 ## Get a Steam Web API key
@@ -142,6 +147,7 @@ Open [http://localhost:3000](http://localhost:3000). `dev:all` runs the app and 
 | --- | --- |
 | `pnpm dev:all` | App and job worker |
 | `pnpm test` | Unit tests |
+| `pnpm test:e2e` | Build-and-load smoke test (run `pnpm build` first) |
 | `pnpm db:migrate` | Apply SQL migrations to `./data/matrix.db` |
 | `pnpm seed:generate` | Regenerate `data/seed/` from the local database |
 | `pnpm bootstrap` | Import and enrich a profile from the command line |
