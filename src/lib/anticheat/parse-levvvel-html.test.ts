@@ -4,7 +4,6 @@ import { fileURLToPath } from "node:url"
 import { describe, expect, it } from "vitest"
 import { LEVVVEL_PARTIAL_ROW_THRESHOLD } from "@/lib/anticheat/anticheatTypes"
 import {
-  extractLevvvelNonce,
   parseLevvvelHtml,
   parseLevvvelTableRows,
   splitAntiCheatNames,
@@ -29,13 +28,6 @@ describe("splitAntiCheatNames", () => {
       "Easy Anti-Cheat",
       "BattlEye",
     ])
-  })
-})
-
-describe("extractLevvvelNonce", () => {
-  it("reads nonce when name attribute appears before value", () => {
-    const html = `<input type="hidden" id="wdtNonceFrontendServerSide_20" name="wdtNonceFrontendServerSide_20" value="7e303fed52" />`
-    expect(extractLevvvelNonce(html)).toBe("7e303fed52")
   })
 })
 

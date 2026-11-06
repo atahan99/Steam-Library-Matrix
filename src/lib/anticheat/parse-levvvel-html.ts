@@ -93,20 +93,6 @@ export const parseLevvvelTableRows = (
   return rows
 }
 
-/** Extract wpDataTables nonce for table 20 from Levvvel kernel page HTML. */
-export const extractLevvvelNonce = (html: string): string | undefined => {
-  const patterns = [
-    /wdtNonceFrontendServerSide_20[^>]*\bvalue=["']([^"']+)["']/i,
-    /wdtNonceFrontendServerSide_20["'\s]*value=["']([^"']+)["']/i,
-    /["']wdtNonceFrontendServerSide_20["']\s*:\s*["']([^"']+)["']/i,
-  ]
-  for (const pattern of patterns) {
-    const match = html.match(pattern)
-    if (match?.[1]) return match[1]
-  }
-  return undefined
-}
-
 export const parseLevvvelHtml = (html: string): LevvvelNormalizedRow[] => {
   const $ = cheerio.load(html)
   // kernel-table-grid: Levvvel redesign (2026-11); wpDataTable: older layout kept for fallback
@@ -145,34 +131,4 @@ export const parseLevvvelHtml = (html: string): LevvvelNormalizedRow[] => {
   }
 
   return allRows
-}
-
-export const parseLevvvelAjaxDataRows = (
-  data: unknown
-): LevvvelNormalizedRow[] => {
-  if (!Array.isArray(data)) return []
-
-  const rows: LevvvelNormalizedRow[] = []
-  const seen = new Set<string>()
-
-  for (const row of data) {
-    if (!Array.isArray(row) || row.length < 3) continue
-    const cells = row.map((cell) =>
-      typeof cell === "string"
-        ? cell.replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim()
-        : String(cell ?? "").trim()
-    )
-    const entry = rowToEntry(cells, {
-      game: 1,
-      software: 2,
-      developer: 3,
-      publisher: 4,
-    })
-    if (!entry) continue
-    if (seen.has(entry.normalizedName)) continue
-    seen.add(entry.normalizedName)
-    rows.push(entry)
-  }
-
-  return rows
 }

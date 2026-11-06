@@ -10,11 +10,7 @@ import {
   type LevvvelIndexes,
 } from "@/lib/anticheat/anticheat-indexes"
 import { matchAntiCheatFromIndexes } from "@/lib/anticheat/match-from-indexes"
-import {
-  extractLevvvelNonce,
-  parseLevvvelAjaxDataRows,
-  parseLevvvelHtml,
-} from "@/lib/anticheat/parse-levvvel-html"
+import { parseLevvvelHtml } from "@/lib/anticheat/parse-levvvel-html"
 import type {
   AntiCheatLookupResult,
   AwacyCompatibilityStatus,
@@ -28,7 +24,6 @@ import {
   AWACY_SITE,
   LEVVVEL_KERNEL_URL,
   LEVVVEL_PARTIAL_ROW_THRESHOLD,
-  LEVVVEL_TABLE_ID,
 } from "@/lib/anticheat/anticheatTypes"
 import { normalizeGameName } from "@/lib/utils/normalize-game-name"
 import { fetchWithTimeout } from "@/lib/utils/fetch-with-timeout"
@@ -161,125 +156,6 @@ export const fetchAwacyGames = async (): Promise<AwacyNormalizedEntry[]> => {
   return entries
 }
 
-const LEVVVEL_COLUMN_NAMES = [
-  "wdt_ID",
-  "game",
-  "software",
-  "developer",
-  "publisher",
-] as const
-
-export const buildLevvvelWpDataTablesPostBody = (
-  start: number,
-  length: number,
-  nonce: string
-): string => {
-  const params = new URLSearchParams()
-  params.set("draw", "1")
-  params.set("start", String(start))
-  params.set("length", String(length))
-  params.set("search[value]", "")
-  params.set("search[regex]", "false")
-  params.set("wdtNonce", nonce)
-  params.set("sRangeSeparator", "|")
-  params.set("table_id", String(LEVVVEL_TABLE_ID))
-
-  for (let i = 0; i < LEVVVEL_COLUMN_NAMES.length; i++) {
-    params.set(`columns[${i}][data]`, String(i))
-    params.set(`columns[${i}][name]`, LEVVVEL_COLUMN_NAMES[i]!)
-    params.set(`columns[${i}][searchable]`, "true")
-    params.set(`columns[${i}][orderable]`, "true")
-    params.set(`columns[${i}][search][value]`, "")
-    params.set(`columns[${i}][search][regex]`, "false")
-  }
-  params.set("order[0][column]", "1")
-  params.set("order[0][dir]", "asc")
-  return params.toString()
-}
-
-const buildWpDataTablesPostBody = buildLevvvelWpDataTablesPostBody
-
-const fetchLevvvelAjaxPage = async (
-  cookieHeader: string | undefined,
-  nonce: string,
-  start: number,
-  length: number
-): Promise<{ rows: LevvvelNormalizedRow[]; total?: number }> => {
-  const url = `https://levvvel.com/wp-admin/admin-ajax.php?action=get_wdtable&table_id=${LEVVVEL_TABLE_ID}`
-  const res = await fetchWithTimeout(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-      "User-Agent": FETCH_USER_AGENT,
-      Referer: LEVVVEL_KERNEL_URL,
-      "X-Requested-With": "XMLHttpRequest",
-      ...(cookieHeader ? { Cookie: cookieHeader } : {}),
-    },
-    body: buildWpDataTablesPostBody(start, length, nonce),
-  })
-
-  if (!res.ok) return { rows: [] }
-
-  const text = await res.text()
-  if (!text.trim()) return { rows: [] }
-
-  try {
-    const json = JSON.parse(text) as {
-      data?: unknown
-      recordsTotal?: number
-      recordsFiltered?: number
-    }
-    const rows = parseLevvvelAjaxDataRows(json.data)
-    const total = json.recordsFiltered ?? json.recordsTotal
-    return { rows, total }
-  } catch (error) {
-    console.warn("[levvvel] AJAX page JSON parse failed", error)
-    return { rows: [] }
-  }
-}
-
-const fetchLevvvelViaAjax = async (
-  html: string,
-  cookieHeader: string | undefined
-): Promise<LevvvelNormalizedRow[]> => {
-  const nonce = extractLevvvelNonce(html)
-  if (!nonce) return []
-
-  const pageSize = 250
-  const merged: LevvvelNormalizedRow[] = []
-  const seen = new Set<string>()
-  let start = 0
-  let total: number | undefined
-
-  for (let page = 0; page < 50; page++) {
-    const { rows, total: reportedTotal } = await fetchLevvvelAjaxPage(
-      cookieHeader,
-      nonce,
-      start,
-      pageSize
-    )
-    if (reportedTotal !== undefined && reportedTotal > 0) {
-      total = reportedTotal
-    }
-
-    if (!rows.length && page > 0) break
-
-    for (const row of rows) {
-      if (seen.has(row.normalizedName)) continue
-      seen.add(row.normalizedName)
-      merged.push(row)
-    }
-
-    if (total !== undefined && merged.length >= total) break
-    if (!rows.length) break
-    if (rows.length < pageSize && total === undefined) break
-
-    start += rows.length > 0 ? rows.length : pageSize
-  }
-
-  return merged
-}
-
 const sleep = (ms: number): Promise<void> =>
   new Promise((resolve) => {
     setTimeout(resolve, ms)
@@ -311,29 +187,12 @@ const fetchLevvvelKernelGamesOnce = async (): Promise<LevvvelDataset> => {
   }
 
   const html = await res.text()
-  const cookieHeader = res.headers.getSetCookie?.()
-    ? res.headers.getSetCookie().join("; ")
-    : res.headers.get("set-cookie") ?? undefined
-
   const rows = parseLevvvelHtml(html)
-  let complete = rows.length >= LEVVVEL_PARTIAL_ROW_THRESHOLD
-
-  if (!complete) {
-    const ajaxRows = await fetchLevvvelViaAjax(html, cookieHeader)
-    if (ajaxRows.length > rows.length) {
-      const seen = new Set(rows.map((r) => r.normalizedName))
-      for (const row of ajaxRows) {
-        if (seen.has(row.normalizedName)) continue
-        seen.add(row.normalizedName)
-        rows.push(row)
-      }
-    }
-    complete = rows.length >= LEVVVEL_PARTIAL_ROW_THRESHOLD
-  }
+  const complete = rows.length >= LEVVVEL_PARTIAL_ROW_THRESHOLD
 
   if (!complete) {
     console.warn(
-      "Levvvel parser may only have partial table; inspect AJAX/table plugin source"
+      "Levvvel parser may only have partial table; check the page's table markup against parseLevvvelHtml"
     )
   }
 
