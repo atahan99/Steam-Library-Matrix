@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-export const SEED_MANIFEST_VERSION = 5
+export const SEED_MANIFEST_VERSION = 6
 
 export const SEED_DENUVO_CONFIDENCE = z.enum(["high", "medium", "low", "none"])
 export type SeedDenuvoConfidence = z.infer<typeof SEED_DENUVO_CONFIDENCE>
@@ -59,6 +59,12 @@ export const metadataManifestSchema = z.object({
       })
       .optional(),
     macosCompat: z
+      .object({
+        generatedAt: z.string(),
+        count: z.number().int().nonnegative(),
+      })
+      .optional(),
+    steamspy: z
       .object({
         generatedAt: z.string(),
         count: z.number().int().nonnegative(),
@@ -176,6 +182,24 @@ export const protondbSeedSchema = z.object({
 
 export type ProtonDbSeed = z.infer<typeof protondbSeedSchema>
 
+/** Slow-changing SteamSpy fields only; peak players (ccu) changes daily, so the worker fetches it live. */
+export const steamspySeedItemSchema = z.object({
+  appid: z.number().int().positive(),
+  positive: z.number().int().nonnegative(),
+  negative: z.number().int().nonnegative(),
+  owners: z.string().nullable().optional(),
+  tags: z.array(z.string()).optional(),
+  checkedAt: z.string(),
+})
+
+export const steamspySeedSchema = z.object({
+  version: z.number().int().positive(),
+  generatedAt: z.string(),
+  items: z.record(z.string(), steamspySeedItemSchema),
+})
+
+export type SteamSpySeed = z.infer<typeof steamspySeedSchema>
+
 export const hltbSeedItemSchema = z.object({
   appid: z.number().int().positive(),
   hltbId: z.string().nullable().optional(),
@@ -233,5 +257,6 @@ export type LoadedSeedFiles = {
   protondb: ProtonDbSeed | null
   hltb: HltbSeed | null
   macosCompat: MacosCompatSeed | null
+  steamspy: SteamSpySeed | null
   warnings: string[]
 }

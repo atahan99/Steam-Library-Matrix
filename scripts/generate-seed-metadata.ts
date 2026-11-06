@@ -2,12 +2,16 @@
 /**
  * Generate bundled seed metadata from local SQLite (same sources as background enrichment).
  * Usage: pnpm seed:generate [--limit 5000] [--appids-file path] [--verbose]
- *        [--skip-prefetch] [--skip-protondb] [--skip-hltb] [--skip-app-details] [--force-prefetch]
+ *        [--skip-prefetch] [--skip-protondb] [--skip-hltb] [--skip-app-details] [--skip-steamspy]
+ *        [--force-prefetch] [--only steamspy]
+ *
+ * --only steamspy prefetches and rewrites just steamspy.seed.json (+ its manifest entry),
+ * leaving the other seed files untouched. SteamSpy allows ~1 req/s, so ~2200 appids take ~40 min.
  *
  * App-details prefetch respects Steam's ~200 req/5 min store API limit (see SLM_STEAM_STORE_GAP_MS).
  * A full ~2200-appid run takes on the order of 1–2 hours.
  */
-import { mkdir, writeFile } from "node:fs/promises"
+import { mkdir, readFile, writeFile } from "node:fs/promises"
 import path from "node:path"
 import { inArray } from "drizzle-orm"
 import { closeDb, getDb } from "@/lib/db/client"
@@ -19,7 +23,9 @@ import {
   protondbEntries,
   steamAppDetails,
   steamGames,
+  steamspyEntries,
 } from "@/lib/db/schema"
+import { enrichSingleSteamSpy } from "@/lib/enrichment/steamspy"
 import { prefetchSeedEnrichment } from "@/lib/seed/prefetch-seed-enrichment"
 import { resolveTargetAppids } from "@/lib/seed/resolve-target-appids"
 import type {
@@ -30,6 +36,7 @@ import type {
   MetadataManifest,
   ProtonDbSeed,
   SteamGamesSeed,
+  SteamSpySeed,
 } from "@/lib/seed/types"
 import { DEFAULT_SEED_DIR } from "@/lib/seed/load-seed-files"
 import { SEED_MANIFEST_VERSION } from "@/lib/seed/types"
@@ -48,6 +55,8 @@ const parseArgs = () => {
   let skipHltb = false
   let skipAppDetails = false
   let forcePrefetch = false
+  let skipSteamspy = false
+  let onlySteamspy = false
 
   for (let i = 0; i < args.length; i += 1) {
     if (args[i] === "--limit" && args[i + 1]) {
@@ -68,6 +77,11 @@ const parseArgs = () => {
       skipAppDetails = true
     } else if (args[i] === "--force-prefetch") {
       forcePrefetch = true
+    } else if (args[i] === "--skip-steamspy") {
+      skipSteamspy = true
+    } else if (args[i] === "--only" && args[i + 1] === "steamspy") {
+      onlySteamspy = true
+      i += 1
     }
   }
 
@@ -80,7 +94,43 @@ const parseArgs = () => {
     skipHltb,
     skipAppDetails,
     forcePrefetch,
+    skipSteamspy,
+    onlySteamspy,
   }
+}
+
+/** Fetch SteamSpy for targets without a fresh row (TTL-aware), at its ~1 req/s pace. */
+const prefetchSteamSpy = async (appids: number[], force: boolean, verbose: boolean) => {
+  let fetched = 0
+  for (const [i, appid] of appids.entries()) {
+    const result = await enrichSingleSteamSpy(appid, force)
+    if (!result.skipped) fetched += 1
+    if (verbose && (i + 1) % PROGRESS_EVERY === 0) {
+      console.log(`[seed:generate] steamspy ${i + 1}/${appids.length} (fetched ${fetched})`)
+    }
+  }
+  return fetched
+}
+
+/** SteamSpy rows with data for the targets; ccu is left out on purpose (it goes stale daily). */
+const exportSteamSpySeed = async (appids: number[], generatedAt: string): Promise<SteamSpySeed> => {
+  const db = getDb()
+  const seed: SteamSpySeed = { version: SEED_MANIFEST_VERSION, generatedAt, items: {} }
+  for (const chunk of chunkArray(appids, CHUNK_SIZE)) {
+    const rows = await db.select().from(steamspyEntries).where(inArray(steamspyEntries.appid, chunk))
+    for (const row of rows) {
+      if (row.positive == null || row.negative == null) continue
+      seed.items[String(row.appid)] = {
+        appid: row.appid,
+        positive: row.positive,
+        negative: row.negative,
+        ...(row.owners ? { owners: row.owners } : {}),
+        ...(row.tags?.length ? { tags: row.tags } : {}),
+        checkedAt: (row.lastCheckedAt ?? new Date()).toISOString(),
+      }
+    }
+  }
+  return seed
 }
 
 const log = (verbose: boolean, message: string) => {
@@ -107,6 +157,8 @@ const main = async () => {
     skipHltb,
     skipAppDetails,
     forcePrefetch,
+    skipSteamspy,
+    onlySteamspy,
   } = parseArgs()
   const generatedAt = new Date().toISOString()
   const db = getDb()
@@ -124,6 +176,27 @@ const main = async () => {
     )
     await closeDb()
     process.exit(1)
+  }
+
+  if (onlySteamspy) {
+    if (!skipPrefetch) {
+      const fetched = await prefetchSteamSpy(targetAppids, forcePrefetch, verbose)
+      console.log(`[seed:generate] steamspy prefetch done — fetched ${fetched}`)
+    }
+    const steamspySeed = await exportSteamSpySeed(targetAppids, generatedAt)
+    const manifestPath = path.join(DEFAULT_SEED_DIR, "metadata-manifest.json")
+    const manifest = JSON.parse(await readFile(manifestPath, "utf8")) as MetadataManifest
+    manifest.version = SEED_MANIFEST_VERSION
+    manifest.generatedAt = generatedAt
+    manifest.sources.steamspy = { generatedAt, count: Object.keys(steamspySeed.items).length }
+    await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`)
+    await writeFile(
+      path.join(DEFAULT_SEED_DIR, "steamspy.seed.json"),
+      `${JSON.stringify(steamspySeed, null, 2)}\n`
+    )
+    console.log(`[seed:generate] steamspy: ${Object.keys(steamspySeed.items).length} (other seed files untouched)`)
+    await closeDb()
+    return
   }
 
   if (!skipPrefetch) {
@@ -150,6 +223,10 @@ const main = async () => {
       console.log(
         `[seed:generate] prefetch done — appDetails updated=${prefetchStats.appDetailsUpdated} proton updated=${prefetchStats.protonUpdated} hltb updated=${prefetchStats.hltbUpdated} names=${prefetchStats.namesFetched}`
       )
+    }
+    if (!skipSteamspy) {
+      const fetched = await prefetchSteamSpy(targetAppids, forcePrefetch, verbose)
+      console.log(`[seed:generate] steamspy prefetch done — fetched ${fetched}`)
     }
   } else {
     log(verbose, "skipping live prefetch (--skip-prefetch)")
@@ -409,6 +486,8 @@ const main = async () => {
     }
   }
 
+  const steamspySeed = await exportSteamSpySeed(targetAppids, generatedAt)
+
   const manifest: MetadataManifest = {
     version: SEED_MANIFEST_VERSION,
     generatedAt,
@@ -433,6 +512,10 @@ const main = async () => {
       macosCompat: {
         generatedAt,
         count: Object.keys(macosCompatSeed.items).length,
+      },
+      steamspy: {
+        generatedAt,
+        count: Object.keys(steamspySeed.items).length,
       },
     },
   }
@@ -466,6 +549,10 @@ const main = async () => {
     path.join(DEFAULT_SEED_DIR, "macos-compat.seed.json"),
     `${JSON.stringify(macosCompatSeed, null, 2)}\n`
   )
+  await writeFile(
+    path.join(DEFAULT_SEED_DIR, "steamspy.seed.json"),
+    `${JSON.stringify(steamspySeed, null, 2)}\n`
+  )
 
   console.log("[seed:generate] done")
   console.log(`  steamGames: ${Object.keys(steamGamesSeed.items).length}`)
@@ -476,6 +563,7 @@ const main = async () => {
   console.log(`  protondb: ${Object.keys(protondbSeed.items).length}`)
   console.log(`  hltb: ${Object.keys(hltbSeed.items).length}`)
   console.log(`  macosCompat: ${Object.keys(macosCompatSeed.items).length}`)
+  console.log(`  steamspy: ${Object.keys(steamspySeed.items).length}`)
   console.log(`  output: ${DEFAULT_SEED_DIR}`)
 
   await closeDb()

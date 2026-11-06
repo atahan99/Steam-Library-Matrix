@@ -51,6 +51,7 @@ const main = async () => {
         ? Object.keys(loaded.protondb.items).length
         : 0
       const hltbCount = loaded.hltb ? Object.keys(loaded.hltb.items).length : 0
+      const steamspyCount = loaded.steamspy ? Object.keys(loaded.steamspy.items).length : 0
 
       failed =
         assertManifestCount("denuvo", parsed.data.sources.denuvo?.count, denuvoCount) ||
@@ -66,6 +67,9 @@ const main = async () => {
         failed
       failed =
         assertManifestCount("hltb", parsed.data.sources.hltb?.count, hltbCount) || failed
+      failed =
+        assertManifestCount("steamspy", parsed.data.sources.steamspy?.count, steamspyCount) ||
+        failed
     }
   } else {
     console.error("missing or invalid metadata-manifest.json")

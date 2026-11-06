@@ -9,6 +9,7 @@ import {
   metadataManifestSchema,
   protondbSeedSchema,
   steamGamesSeedSchema,
+  steamspySeedSchema,
   type LoadedSeedFiles,
 } from "@/lib/seed/types"
 
@@ -63,6 +64,7 @@ export const loadSeedFiles = async (
   let protondb = null
   let hltb = null
   let macosCompat = null
+  let steamspy = null
 
   const manifestPath = path.join(seedDir, "metadata-manifest.json")
   const manifestRead = await readJsonFile(manifestPath)
@@ -154,6 +156,15 @@ export const loadSeedFiles = async (
     if (parsed.warning) warnings.push(parsed.warning)
   }
 
+  const steamspyRead = await readJsonFile(path.join(seedDir, "steamspy.seed.json"))
+  if ("error" in steamspyRead) {
+    if (!steamspyRead.error.includes("missing file")) warnings.push(steamspyRead.error)
+  } else {
+    const parsed = parseWithSchema("steamspy.seed.json", steamspyRead.data, steamspySeedSchema)
+    steamspy = parsed.value
+    if (parsed.warning) warnings.push(parsed.warning)
+  }
+
   return {
     manifest,
     steamGames,
@@ -162,6 +173,7 @@ export const loadSeedFiles = async (
     protondb,
     hltb,
     macosCompat,
+    steamspy,
     warnings,
   }
 }
