@@ -5,6 +5,7 @@ import {
   denuvoAntiTamperCatalog,
   howlongtobeatEntries,
   protondbEntries,
+  steamspyEntries,
   seedHydrationMeta,
   steamAppDetails,
   steamGames,
@@ -445,6 +446,67 @@ export const hydrateSeedData = async (
 
     inserted += gameInserts.length + protonInserted
     updated += protonUpdated
+  }
+
+  if (loaded.steamspy?.items) {
+    const items = Object.values(loaded.steamspy.items)
+    const appids = items.map((item) => item.appid)
+
+    const gamesByAppid = await loadRowsByAppids(appids, (chunk) =>
+      db.select({ appid: steamGames.appid }).from(steamGames).where(inArray(steamGames.appid, chunk))
+    )
+    const spyByAppid = await loadRowsByAppids(appids, (chunk) =>
+      db
+        .select({ appid: steamspyEntries.appid, lastCheckedAt: steamspyEntries.lastCheckedAt })
+        .from(steamspyEntries)
+        .where(inArray(steamspyEntries.appid, chunk))
+    )
+
+    const gameInserts: number[] = []
+    const spyUpserts: Array<typeof steamspyEntries.$inferInsert> = []
+    let spyInserted = 0
+    let spyUpdated = 0
+
+    for (const item of items) {
+      if (!gamesByAppid.has(item.appid)) gameInserts.push(item.appid)
+      const existing = spyByAppid.get(item.appid)
+      if (existing && !shouldApplySeedTimestamp(existing.lastCheckedAt, item.checkedAt)) {
+        skipped += 1
+        continue
+      }
+      spyUpserts.push({
+        appid: item.appid,
+        positive: item.positive,
+        negative: item.negative,
+        owners: item.owners ?? null,
+        tags: item.tags ?? null,
+        ccu: null, // live-only; the worker fills it on its next pass
+        lastCheckedAt: parseCheckedAtDate(item.checkedAt),
+        updatedAt: now,
+      })
+      if (existing) spyUpdated += 1
+      else spyInserted += 1
+    }
+
+    db.transaction((tx) => {
+      for (const appid of gameInserts) {
+        tx.insert(steamGames).values({
+          appid,
+          name: `App ${appid}`,
+          storeUrl: `https://store.steampowered.com/app/${appid}`,
+          updatedAt: now,
+        }).run()
+      }
+      for (const row of spyUpserts) {
+        tx.insert(steamspyEntries).values(row).onConflictDoUpdate({
+          target: steamspyEntries.appid,
+          set: row,
+        }).run()
+      }
+    })
+
+    inserted += gameInserts.length + spyInserted
+    updated += spyUpdated
   }
 
   if (loaded.hltb?.items) {

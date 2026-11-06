@@ -9,7 +9,8 @@ import { fetchWithTimeout } from "@/lib/utils/fetch-with-timeout"
 const STEAMSPY_API = "https://steamspy.com/api.php?request=appdetails&appid="
 // SteamSpy asks clients to stay at or below 1 request per second for appdetails.
 const STEAMSPY_DELAY_MS = 1000
-const MAX_TAGS = 8
+// SteamSpy returns up to ~20 user tags; keep them all (the top few mostly repeat store genres).
+const MAX_TAGS = 20
 
 export type SteamSpySummary = {
   positive: number

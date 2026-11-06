@@ -17,10 +17,11 @@ The folder is `data/seed/` locally and `/app/data/seed` in Docker. Set `SLM_SEED
 | `protondb.seed.json` | ProtonDB tier, confidence, report count |
 | `hltb.seed.json` | HLTB times and match data, including "no match" rows |
 | `macos-compat.seed.json` | AppleGamingWiki macOS catalog and per-game matches |
+| `steamspy.seed.json` | SteamSpy review counts, owner range and up to 20 tags. Peak players is left out because it changes daily; the worker fetches it live. |
 
 `seed:generate` seeds the union of `top-appids.json` and `profile-appids.json`. AWACY and Levvvel catalogs are not seeded; they sync at startup.
 
-When you change seed contents, bump `SEED_MANIFEST_VERSION` in [`src/lib/seed/types.ts`](../../src/lib/seed/types.ts) (currently 5). Existing installs only reload the seed when the version changes, unless `SLM_FORCE_SEED_HYDRATION=true`.
+When you change seed contents, bump `SEED_MANIFEST_VERSION` in [`src/lib/seed/types.ts`](../../src/lib/seed/types.ts) (currently 6). Existing installs only reload the seed when the version changes, unless `SLM_FORCE_SEED_HYDRATION=true`.
 
 ## Commands
 
@@ -30,6 +31,7 @@ pnpm seed:export-profiles            # write profile-appids.json from your local
 pnpm seed:generate                   # fetch live data for missing rows, then export JSON
 pnpm seed:generate --skip-prefetch   # export only, no network
 pnpm seed:generate --force-prefetch  # refetch rows that are still fresh
+pnpm seed:generate --only steamspy   # rebuild only steamspy.seed.json (~40 min at 1 req/s)
 pnpm seed:hydrate                    # load the JSON into SQLite by hand
 pnpm seed:verify                     # validate the files
 pnpm seed:diagnose                   # check overlap with imported profiles
