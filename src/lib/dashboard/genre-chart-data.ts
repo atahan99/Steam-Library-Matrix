@@ -24,13 +24,26 @@ export type GenreChartDatum = {
 
 export type GenreChartFilter = string | "all"
 
+/** Store genres (Steam's broad categories) or SteamSpy community tags. */
+export type GenreMode = "genres" | "tags"
+
+// A game's top few tags describe it; all eight would inflate every slice.
+const TAGS_PER_GAME = 3
+const MAX_TAG_SLICES = 20
+
+export const labelsForGame = (game: DashboardGame, mode: GenreMode = "genres"): string[] =>
+  mode === "tags"
+    ? (game.steamspy?.tags ?? []).slice(0, TAGS_PER_GAME)
+    : getLibraryFilterGenres(game.steamDetails)
+
 export const buildGenreChartData = (
-  games: DashboardGame[]
+  games: DashboardGame[],
+  mode: GenreMode = "genres"
 ): GenreChartDatum[] => {
   const byGenre = new Map<string, { count: number; playtimeMinutes: number }>()
 
   for (const game of games) {
-    const genres = getLibraryFilterGenres(game.steamDetails)
+    const genres = labelsForGame(game, mode)
     const labels = genres.length > 0 ? genres : [UNTAGGED_GENRE]
     const playtime = game.playtimeForeverMinutes || 0
 
@@ -43,8 +56,14 @@ export const buildGenreChartData = (
   }
 
   const keys = [...byGenre.keys()]
+  const named = keys.filter((g) => g !== UNTAGGED_GENRE)
+  // Tags are open-ended (hundreds), so keep the most common; genres keep their usual order.
+  const sortedNamed =
+    mode === "tags"
+      ? named.sort((a, b) => byGenre.get(b)!.count - byGenre.get(a)!.count).slice(0, MAX_TAG_SLICES)
+      : sortGenreFilterOptions(named)
   const ordered = [
-    ...sortGenreFilterOptions(keys.filter((g) => g !== UNTAGGED_GENRE)),
+    ...sortedNamed,
     ...(keys.includes(UNTAGGED_GENRE) ? [UNTAGGED_GENRE] : []),
   ]
 
@@ -61,9 +80,10 @@ export const buildGenreChartData = (
 }
 
 export const getLargestGenreByCount = (
-  games: DashboardGame[]
+  games: DashboardGame[],
+  mode: GenreMode = "genres"
 ): { label: string; count: number; share: number } | null => {
-  const data = buildGenreChartData(games).filter((d) => d.count > 0)
+  const data = buildGenreChartData(games, mode).filter((d) => d.count > 0)
   if (data.length === 0 || games.length === 0) return null
   const top = data.reduce((a, b) => (b.count > a.count ? b : a))
   return {
@@ -74,9 +94,10 @@ export const getLargestGenreByCount = (
 }
 
 export const getLargestGenreByPlaytime = (
-  games: DashboardGame[]
+  games: DashboardGame[],
+  mode: GenreMode = "genres"
 ): { label: string; playtimeMinutes: number; share: number } | null => {
-  const data = buildGenreChartData(games).filter((d) => d.playtimeMinutes > 0)
+  const data = buildGenreChartData(games, mode).filter((d) => d.playtimeMinutes > 0)
   if (data.length === 0) return null
   const totalPlaytime = games.reduce(
     (sum, game) => sum + (game.playtimeForeverMinutes || 0),
@@ -95,10 +116,11 @@ export const getLargestGenreByPlaytime = (
 
 export const matchesGenreChartFilter = (
   game: DashboardGame,
-  filter: GenreChartFilter
+  filter: GenreChartFilter,
+  mode: GenreMode = "genres"
 ): boolean => {
   if (filter === "all") return true
-  const genres = getLibraryFilterGenres(game.steamDetails)
+  const genres = labelsForGame(game, mode)
   if (filter === UNTAGGED_GENRE) return genres.length === 0
   return genres.includes(filter)
 }

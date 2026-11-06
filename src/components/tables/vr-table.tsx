@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import { formatDateDisplay } from "@/lib/utils/format-datetime"
 import { useGameDetail } from "@/components/dashboard/dashboard-context"
 import { useDashboardTableParams } from "@/hooks/use-dashboard-table-params"
 import {
@@ -215,7 +216,7 @@ export const VrTable = () => {
         g.steamDetails?.vrSupported === true ? "Yes" : "No",
         g.steamDetails?.vrOnly === true ? "Yes" : "No",
         g.steamDetails?.lastCheckedAt
-          ? new Date(g.steamDetails.lastCheckedAt).toLocaleDateString()
+          ? formatDateDisplay(g.steamDetails.lastCheckedAt)
           : "",
       ]),
     [filtered]
@@ -362,9 +363,9 @@ export const VrTable = () => {
                     </TableCell>
                     <TableCell className="text-xs text-muted-foreground">
                       {g.steamDetails?.lastCheckedAt
-                        ? new Date(
+                        ? formatDateDisplay(
                             g.steamDetails.lastCheckedAt
-                          ).toLocaleDateString()
+                          )
                         : "—"}
                     </TableCell>
                   </TableRow>

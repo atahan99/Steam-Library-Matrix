@@ -1,52 +1,41 @@
-# Bundled seed metadata
+# Bundled seed data
 
-Minimal derived metadata shipped with the repo for first-launch dashboard performance.
+Precomputed metadata checked into git so a new install has data before any scraping finishes. At startup (local or Docker) the app loads these files into SQLite, and the dashboard reads SQLite, never the JSON. Background jobs then refresh rows that are missing, stale or low confidence. How this fits with the sources: [docs/scraping.md](../../docs/scraping.md#bundled-seed-metadata).
 
-## What the JSON files are
+The folder is `data/seed/` locally and `/app/data/seed` in Docker. Set `SLM_SEED_DIR` to use another one.
 
-Seed JSON under `data/seed/` is a **portable bundle** checked into git. On startup (local or Docker), the app **hydrates** these files into SQLite global cache tables (`protondb_entries`, `howlongtobeat_entries`, `steam_app_details`, etc.). The dashboard reads SQLite — not JSON directly.
+## Files
 
-- **Local dev:** `file:./data/matrix.db` + `data/seed/`
-- **Docker:** the `matrix_db` named volume (`/app/data/db/matrix.db`) + `/app/data/seed` (image copy, optionally mounted read-only from the repo)
-
-Override seed directory: `SLM_SEED_DIR=/path/to/seed`
-
-## Target appids (top sellers + profiles)
-
-| File | Purpose |
+| File | Contents |
 | --- | --- |
-| `top-appids.json` | Steam store top sellers (~1500–5000) |
-| `profile-appids.json` | Union of imported profile libraries (optional) |
+| `metadata-manifest.json` | Version, counts, `generatedAt` |
+| `top-appids.json` | Steam top sellers to seed (`seed:fetch-top-appids` fetches up to 5000) |
+| `profile-appids.json` | Appids from imported profiles (optional) |
+| `steam-games.seed.json` | Appid, name, icon and store basics |
+| `app-details-lite.seed.json` | Genres, categories, platforms, Deck rating, release date |
+| `denuvo.seed.json` | Denuvo status, confidence, source, evidence |
+| `protondb.seed.json` | ProtonDB tier, confidence, report count |
+| `hltb.seed.json` | HLTB times and match data, including "no match" rows |
+| `macos-compat.seed.json` | AppleGamingWiki macOS catalog and per-game matches |
 
-`pnpm seed:generate` merges both lists when exporting/prefetching.
+`seed:generate` seeds the union of `top-appids.json` and `profile-appids.json`. AWACY and Levvvel catalogs are not seeded; they sync at startup.
 
-Export profiles from a running DB:
-
-```bash
-DATABASE_URL=file:./data/matrix.db pnpm seed:export-profiles
-```
+When you change seed contents, bump `SEED_MANIFEST_VERSION` in [`src/lib/seed/types.ts`](../../src/lib/seed/types.ts) (currently 5). Existing installs only reload the seed when the version changes, unless `SLM_FORCE_SEED_HYDRATION=true`.
 
 ## Commands
 
-- Fetch Steam top sellers (5000 appids): `pnpm seed:fetch-top-appids`
-- Export profile appids: `pnpm seed:export-profiles`
-- Regenerate seed JSON (live ProtonDB + HLTB prefetch, then export): `pnpm seed:generate`
-- Export only (no live scrape): `pnpm seed:generate --skip-prefetch`
-- Force re-prefetch stale rows: `pnpm seed:generate --force-prefetch`
-- Hydrate manually: `pnpm seed:hydrate`
-- Validate files: `pnpm seed:verify`
-- Diagnose profile overlap: `pnpm seed:diagnose`
-- Build Docker pre-hydrated DB template: `pnpm docker:build-db-template`
+```bash
+pnpm seed:fetch-top-appids           # refresh top-appids.json
+pnpm seed:export-profiles            # write profile-appids.json from your local DB
+pnpm seed:generate                   # fetch live data for missing rows, then export JSON
+pnpm seed:generate --skip-prefetch   # export only, no network
+pnpm seed:generate --force-prefetch  # refetch rows that are still fresh
+pnpm seed:hydrate                    # load the JSON into SQLite by hand
+pnpm seed:verify                     # validate the files
+pnpm seed:diagnose                   # check overlap with imported profiles
+pnpm docker:build-db-template        # build the pre-hydrated Docker template
+```
 
-## Prefetch runtime
+`seed:generate` is limited by Steam's storefront rate, so a full run over about 2,200 appids takes one to two hours. If Steam starts a cooldown it stops and keeps what it fetched; run it again later. Details: [docs/scraping.md](../../docs/scraping.md#steam-apis).
 
-With default concurrency, expect roughly:
-
-- ProtonDB: ~2–5 minutes for 5000 appids
-- HowLongToBeat: ~45–90 minutes for 5000 appids (rate limits dominate)
-
-Already-fresh rows in your local SQLite are skipped unless `--force-prefetch`.
-
-Seed data is a starting point — live enrichment refreshes missing, stale, or low-confidence rows in the background.
-
-Disable automatic hydration on startup: `SLM_SKIP_SEED_HYDRATION=true`
+Set `SLM_SKIP_SEED_HYDRATION=true` to skip loading at startup.

@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo } from "react"
+import { formatDateDisplay } from "@/lib/utils/format-datetime"
 import { ArrowDown, ArrowUp } from "lucide-react"
 import { GameCell } from "@/components/tables/game-cell"
 import {
@@ -52,6 +53,11 @@ import {
   type LibraryTypeFilter,
 } from "@/lib/utils/library-type-filter"
 import { formatPlaytime } from "@/lib/utils/format-playtime"
+import { steamReviewScore } from "@/lib/utils/steam-review-score"
+import { ReviewScoreBadge } from "@/components/badges/review-score-badge"
+
+const reviewPercent = (game: DashboardGame) =>
+  steamReviewScore(game.steamspy?.positive, game.steamspy?.negative)?.percent
 import {
   gameMatchesOsFilter,
   isLinuxSupported,
@@ -70,7 +76,7 @@ import {
   TablePaginationFooter,
 } from "@/components/tables/table-pagination-footer"
 
-type SortKey = "name" | "playtime" | "recent"
+type SortKey = "name" | "playtime" | "recent" | "reviews"
 
 type LibraryUrlState = {
   play: LibraryPlayFilter
@@ -81,7 +87,7 @@ type LibraryUrlState = {
 } & BaseTableUrlFields
 
 const isSortKey = (value: string | null): value is SortKey =>
-  value === "name" || value === "playtime" || value === "recent"
+  value === "name" || value === "playtime" || value === "recent" || value === "reviews"
 
 const isOsPlatform = (value: string): value is OsFilterPlatform =>
   value === "windows" || value === "linux" || value === "mac"
@@ -111,6 +117,7 @@ const LIBRARY_SORT_OPTIONS = [
   { value: "name", label: "Name" },
   { value: "playtime", label: "Total playtime" },
   { value: "recent", label: "Recent playtime" },
+  { value: "reviews", label: "Review score" },
 ] as const
 
 const LIBRARY_TYPE_OPTIONS: { value: LibraryTypeFilter; label: string }[] = [
@@ -180,6 +187,16 @@ export const LibraryTable = ({
         if (sortKey === "name") {
           return compareStrings(a.name, b.name, sortDirection)
         }
+        if (sortKey === "reviews") {
+          // Games without a Steam review summary sort last in either direction.
+          const pa = reviewPercent(a)
+          const pb = reviewPercent(b)
+          if (pa == null || pb == null) {
+            return pa == null && pb == null ? compareStrings(a.name, b.name, "asc") : pa == null ? 1 : -1
+          }
+          const primary = compareNumbers(pa, pb, sortDirection)
+          return primary !== 0 ? primary : compareStrings(a.name, b.name, "asc")
+        }
         if (sortKey === "playtime") {
           const primary = compareNumbers(
             a.playtimeForeverMinutes,
@@ -223,6 +240,7 @@ export const LibraryTable = ({
         isWindowsSupported(game) ? "Yes" : "No",
         isLinuxSupported(game) ? "Yes" : "No",
         isMacSupported(game) ? "Yes" : "No",
+        steamReviewScore(game.steamspy?.positive, game.steamspy?.negative)?.label ?? "",
       ]),
     [filteredGames]
   )
@@ -289,6 +307,7 @@ export const LibraryTable = ({
                   "Windows",
                   "Linux",
                   "Mac",
+                  "Reviews",
                 ]}
                 rows={exportRows}
               />
@@ -402,6 +421,15 @@ export const LibraryTable = ({
                   {renderSortLabel("Recent", "recent")}
                 </button>
               </TableHead>
+              <TableHead>
+                <button
+                  type="button"
+                  className="cursor-pointer"
+                  onClick={() => handleSort("reviews")}
+                >
+                  {renderSortLabel("Reviews", "reviews")}
+                </button>
+              </TableHead>
               <TableHead>Synced</TableHead>
             </TableRow>
           </TableHeader>
@@ -409,7 +437,7 @@ export const LibraryTable = ({
             {paged.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={6}
+                  colSpan={7}
                   className="text-center text-muted-foreground"
                 >
                   {emptyMessage}
@@ -440,9 +468,15 @@ export const LibraryTable = ({
                       releaseDate={game.steamDetails?.releaseDate}
                     />
                   </TableCell>
+                  <TableCell className="text-sm">
+                    <ReviewScoreBadge
+                      positive={game.steamspy?.positive}
+                      negative={game.steamspy?.negative}
+                    />
+                  </TableCell>
                   <TableCell className="text-xs text-muted-foreground">
                     {game.lastSyncedAt
-                      ? new Date(game.lastSyncedAt).toLocaleDateString()
+                      ? formatDateDisplay(game.lastSyncedAt)
                       : "—"}
                   </TableCell>
                 </TableRow>

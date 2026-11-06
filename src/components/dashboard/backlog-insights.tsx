@@ -17,10 +17,12 @@ import {
 import {
   getAlmostThere,
   getBacklogStats,
+  getHiddenGems,
   getOldestUnplayed,
   getQuickWins,
 } from "@/lib/dashboard/backlog"
 import { formatHltbMinutes } from "@/lib/dashboard/game-detail-display"
+import { steamReviewScore } from "@/lib/utils/steam-review-score"
 import type { DashboardGame } from "@/types/dashboard"
 
 const LIST_LIMIT = 50
@@ -102,6 +104,7 @@ export const BacklogInsights = () => {
   const quickWins = getQuickWins(games, LIST_LIMIT)
   const almostThere = getAlmostThere(games, LIST_LIMIT)
   const oldestUnplayed = getOldestUnplayed(games, LIST_LIMIT)
+  const hiddenGems = getHiddenGems(games, LIST_LIMIT)
 
   return (
     <section className="flex flex-col gap-4" aria-label="Backlog insights">
@@ -127,7 +130,7 @@ export const BacklogInsights = () => {
         />
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-3">
+      <div className="grid gap-4 lg:grid-cols-2 2xl:grid-cols-4">
         <BacklogListCard
           title="Quick wins"
           description="Unplayed and short — finish in an evening"
@@ -141,6 +144,15 @@ export const BacklogInsights = () => {
           games={almostThere}
           renderMeta={(game) => `${game.achievements?.completionPercent ?? 0}%`}
           emptyMessage="No games between 50% and 99% achievement completion."
+        />
+        <BacklogListCard
+          title="Hidden gems"
+          description="Unplayed and loved by players — best of what you own"
+          games={hiddenGems}
+          renderMeta={(game) =>
+            `${steamReviewScore(game.steamspy?.positive, game.steamspy?.negative)?.percent ?? 0}%`
+          }
+          emptyMessage="No unplayed games with strong Steam reviews yet — SteamSpy may still be filling in."
         />
         <BacklogListCard
           title="Gathering dust"

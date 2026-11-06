@@ -8,6 +8,7 @@ import {
   getLargestGenreByPlaytime,
   type GenreChartDatum,
   type GenreChartFilter,
+  type GenreMode,
 } from "@/lib/dashboard/genre-chart-data"
 import { useDashboardCollection } from "@/components/dashboard/dashboard-context"
 import {
@@ -320,24 +321,27 @@ type GenreChartsProps = {
   games: DashboardGame[]
   selectedGenre: GenreChartFilter
   onGenreSelect: (genre: GenreChartFilter) => void
+  mode?: GenreMode
 }
 
 export const GenreCharts = ({
   games,
   selectedGenre,
   onGenreSelect,
+  mode = "genres",
 }: GenreChartsProps) => {
+  const noun = mode === "tags" ? "tag" : "genre"
   const { collection } = useDashboardCollection()
 
   const collectionLabel =
     collection === "wishlist" ? "Games in wishlist" : "Games in library"
   const collectionNoun = collection === "wishlist" ? "wishlist" : "library"
 
-  const chartData = useMemo(() => buildGenreChartData(games), [games])
-  const countSummary = useMemo(() => getLargestGenreByCount(games), [games])
+  const chartData = useMemo(() => buildGenreChartData(games, mode), [games, mode])
+  const countSummary = useMemo(() => getLargestGenreByCount(games, mode), [games, mode])
   const playtimeSummary = useMemo(
-    () => getLargestGenreByPlaytime(games),
-    [games]
+    () => getLargestGenreByPlaytime(games, mode),
+    [games, mode]
   )
   const totalPlaytime = useMemo(
     () =>
@@ -365,7 +369,7 @@ export const GenreCharts = ({
   return (
     <div className="flex flex-col gap-6">
       <GenreMetricCharts
-        title="Games by genre"
+        title={`Games by ${noun}`}
         description="Click a segment to filter the table below"
         data={chartData}
         dataKey="count"
@@ -378,8 +382,12 @@ export const GenreCharts = ({
       />
 
       <GenreMetricCharts
-        title="Playtime by genre"
-        description="Lifetime playtime attributed to each genre tag"
+        title={`Playtime by ${noun}`}
+        description={
+          mode === "tags"
+            ? "Lifetime playtime attributed to each game's top 3 community tags"
+            : "Lifetime playtime attributed to each genre tag"
+        }
         data={chartData}
         dataKey="playtimeMinutes"
         centerValue={formatPlaytimePieCenter(totalPlaytime)}

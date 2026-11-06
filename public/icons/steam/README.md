@@ -1,9 +1,7 @@
 # Steam icon
 
-Brand SVG from [thesvg.org](https://thesvg.org). Runtime UI uses `SteamIcon` in `src/components/icons/steam-icon.tsx`; this file is a reference copy.
+Mono SVG from [thesvg.org](https://thesvg.org). Nothing loads this file at runtime: the app draws it inline through `SteamIcon` in `src/components/icons/steam-icon.tsx`, and the Library Orbit uses `../sites/steam.svg`. It is kept as a reference copy.
 
-Also used on the landing/About **Library Orbit** for the Steam Store ring node.
-
-| File | Slug | Variant |
-|------|------|---------|
-| `mono.svg` | steam | mono |
+| File | Slug |
+|------|------|
+| `mono.svg` | steam |

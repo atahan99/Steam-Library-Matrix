@@ -1,8 +1,5 @@
 import { BrandIcon } from "@/components/icons/brand-icon"
-import { SourceSiteIcon } from "@/components/icons/source-site-icons"
-import { SteamIcon } from "@/components/icons/steam-icon"
 import {
-  faviconUrlFromHref,
   SOURCE_ICON,
   type SourceIconConfig,
   type SourceSlug,
@@ -25,16 +22,8 @@ export const SourceIconFromConfig = ({
 }) => {
   const iconClass = cn(DEFAULT_ICON_CLASS, className)
 
-  if (icon.type === "steam") {
-    return <SteamIcon className={iconClass} />
-  }
-
   if (icon.type === "brand") {
     return <BrandIcon brand={icon.brand} className={iconClass} />
-  }
-
-  if (icon.type === "site") {
-    return <SourceSiteIcon site={icon.site} className={iconClass} />
   }
 
   return (
@@ -44,7 +33,7 @@ export const SourceIconFromConfig = ({
         iconClass
       )}
     >
-      {/* eslint-disable-next-line @next/next/no-img-element -- external source favicon; avoids next.config remotePatterns */}
+      {/* eslint-disable-next-line @next/next/no-img-element -- bundled source favicon; avoids next.config remotePatterns */}
       <img
         src={icon.src}
         alt=""
@@ -61,14 +50,6 @@ export const SourceIcon = ({ source, className }: SourceIconProps) => (
   <SourceIconFromConfig icon={SOURCE_ICON[source]} className={className} />
 )
 
-export const resolveSourceIcon = (
-  source?: SourceSlug,
-  href?: string
-): SourceIconConfig | null => {
-  if (source && SOURCE_ICON[source]) {
-    return SOURCE_ICON[source]
-  }
-  if (!href) return null
-  const favicon = faviconUrlFromHref(href)
-  return favicon ? { type: "favicon", src: favicon } : null
-}
+// Unknown sources get no icon: a third-party favicon service would leak every link domain.
+export const resolveSourceIcon = (source?: SourceSlug): SourceIconConfig | null =>
+  (source && SOURCE_ICON[source]) || null

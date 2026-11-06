@@ -7,6 +7,7 @@ describe("enrichment source registry", () => {
     ["protondb", "ProtonDB"],
     ["achievements", "Achievements"],
     ["hltb", "HowLongToBeat"],
+    ["steamspy", "SteamSpy"],
   ] as const)("resolves registered kind %s", (kind, label) => {
     const source = getSource(kind)
     expect(source?.kind).toBe(kind)

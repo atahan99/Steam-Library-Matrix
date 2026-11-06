@@ -1,6 +1,7 @@
 "use client"
 
 import Image from "next/image"
+import { formatDateDisplay } from "@/lib/utils/format-datetime"
 import Link from "next/link"
 import { Gamepad2, XIcon } from "lucide-react"
 import { AntiCheatStatusBadge } from "@/components/badges/anticheat-status-badge"
@@ -37,6 +38,8 @@ import { filterTableNavItemsForGame } from "@/lib/dashboard/game-table-membershi
 import { formatPlaytime } from "@/lib/utils/format-playtime"
 import { getSteamStoreUrl } from "@/lib/utils/steam-url"
 import type { DashboardGame } from "@/types/dashboard"
+import { ReviewScoreBadge } from "@/components/badges/review-score-badge"
+import { formatOwnersRange } from "@/lib/utils/steam-review-score"
 
 const DetailRow = ({
   label,
@@ -49,12 +52,13 @@ const DetailRow = ({
     <dt className="shrink-0 text-xs font-medium uppercase tracking-wide text-muted-foreground sm:w-32">
       {label}
     </dt>
-    <dd className="text-sm">{children}</dd>
+    <dd className="min-w-0 break-words text-sm">{children}</dd>
   </div>
 )
 
 const GameDetailBody = ({ game, steamid }: { game: DashboardGame; steamid: string }) => {
   const storeHref = game.storeUrl ?? getSteamStoreUrl(game.appid)
+  const owners = formatOwnersRange(game.steamspy?.owners)
   const { closeGameDetail } = useGameDetail()
   const { games, wishlistGames } = useDashboard()
   const tableNavItems = filterTableNavItemsForGame(
@@ -65,7 +69,7 @@ const GameDetailBody = ({ game, steamid }: { game: DashboardGame; steamid: strin
   const vrDisplay = getVrDetailDisplay(game.steamDetails)
   const genreLabels = getGenreLabelsForDetail(game.steamDetails?.genres)
   const release = game.steamDetails?.releaseDate?.date
-    ? new Date(game.steamDetails.releaseDate.date).toLocaleDateString()
+    ? formatDateDisplay(game.steamDetails.releaseDate.date)
     : "—"
 
   return (
@@ -180,6 +184,31 @@ const GameDetailBody = ({ game, steamid }: { game: DashboardGame; steamid: strin
           )}
         </DetailRow>
         <DetailRow label="Release">{release}</DetailRow>
+        <DetailRow label="Reviews">
+          <ReviewScoreBadge
+            positive={game.steamspy?.positive}
+            negative={game.steamspy?.negative}
+            stacked
+          />
+        </DetailRow>
+        {owners ? <DetailRow label="Owners">{owners}</DetailRow> : null}
+        {game.steamspy?.ccu ? (
+          <DetailRow label="Peak players">
+            {game.steamspy.ccu.toLocaleString("en-US")}
+            <span className="text-muted-foreground"> yesterday</span>
+          </DetailRow>
+        ) : null}
+        {game.steamspy?.tags?.length ? (
+          <DetailRow label="Tags">
+            <ul className="flex list-none flex-wrap gap-1">
+              {game.steamspy.tags.map((tag) => (
+                <li key={tag} className="rounded-md bg-muted px-1.5 py-0.5 text-xs text-muted-foreground">
+                  {tag}
+                </li>
+              ))}
+            </ul>
+          </DetailRow>
+        ) : null}
       </dl>
 
       <footer className="flex flex-col gap-3 border-t border-border pt-4">

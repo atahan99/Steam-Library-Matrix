@@ -1,56 +1,20 @@
-# Docker database files
+# Docker database
 
-SQLite for **Docker Compose only** (not used by local `pnpm dev:all`). This directory holds
-**build-time and reference files only** — the live database is in the `matrix_db` named
-volume (see below), **not** here.
+The live Docker database is not in this folder. Compose keeps it in the named volume `matrix_db`, mounted at `/app/data/db`, because SQLite WAL files can corrupt on bind mounts. Local dev uses `./data/` instead ([docs/database.md](../../docs/database.md)), and the two should never share a file.
 
-| File | Purpose |
-| --- | --- |
-| `README.md` | This file |
-| `matrix.db.template` | Pre-hydrated seed cache — **generated during `docker build`**, gitignored, baked into the image |
-| `matrix.db.example` | Empty placeholder, vestigial (Compose needs no manual copy step) |
-
-A `matrix.db` (plus `-wal`/`-shm` sidecars) only appears here if you manually copy a backup
-into this folder. The **running** database and its WAL files live in the `matrix_db` volume
-(Docker) or `./data/` (local dev) — never in this directory at runtime.
-
-## Live database storage
-
-Compose stores the **live** database in the Docker named volume `matrix_db` at `/app/data/db` inside the container. This avoids SQLite WAL corruption that can occur with bind mounts.
+`docker build` writes `matrix.db.template` here inside the build stage (gitignored) and copies it into the image. It is an empty database with migrations applied and seed data loaded.
 
 ## First run
 
-On container start, if `matrix.db` is missing the entrypoint copies `matrix.db.template` from the image (migrate + seed hydrate at build time), runs migrations forward, then optionally hydrates any newer seed JSON. If the template is absent, seed JSON hydration still populates the DB on first run.
+When the volume has no `matrix.db`, the entrypoint copies the template in, runs migrations, and loads any newer seed JSON from `/app/data/seed` (Compose mounts `../data/seed` read-only). Without a template, seed loading still fills the new database.
 
-Bundled seed JSON lives at `/app/data/seed` in the container (Compose mounts `../data/seed:ro` from the repo).
+Denuvo data ships in the seed. The AWACY and Levvvel anti-cheat catalogs do not; they are downloaded on first start unless `SLM_SKIP_CATALOG_BOOTSTRAP=true`. If that download fails (offline, upstream outage), the anti-cheat views stay empty until a later start or a sync from Data Status succeeds.
 
-No manual `cp matrix.db.example` step is required when using Compose.
+Backups: [docs/database.md](../../docs/database.md#backup-and-restore).
 
-## Anti-cheat catalogs (AWACY / Levvvel)
+## Moving from a bind mount
 
-Denuvo rows ship in bundled seed JSON and the pre-hydrated template. **AWACY** (Linux anti-cheat) and **Levvvel** (kernel anti-cheat) catalogs are **not** seeded — they are fetched from the network on first container start via `catalog-bootstrap` (unless `SLM_SKIP_CATALOG_BOOTSTRAP=true`). If that bootstrap fails (offline install, upstream outage), the anti-cheat dashboard may be empty until catalogs sync successfully. Re-run bootstrap with `pnpm bootstrap:anticheat-catalogs` locally or restart the container once network access is available.
-
-Seeding AWACY/Levvvel JSON was deferred: catalog rows change frequently, add significant image-adjacent maintenance, and duplicate what bootstrap already refreshes on a schedule.
-
-## Backup (named volume)
-
-```bash
-docker compose -f docker/compose.yml exec app cp /app/data/db/matrix.db /tmp/matrix-backup.db
-docker cp "$(docker compose -f docker/compose.yml ps -q app)":/tmp/matrix-backup.db ./matrix-backup.db
-```
-
-Stop the app first for a quiesced copy if you prefer:
-
-```bash
-docker compose -f docker/compose.yml stop app
-docker compose -f docker/compose.yml exec app cp /app/data/db/matrix.db /tmp/matrix-backup.db
-docker cp "$(docker compose -f docker/compose.yml ps -q app)":/tmp/matrix-backup.db ./matrix-backup.db
-docker compose -f docker/compose.yml start app
-```
-
-## Migrate from bind mount (`docker/db/`)
-
-If you previously used `./db:/app/data/db`, copy data into the named volume once:
+If an older setup mounted `./db:/app/data/db`, copy the files into the volume once:
 
 ```bash
 docker compose -f docker/compose.yml down
@@ -62,18 +26,11 @@ docker run --rm \
 docker compose -f docker/compose.yml up -d
 ```
 
-Adjust the volume name if your Compose project name differs (`docker volume ls`).
+Check the volume name with `docker volume ls` if your Compose project name differs.
 
-## Migrate from default Compose project name (`docker_matrix_db`)
+## Moving from the `docker_matrix_db` volume
 
-If you previously ran Compose without an explicit project `name:`, the live DB lived in
-`docker_matrix_db`. Adding `name: steam-library-matrix` creates a new volume
-(`steam-library-matrix_matrix_db`), so the app looks empty until you migrate or re-import.
-
-**Option A — re-import:** tear down, bring up with the new project name, and import your
-Steam profile again (seed + import are quick for typical libraries).
-
-**Option B — one-time volume copy:**
+Compose runs as project `steam-library-matrix`, so the volume is `steam-library-matrix_matrix_db`. Older setups without a project name used `docker_matrix_db`, and the app looks empty after upgrading. Either import your profile again, or copy the old volume once:
 
 ```bash
 docker compose -f docker/compose.yml down
@@ -84,7 +41,7 @@ docker run --rm \
 docker compose -f docker/compose.yml up --build -d
 ```
 
-## Recovery from corruption
+## Recovering from corruption
 
 ```bash
 docker compose -f docker/compose.yml stop app
@@ -92,15 +49,4 @@ docker compose -f docker/compose.yml run --rm app sh -c 'rm -f /app/data/db/matr
 docker compose -f docker/compose.yml up -d
 ```
 
-The entrypoint recreates the DB from `matrix.db.template` when `matrix.db` is missing.
-
-## Local vs Docker
-
-| | Local | Docker |
-| --- | --- | --- |
-| Database | `./data/matrix.db` | named volume `matrix_db` → `/app/data/db` |
-| Seed JSON | `./data/seed/` | image + optional mount |
-| Prefetch | hydrate on `pnpm dev` start | pre-hydrated template + entrypoint |
-| App URL | http://localhost:3000 | http://localhost:3001 |
-
-Do **not** run local dev and Docker against the same database file.
+The entrypoint creates a fresh database on the next start. Import your profile again afterwards.

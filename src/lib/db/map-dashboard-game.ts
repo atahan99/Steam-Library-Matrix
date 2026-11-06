@@ -146,6 +146,17 @@ export const mapSteamGameToDashboard = (
           lastCheckedAt: ac.lastCheckedAt,
         }
       : undefined,
+    steamspy: gameTyped.steamspyEntry
+      ? {
+          // positive === null is the "SteamSpy has no data" row
+          positive: gameTyped.steamspyEntry.positive ?? undefined,
+          negative: gameTyped.steamspyEntry.negative ?? undefined,
+          owners: gameTyped.steamspyEntry.owners ?? undefined,
+          ccu: gameTyped.steamspyEntry.ccu ?? undefined,
+          tags: gameTyped.steamspyEntry.tags ?? undefined,
+          lastCheckedAt: gameTyped.steamspyEntry.lastCheckedAt,
+        }
+      : undefined,
     protondb: proton
       ? {
           tier:

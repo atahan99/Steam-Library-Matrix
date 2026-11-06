@@ -85,6 +85,21 @@ export const steamAppDetails = sqliteTable("steam_app_details", {
   updatedAt: timestampMs("updated_at").default(sql`(cast(unixepoch('subsec') * 1000 as integer))`),
 })
 
+export const steamspyEntries = sqliteTable("steamspy_entries", {
+  appid: integer("appid")
+    .primaryKey()
+    .references(() => steamGames.appid, { onDelete: "cascade" }),
+  /** Null when SteamSpy has no data for the app (negative-cache row). */
+  positive: integer("positive"),
+  negative: integer("negative"),
+  owners: text("owners"),
+  ccu: integer("ccu"),
+  tags: jsonText<string[]>("tags"),
+  lastCheckedAt: timestampMs("last_checked_at").default(sql`(cast(unixepoch('subsec') * 1000 as integer))`),
+  createdAt: timestampMs("created_at").default(sql`(cast(unixepoch('subsec') * 1000 as integer))`),
+  updatedAt: timestampMs("updated_at").default(sql`(cast(unixepoch('subsec') * 1000 as integer))`),
+})
+
 export const howlongtobeatEntries = sqliteTable("howlongtobeat_entries", {
   appid: integer("appid")
     .primaryKey()

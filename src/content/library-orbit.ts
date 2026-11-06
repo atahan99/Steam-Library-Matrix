@@ -21,7 +21,7 @@ export const libraryOrbitNodes: LibraryOrbitNode[] = [
     id: "steam",
     label: "Steam Store",
     url: "https://store.steampowered.com",
-    icon: { type: "steam" },
+    icon: SOURCE_ICON.steam,
   },
   {
     id: "protondb",
@@ -58,5 +58,11 @@ export const libraryOrbitNodes: LibraryOrbitNode[] = [
     label: "Steam Deck",
     url: "https://www.steamdeck.com/en/verified",
     icon: SOURCE_ICON["steam-deck"],
+  },
+  {
+    id: "steamspy",
+    label: "SteamSpy",
+    url: "https://steamspy.com",
+    icon: SOURCE_ICON.steamspy,
   },
 ]

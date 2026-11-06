@@ -30,6 +30,7 @@ const JOB_KIND_PRIORITY_SQL = sql`CASE ${enrichmentJobs.kind}
   WHEN 'protondb' THEN 4
   WHEN 'hltb' THEN 5
   WHEN 'app_details' THEN 4
+  WHEN 'steamspy' THEN 6
   ELSE 99
 END`
 

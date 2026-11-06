@@ -11,6 +11,7 @@ import {
   profileGameAchievements,
   profileGames,
   protondbEntries,
+  steamspyEntries,
   steamAppDetails,
   steamGames,
 } from "@/lib/db/schema"
@@ -22,6 +23,7 @@ import {
   APP_DETAILS_TTL_HOURS,
   HLTB_TTL_HOURS,
   PROTONDB_TTL_HOURS,
+  STEAMSPY_TTL_HOURS,
 } from "@/lib/enrichment/enrichment-ttl"
 import { isHltbConfirmedAbsentMatchedName } from "@/lib/enrichment/hltb-lookup-outcome"
 
@@ -40,6 +42,7 @@ export type EnrichmentResolveSource =
   | "achievements"
   | "anticheat"
   | "hltb"
+  | "steamspy"
 
 export type ResolveEnrichmentAppidsOptions = {
   steamid?: string
@@ -109,7 +112,7 @@ const resolveBaseAppidsForSource = async (
 
   if (!options.steamid) return []
 
-  if (source === "protondb") {
+  if (source === "protondb" || source === "steamspy") {
     return getProfileAppids(options.steamid)
   }
 
@@ -191,36 +194,40 @@ const sortAppDetailsDeckPriority = (
   })
 }
 
-const filterProtonDbAppids = async (
+/** Drop appids checked within the TTL. A fresh row is done even when the source had no data. */
+const filterFreshlyChecked = async (
   appids: number[],
-  force: boolean
+  force: boolean,
+  ttlHours: number,
+  loadChecked: (chunk: number[]) => Promise<{ appid: number; lastCheckedAt: Date | null }[]>
 ): Promise<number[]> => {
   if (force) return appids
   if (appids.length === 0) return []
 
-  const db = getDb()
   const freshAppids = new Set<number>()
-
   for (const chunk of chunkArray(appids, QUERY_CHUNK_SIZE)) {
-    const existing = await db
-      .select({
-        appid: protondbEntries.appid,
-        lastCheckedAt: protondbEntries.lastCheckedAt,
-      })
-      .from(protondbEntries)
-      .where(inArray(protondbEntries.appid, chunk))
-
-    for (const row of existing) {
-      // Checked recently = done, even when ProtonDB has no tier for this game.
-      // Otherwise every game without Proton data was re-fetched on every pass.
-      if (isCacheFresh(row.lastCheckedAt?.toISOString(), PROTONDB_TTL_HOURS)) {
-        freshAppids.add(row.appid)
-      }
+    for (const row of await loadChecked(chunk)) {
+      if (isCacheFresh(row.lastCheckedAt?.toISOString(), ttlHours)) freshAppids.add(row.appid)
     }
   }
-
   return appids.filter((appid) => !freshAppids.has(appid))
 }
+
+const filterProtonDbAppids = (appids: number[], force: boolean) =>
+  filterFreshlyChecked(appids, force, PROTONDB_TTL_HOURS, (chunk) =>
+    getDb()
+      .select({ appid: protondbEntries.appid, lastCheckedAt: protondbEntries.lastCheckedAt })
+      .from(protondbEntries)
+      .where(inArray(protondbEntries.appid, chunk))
+  )
+
+const filterSteamSpyAppids = (appids: number[], force: boolean) =>
+  filterFreshlyChecked(appids, force, STEAMSPY_TTL_HOURS, (chunk) =>
+    getDb()
+      .select({ appid: steamspyEntries.appid, lastCheckedAt: steamspyEntries.lastCheckedAt })
+      .from(steamspyEntries)
+      .where(inArray(steamspyEntries.appid, chunk))
+  )
 
 const filterAchievementAppids = async (
   steamid: string,
@@ -414,6 +421,8 @@ export async function resolveAppidsForSource(
       return filterAppDetailsAppids(appids, options.force)
     case "protondb":
       return filterProtonDbAppids(appids, options.force)
+    case "steamspy":
+      return filterSteamSpyAppids(appids, options.force)
     case "achievements": {
       if (!options.steamid) return appids
       return filterAchievementAppids(options.steamid, appids, options.force)

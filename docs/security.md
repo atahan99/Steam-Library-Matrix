@@ -1,66 +1,70 @@
 # Security
 
-Notes for **single-user, self-hosted** use. This app is LAN-first — keep it on a private network. The points below are worth knowing regardless of exposure.
+The app is built for one person on a private network. It has no login, so keep its port off the internet.
 
 ## API access
 
-There is **no in-app Bearer guard** on import, refresh, dashboard, or enrichment routes.
+Only one route checks a secret:
 
-- `GET /api/cron/process-jobs` always requires `Authorization: Bearer <CRON_SECRET>`.
-- All other routes — `POST /api/jobs`, `/api/steam/import`, `/api/steam/refresh`, `/api/dashboard/*` — are **open** (rate-limited only).
-- Non-GET/HEAD API requests with an `Origin` header whose host differs from `Host` get `403` (CSRF guard). Requests without `Origin` (curl, scripts) are allowed.
+- `GET /api/cron/process-jobs` needs `Authorization: Bearer <CRON_SECRET>`. It returns 503 when `CRON_SECRET` is unset and 401 on a wrong token. The comparison is constant time and checks byte length first ([`guard.ts`](../src/lib/api/guard.ts)).
+- Every other route (`POST /api/jobs`, `/api/steam/import`, `/api/steam/refresh`, `/api/dashboard/*`) is open and only rate limited.
 
-Keep the app on your LAN. The open routes (including the `/api/jobs` enrichment queue) shouldn't be reachable from an untrusted network.
-
-## Background jobs
-
-Jobs live in `enrichment_jobs`; processing via `GET /api/cron/process-jobs` (Bearer `CRON_SECRET`). Data Status enqueues and polls instead of blocking the browser on large libraries.
+A non-GET/HEAD request whose `Origin` host differs from `Host` gets 403 ([`with-api-route.ts`](../src/lib/api/with-api-route.ts)). This blocks cross-site form posts from a browser. Requests with no `Origin`, such as curl or scripts, pass.
 
 ## Rate limiting
 
-In-memory sliding windows, one global bucket per tier (single-user app; client IP headers are not trusted). The limiter is **process-local** — it does not coordinate between the Next.js web server and the embedded job worker when both run in the same container.
+[`rate-limit.ts`](../src/lib/api/rate-limit.ts) keeps an in-memory sliding window of one minute, with one shared bucket per tier. It ignores client IP because `X-Forwarded-For` can be spoofed and there is only one user.
 
-- Default: `SLM_RATE_LIMIT_PER_MIN` (60/min)
-- Expensive routes: min(10, default limit)
-- Expired timestamps are pruned on each request; memory is bounded to one window per tier
+| Tier | Limit |
+| --- | --- |
+| default | `SLM_RATE_LIMIT_PER_MIN` (60) |
+| expensive | min(10, default) |
+
+Over the limit the API returns 429 with `Retry-After`. The counter lives in one process and is not shared with a separate `dev:jobs` process.
 
 ## Content Security Policy
 
-[`src/proxy.ts`](../src/proxy.ts) sets a per-request nonce ([`csp.ts`](../src/lib/security/csp.ts)) in production:
+[`src/proxy.ts`](../src/proxy.ts) builds a fresh nonce for each request and sets the policy from [`csp.ts`](../src/lib/security/csp.ts). In production:
 
-- `script-src 'self' 'nonce-{nonce}' 'strict-dynamic'`
-- `style-src 'self' 'nonce-{nonce}' 'sha256-…'` (Recharts via [`NonceProvider`](../src/components/security/nonce-provider.tsx); two hashes for the `<style>` Sonner injects without a nonce — `csp.test.ts` fails if a Sonner upgrade changes them)
-- `style-src-attr 'unsafe-inline'` (React `style={{…}}` — orbit layout, neon card, charts)
-- Dev: `'unsafe-eval'` (HMR) and `'unsafe-inline'` on `style-src` only
-- No `upgrade-insecure-requests`, so plain-HTTP LAN access by IP works; HTTPS deployments get HSTS from `proxy.ts`
+- `script-src 'self' 'nonce-…' 'strict-dynamic'`
+- `style-src 'self' 'nonce-…'` plus two `sha256` hashes for the `<style>` tag Sonner injects without a nonce. `csp.test.ts` recomputes them from the installed Sonner, so an upgrade that changes them fails the test.
+- `style-src-attr 'unsafe-inline'` for React `style={…}` props
+- `frame-ancestors 'none'` and `object-src 'none'`; images, fonts and `fetch` may load from `'self'` or any `https:` origin
 
-If you add a library that injects scripts/styles and it's blocked, this is why.
+Development adds `'unsafe-eval'` to scripts for hot reload and uses `'unsafe-inline'` for styles.
+
+There is no `upgrade-insecure-requests`, so plain HTTP by LAN IP works. Production responses also send HSTS, which browsers apply only over HTTPS.
+
+If a new library's scripts or styles are blocked, this policy is the reason.
+
+Source icons are bundled under [`public/icons/sites/`](../public/icons/sites/). A link to an unknown source gets no icon, so no third-party favicon service sees your link domains.
 
 ## Scraping
 
-- No browser automation — [scraping.md](./scraping.md)
-- SteamDB calculator: external tab only
+The server uses plain HTTP fetches and never drives a browser ([scraping.md](./scraping.md)). The SteamDB calculator opens in a new tab and is never scraped.
 
 ## Secrets
 
-- Never commit `.env` / `docker/.env`
-- Never `NEXT_PUBLIC_*` for `CRON_SECRET` or `STEAM_API_KEY` (a leaked Web API key is a leaked key, LAN or not)
-- Rotate `CRON_SECRET` if leaked; restart containers
+- Never commit `.env` or `docker/.env`.
+- Never put `CRON_SECRET` or `STEAM_API_KEY` in a `NEXT_PUBLIC_*` variable.
+- If `CRON_SECRET` leaks, change it and restart.
 
-## Docker
+## Docker hardening
 
-- Entrypoint writes selected env to `/app/.env` for standalone Next.js
-- App runs as `nextjs` via `su-exec`
-- Compose binds the port to `127.0.0.1`, drops all capabilities except those the entrypoint needs, and sets `no-new-privileges`
-- Protect `./data/` (local) or the `matrix_db` volume (Docker); backup `matrix.db` before upgrades
+[`docker/compose.yml`](../docker/compose.yml):
 
-## Security checklist
+- publishes the port on `127.0.0.1:3001` only ([self-hosting.md](./self-hosting.md#lan-access) shows how to open it)
+- drops all capabilities, then adds back `CHOWN`, `DAC_OVERRIDE`, `FOWNER`, `SETUID` and `SETGID`, which the entrypoint needs to fix ownership of the database directory and switch users
+- sets `no-new-privileges`
 
-- [ ] Keep the app on your LAN; don't publish its port to the internet
-- [ ] `CRON_SECRET` only if you poll `/api/cron/process-jobs` externally (optional with the embedded worker)
-- [ ] Back up `matrix.db` before upgrades
-- [ ] Run `pnpm audit` on build hosts periodically
+The entrypoint starts as root, then runs the app as `nextjs` through `su-exec`.
+
+## Checklist
+
+- [ ] The port is not reachable from the internet.
+- [ ] Back up `matrix.db` before upgrades ([database.md](./database.md#backup-and-restore)).
+- [ ] Run `pnpm audit` now and then.
 
 ## Reporting
 
-For security issues, contact the maintainer privately — not a public issue with exploit details.
+Report security issues to the maintainer privately, not in a public issue.

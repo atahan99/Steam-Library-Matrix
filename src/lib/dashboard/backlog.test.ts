@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest"
 import {
   getAlmostThere,
   getBacklogStats,
+  getHiddenGems,
   getOldestUnplayed,
   getQuickWins,
 } from "@/lib/dashboard/backlog"
@@ -120,5 +121,23 @@ describe("getOldestUnplayed", () => {
     ]
 
     expect(getOldestUnplayed(games).map((g) => g.appid)).toEqual([2, 1])
+  })
+})
+
+describe("getHiddenGems", () => {
+  const reviewed = (appid: number, positive: number, negative: number, extra: Partial<DashboardGame> = {}) =>
+    makeGame({ appid, name: `Game ${appid}`, steamspy: { positive, negative }, ...extra })
+
+  it("ranks unplayed, well-reviewed games by score, then review count", () => {
+    const games = [
+      reviewed(1, 900, 100), // 90%
+      reviewed(2, 9800, 200), // 98%
+      reviewed(3, 980, 20), // 98%, fewer reviews
+      reviewed(4, 970, 30, { playtimeForeverMinutes: 60 }), // played: excluded
+      reviewed(5, 600, 400), // 60%: below the bar
+      reviewed(6, 150, 0), // too few reviews to trust
+      makeGame({ appid: 7 }), // no SteamSpy data
+    ]
+    expect(getHiddenGems(games).map((g) => g.appid)).toEqual([2, 3, 1])
   })
 })

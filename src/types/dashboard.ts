@@ -133,6 +133,15 @@ export type DashboardGame = {
     matchConfidence?: string
     lastCheckedAt?: string
   }
+  /** Community stats from SteamSpy; `positive` is undefined when SteamSpy has no data. */
+  steamspy?: {
+    positive?: number
+    negative?: number
+    owners?: string
+    ccu?: number
+    tags?: string[]
+    lastCheckedAt?: string
+  }
   protondb?: {
     tier?: ProtonDbTier
     confidence?: string

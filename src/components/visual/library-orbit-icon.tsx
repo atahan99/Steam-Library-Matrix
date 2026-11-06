@@ -1,4 +1,4 @@
-import { Gamepad2 } from "lucide-react"
+import { AppLogo } from "@/components/icons/app-logo"
 import { SourceIconFromConfig } from "@/components/icons/source-icon"
 import type { LibraryOrbitIconConfig } from "@/content/library-orbit"
 import { cn } from "@/lib/utils"
@@ -10,7 +10,7 @@ type LibraryOrbitIconProps = {
 
 export const LibraryOrbitIcon = ({ icon, className }: LibraryOrbitIconProps) => {
   if (icon.type === "app") {
-    return <Gamepad2 className={cn("text-primary", className)} aria-hidden />
+    return <AppLogo className={className} />
   }
 
   return (

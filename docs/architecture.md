@@ -1,57 +1,29 @@
 # Architecture
 
-**Steam Library Matrix** is a self-hosted web dashboard that imports a public Steam
-library and layers on data Steam doesn't surface in one place — Proton/Linux
-compatibility, anti-cheat and Denuvo status, "how long to beat," Steam Deck rating,
-Mac/VR support, and achievements — then lets you search, filter, sort, and compare
-across all of it.
+Steam Library Matrix is a self-hosted dashboard. It imports a public Steam library and
+adds data Steam does not show in one place: Proton/Linux compatibility, anti-cheat and
+Denuvo status, time to beat, Steam Deck rating, Mac and VR support, achievements, and
+SteamSpy review and tag data. You can then search, filter, sort, and compare across all
+of it.
 
-It is **self-hosted only**: there is no cloud database or hosted backend. The entire
-runtime is one Next.js process plus a single SQLite file.
+There is no hosted backend. The runtime is one Next.js process and one SQLite file.
 
-This document explains how the system is put together and how data flows through it.
 For setup and operations see [`README.md`](../README.md) and the other files in
 [`docs/`](./README.md).
 
----
-
-## Table of contents
-
-1. [Design principles](#1-design-principles)
-2. [Tech stack](#2-tech-stack)
-3. [System overview](#3-system-overview)
-4. [Data sources](#4-data-sources)
-5. [Data model](#5-data-model)
-6. [Core workflows](#6-core-workflows)
-7. [Deep dive: the job worker](#7-deep-dive-the-job-worker)
-8. [Deep dive: matching logic](#8-deep-dive-matching-logic)
-9. [Deep dive: the seed system](#9-deep-dive-the-seed-system)
-10. [Running it: local vs Docker](#10-running-it-local-vs-docker)
-11. [Security model](#11-security-model)
-12. [File map](#12-file-map)
-
----
-
 ## 1. Design principles
 
-A few ideas recur throughout the codebase and explain most of its structure:
-
-- **The UI never waits on the slow internet.** Page loads read everything from local
-  SQLite and are instant. All slow, rate-limited, failure-prone external fetching is
-  pushed into a background worker.
-- **Separate "your data" from "the extra data."** Importing a library is fast (one or
-  two Steam calls). Enriching it is the slow part, handled asynchronously.
-- **Graceful degradation.** If a third-party source breaks or is down, that game simply
-  shows no value for that column — the dashboard always loads. Nothing external can take
-  the page down.
-- **Durable, resumable work.** Background jobs live as rows in SQLite with saved progress
-  cursors, so a restart resumes exactly where it stopped; nothing is lost.
-- **Honest about uncertainty.** Cross-source matching is fuzzy, so the app records *how*
-  a match was made and how confident it was, and the UI reflects that.
-- **Useful on day one.** A bundled "seed" dataset pre-populates popular games so a fresh
-  install isn't empty, while live enrichment improves and personalizes it over time.
-
----
+- Page loads read only from local SQLite. All slow, rate-limited external fetching
+  happens in a background worker.
+- Importing a library takes one or two Steam calls. Enrichment is the slow part and runs
+  asynchronously.
+- If a third-party source is down, the affected column is empty for that game and the
+  dashboard still loads.
+- Background jobs are SQLite rows with saved cursors, so a restart resumes where it
+  stopped.
+- Cross-source matching is fuzzy, so the app stores how each match was made and how
+  confident it was.
+- A bundled seed dataset fills in popular games so a fresh install is not empty.
 
 ## 2. Tech stack
 
@@ -60,18 +32,15 @@ A few ideas recur throughout the codebase and explain most of its structure:
 | App framework | Next.js 16 (App Router), React 19, TypeScript |
 | UI | Tailwind CSS 4, shadcn/ui (Base UI), Lucide icons, Recharts |
 | Database | SQLite (`better-sqlite3`), Drizzle ORM, hand-written SQL migrations in `db/migrations/` |
-| Background work | In-process enrichment worker (embedded in Docker; a poller drives it locally) |
-| External data | Steam Web API, Steam storefront, ProtonDB, HowLongToBeat, AWACY / Levvvel / Denuvo |
+| Background work | In-process enrichment worker (embedded in Docker, driven by a poller locally) |
+| External data | Steam Web API, Steam storefront, ProtonDB, HowLongToBeat, SteamSpy, AWACY, Levvvel, Denuvo curator, AppleGamingWiki |
 | Testing | Vitest (network tests isolated as `*.live.test.ts`) |
 | Packaging | Node 22 + pnpm (local), Docker + Docker Compose (self-host) |
 
----
-
 ## 3. System overview
 
-The whole application is **one process** plus **one database file**. The web UI, the API
-routes, and the background worker all live inside the same Next.js
-runtime and talk to the same SQLite database.
+The web UI, the API routes, and the background worker run in the same Next.js process
+and share one SQLite database.
 
 ```mermaid
 flowchart TB
@@ -87,7 +56,9 @@ flowchart TB
     Store["Steam storefront (unkeyed)"]
     Proton["ProtonDB"]
     HLTB["HowLongToBeat"]
+    Spy["SteamSpy"]
     AC["AWACY / Levvvel / Denuvo"]
+    AGW["AppleGamingWiki"]
   end
 
   User --> UI --> API
@@ -97,53 +68,37 @@ flowchart TB
   Worker -. "enrich: fetch the extra data" .-> Sources
 ```
 
-Two structural facts follow from this:
-
-1. Reads (dashboard) come straight from SQLite — fast and offline-capable.
-2. Writes from external sources are funneled through the worker, which controls
-   concurrency, freshness (TTLs), and rate limiting.
-
----
+The dashboard reads straight from SQLite. Data from external sources goes through the
+worker, which controls concurrency, freshness (TTLs), and rate limiting.
 
 ## 4. Data sources
 
-Each game is enriched from several independent sources, each answering one question:
-
 | Source | Provides | Access |
 | --- | --- | --- |
-| **Steam Web API** (`api.steampowered.com`) | Owned games, playtime, profile, achievements, wishlist | Official, **keyed** (`STEAM_API_KEY`), ~100k calls/day |
-| **Steam storefront** (`store.steampowered.com`) | Genres, categories, platforms, release date, **Steam Deck** rating, **Denuvo** notices | Unofficial, **unkeyed**, throttled ~200 req / 5 min per IP, bans on abuse |
-| **ProtonDB** | Linux compatibility tier (platinum…borked) | Public API |
-| **HowLongToBeat** | Time to beat (main / extras / completionist) | Scraped (no API) |
-| **AreWeAntiCheatYet (AWACY)** | Whether anti-cheat works on Linux | Community catalog |
-| **Levvvel** | Whether a game uses kernel-level anti-cheat | Community catalog |
-| **Denuvo** (curator + store pages) | Denuvo anti-tamper DRM presence | Curator list + store-page text |
-| **AppleGamingWiki** | macOS: Apple Silicon (native), Rosetta 2, CrossOver ratings | Cargo API (community wiki) |
+| Steam Web API (`api.steampowered.com`) | Owned games, playtime, profile, achievements, wishlist | Official, keyed (`STEAM_API_KEY`) |
+| Steam storefront (`store.steampowered.com`) | Genres, categories, platforms, release date, Steam Deck rating, Denuvo notices | Unofficial, unkeyed, throttled per IP |
+| ProtonDB | Linux compatibility tier (platinum to borked) | Public API |
+| HowLongToBeat | Time to beat (main, extras, completionist) | Scraped (no public API) |
+| SteamSpy | Review counts, owner estimate, current players, user tags | Public API, about 1 request per second |
+| AreWeAntiCheatYet (AWACY) | Whether anti-cheat works on Linux | Community catalog |
+| Levvvel | Whether a game uses kernel-level anti-cheat | Community page (`table.kernel-table-grid`) |
+| Denuvo (curator + store pages) | Denuvo anti-tamper presence | Curator list + store-page text |
+| AppleGamingWiki | macOS: Apple Silicon (native), Rosetta 2, CrossOver ratings | Cargo API |
 
-> **Keyed vs unkeyed — important.** The two Steam hosts are different services. The
-> **Web API** is keyed and generous. The **storefront** ignores keys entirely and limits
-> by IP; it is the source of rate-limit bans. The richer store fields (categories,
-> platforms, Deck rating, Denuvo) exist *only* on the unkeyed storefront, so they must be
-> throttled rather than authenticated. See [`docs/scraping.md`](./scraping.md).
+The two Steam hosts are different services. The Web API is keyed and has a generous
+quota. The storefront ignores keys and limits by IP, and it is where rate-limit bans come
+from. Categories, platforms, Deck rating, and Denuvo notices exist only on the
+storefront, so the app throttles those calls. Limits, cooldowns, and fetch order are in
+[`docs/scraping.md`](./scraping.md).
 
-```
-                         ┌─ Steam Web API ──→ library, playtime, achievements, wishlist
-                         ├─ Steam storefront → genres, platforms, Deck rating, Denuvo
-   One game (appid) ─────┼─ ProtonDB ───────→ Linux compatibility tier
-                         ├─ HowLongToBeat ──→ time to beat
-                         ├─ AWACY ──────────→ Linux anti-cheat status
-                         ├─ Levvvel ────────→ kernel anti-cheat
-                         ├─ Denuvo ─────────→ anti-tamper DRM
-                         └─ AppleGamingWiki → macOS (Apple Silicon / Rosetta / CrossOver)
-```
-
----
+SteamSpy data feeds the Library Reviews column and game popover, the Backlog "Hidden
+gems" list, the Overview "Library rating", and the Genres page's "Community tags" mode.
 
 ## 5. Data model
 
-A game is stored **once** (`steam_games`); each source gets its own table keyed by
-`appid`. Profiles connect to games through "library" and "wishlist" link tables. Shared
-catalogs (AWACY, Levvvel, Denuvo) are fetched once globally rather than per game.
+Each game is stored once in `steam_games`. Each source has its own table keyed by
+`appid`. Profiles link to games through library and wishlist tables. The AWACY, Levvvel,
+Denuvo, and AppleGamingWiki catalogs are fetched once globally.
 
 ```mermaid
 erDiagram
@@ -154,6 +109,7 @@ erDiagram
   steam_games ||--o| steam_app_details : "store info"
   steam_games ||--o| protondb_entries : "linux tier"
   steam_games ||--o| howlongtobeat_entries : "time to beat"
+  steam_games ||--o| steamspy_entries : "reviews + tags"
   steam_games ||--o| anticheat_entries : "anti-cheat + denuvo"
   steam_games ||--o| macos_compat_entries : "macOS compat"
   steam_profiles ||--o{ profile_game_achievements : "completion"
@@ -165,33 +121,29 @@ erDiagram
 | --- | --- |
 | `steam_profiles` | Imported profiles (persona, avatar, level, country, sync timestamps) |
 | `steam_games` | One row per app (name, icon, store URL) |
-| `profile_games` | Library link: which profile owns which app + playtime (composite PK) |
-| `profile_wishlist` | Wishlist link (composite PK) |
+| `profile_games`, `profile_wishlist` | Library and wishlist links, with playtime on the library link |
 | `steam_app_details` | Storefront details: type, genres, categories, platforms, release, Deck rating |
 | `protondb_entries` | ProtonDB tier, confidence, report counts |
-| `howlongtobeat_entries` | Beat times + matched name + match confidence |
-| `anticheat_entries` | AWACY status, Levvvel kernel flag, Denuvo fields (per game) |
-| `macos_compat_entries` | AppleGamingWiki macOS ratings (Apple Silicon / Rosetta 2 / CrossOver), name-matched per game |
-| `profile_game_achievements` | Per profile/game completion (composite PK) |
-| `profile_backlog`, `profile_backlog_goal` | Hand-picked play queue + monthly goal, per profile (composite PK) |
-| `enrichment_jobs` | The background job queue (see §7) |
+| `howlongtobeat_entries` | Beat times, matched name, match confidence |
+| `steamspy_entries` | Positive/negative reviews, owners, current players, tags (migration `006_steamspy.sql`) |
+| `anticheat_entries` | AWACY status, Levvvel kernel flag, Denuvo fields |
+| `macos_compat_entries` | AppleGamingWiki ratings, name-matched per game |
+| `profile_game_achievements` | Per profile/game completion |
+| `profile_backlog`, `profile_backlog_goal` | Hand-picked play queue and monthly goal |
+| `enrichment_jobs` | Background job queue (see §7) |
 | `data_refresh_log` | Per-source refresh history for the UI |
-| `awacy_catalog`, `levvvel_kernel_catalog`, `denuvo_anti_tamper_catalog`, `macos_compat_catalog` | Global source catalogs |
-| `anticheat_catalog_meta` | Catalog sync status/row counts |
-| `seed_hydration_meta` | Which bundled seed version has been applied (see §9) |
+| `awacy_catalog`, `levvvel_kernel_catalog`, `denuvo_anti_tamper_catalog`, `macos_compat_catalog` | Global catalogs |
+| `anticheat_catalog_meta` | Catalog sync status and row counts |
+| `steam_store_throttle` | Shared storefront request budget and cooldown |
+| `seed_hydration_meta` | Which seed version has been applied (see §9) |
 
-Foreign keys cascade on delete (deleting a profile removes its library/wishlist/jobs),
-and the schema is defined in `src/lib/db/schema/index.ts` with matching SQL in
-`db/migrations/`.
-
----
+Deleting a profile cascades to its library, wishlist, and jobs. The schema is in
+`src/lib/db/schema/index.ts`. Setup, migrations, and backups are in
+[`docs/database.md`](./database.md).
 
 ## 6. Core workflows
 
-### 6.1 Importing a profile
-
-Fast path. You paste a profile URL, vanity name, or SteamID; within seconds you're
-looking at your library.
+### Importing a profile
 
 ```mermaid
 sequenceDiagram
@@ -210,67 +162,60 @@ sequenceDiagram
   Note over Q,DB: the worker fills in everything else over time
 ```
 
-Input parsing (`src/lib/steam/parse-steam-input.ts`) only extracts a SteamID or vanity
-name via regex — it never fetches a user-supplied URL, which keeps the import endpoint
-free of SSRF risk. Import logic is in `src/lib/steam/import-library.ts`.
+`src/lib/steam/parse-steam-input.ts` extracts a SteamID or vanity name with a regex and
+never fetches the URL you paste, so the endpoint has no SSRF surface. Import logic is in
+`src/lib/steam/import-library.ts`.
 
-### 6.2 Background enrichment
+### Enrichment
 
-The slow work. A SQLite-backed job queue is drained by a worker that processes jobs in
-priority order, in resumable chunks bounded by a time budget. Covered in depth in
-[§7](#7-deep-dive-the-job-worker).
+The UI, post-import, and full sync all enqueue jobs through `POST /api/jobs`, and the
+worker drains them. There is no other enrichment path. See [§7](#7-the-job-worker).
 
-### 6.3 Viewing and filtering
+### Viewing and filtering
 
-On a dashboard request, the server reads the full library + wishlist + every enrichment
-table, stitches them into one combined list (`DashboardGame[]`), and sends it to the
-browser. From there **all filtering, sorting, searching, and pagination happen
-client-side**, with the active view encoded in the URL (shareable, back-button-friendly).
+For a dashboard request the server reads the library, wishlist, and every enrichment
+table and joins them into one `DashboardGame[]` list. Filtering, sorting, search, and
+pagination then run in the browser, with the current view stored in the URL.
 
-Server assembly lives in `src/lib/db/dashboard.ts` (`fetchDashboardPayload`), the join
-query in `src/lib/db/load-steam-game-join-rows.ts`, and row mapping in
-`src/lib/db/map-dashboard-game.ts`. Pages include Overview, Library, ProtonDB,
-HowLongToBeat, Anti-cheat, Mac, VR, Compare, Random Picker / Backlog, Data Status, and About.
+The server side is `fetchDashboardPayload` in `src/lib/db/dashboard.ts`, the join query
+in `src/lib/db/load-steam-game-join-rows.ts`, and row mapping in
+`src/lib/db/map-dashboard-game.ts`. Dashboard pages: Overview, Library, Achievements,
+ProtonDB, HowLongToBeat, Anti-cheat, Mac, VR, Genres, Compare, Random Picker / Backlog,
+Data Status, and About.
 
-### 6.4 Seeding
+The landing page (`src/app/page.tsx`) shows columns of game covers at the edges, picked
+at random with no repeats. Dashboard pages use a plain background. The 404 page
+(`src/app/not-found.tsx`) is an animated SVG scene.
 
-A bundled dataset for ~2,200 popular games is hydrated into SQLite on startup so the
-dashboard isn't empty on first run. Covered in depth in [§9](#9-deep-dive-the-seed-system).
+## 7. The job worker
 
-### One enrichment path
+Enrichment means thousands of slow, rate-limited HTTP calls. They cannot run inside a web
+request, cannot all run at once, and must survive a restart. The worker is a durable queue
+stored in SQLite.
 
-All enrichment is triggered the same way: the UI (and post-import / full-sync) **enqueues
-jobs** via `POST /api/jobs`, and the background worker drains them. There is a single
-execution path — the worker and its per-source steps (`enrichSingle*` primitives reused by
-each batch step). An earlier synchronous server-action refresh path was removed, so the
-queue is now the single way enrichment runs.
+### Job kinds
 
----
-
-## 7. Deep dive: the job worker
-
-### The problem
-
-Enriching a library means thousands of slow, rate-limited HTTP calls. That can't happen
-in a web request (timeouts), can't happen all at once (bans), and can't lose progress on
-restart. The worker is a small **durable queue built inside SQLite** that handles all
-three.
-
-### Vocabulary
-
-There are 8 **job kinds**, each with a priority (lower runs first):
+The worker claims lower priority numbers first.
 
 | Priority | Kinds | Notes |
 | --- | --- | --- |
-| 0 | `anticheat_catalog`, `denuvo_catalog` | global catalogs — everything else depends on them |
+| 0 | `anticheat_catalog`, `denuvo_catalog` | Global catalogs that other steps depend on |
 | 1 | `wishlist` | |
 | 2 | `achievements` | |
-| 3 | `anticheat` | per-game anti-cheat + Denuvo matching |
+| 3 | `anticheat` | Per-game anti-cheat and Denuvo matching |
 | 4 | `protondb`, `app_details` | |
-| 5 | `hltb` | slowest / most fragile, runs last |
+| 5 | `hltb` | Slow and fragile |
+| 6 | `steamspy` | About 1 request per second |
 
-A job row carries a `payload` (target appids, a `cursor`, accumulated `stats`, flags like
-`force`/`missingOnly`, and an `anticheatPhase`) and a `progress` snapshot the UI polls.
+`app_details`, `protondb`, `achievements`, `hltb`, and `steamspy` are registered sources
+(`src/lib/enrichment/sources/`) and share one per-appid loop in `run-registered-step.ts`.
+`wishlist`, `anticheat_catalog`, `denuvo_catalog`, and `anticheat` are bespoke steps in
+`src/lib/jobs/run-step.ts`. How to add a source is in
+[`docs/scraping.md`](./scraping.md#add-a-source-enrichmentsource-registry).
+
+A job row has a `payload` (target appids, `cursor`, accumulated `stats`, flags such as
+`force`, `missingOnly`, `anticheatPhase`, `followUpRound`) and a `progress` snapshot that
+the UI polls.
 
 ### Lifecycle
 
@@ -280,107 +225,94 @@ flowchart TB
   Dedup -- yes --> Reuse["return existing job"]
   Dedup -- no --> Insert["insert pending job"]
 
-  Timer["Timer tick (every few seconds)"] --> Cap{"in-flight ticks<br/>< parallel cap?"}
+  Timer["Timer tick"] --> Cap{"in-flight ticks<br/>< parallel cap?"}
   Cap -- no --> Skip["skip this tick"]
   Cap -- yes --> Claim["claim jobs:<br/>one per kind, priority order"]
   Claim --> Step["run ONE step per job,<br/>in parallel, under a time budget"]
   Step --> R{"step result"}
   R -- done --> Done["mark completed -> coverage follow-up"]
-  R -- not done --> Cont["save cursor -> set pending again"]
-  R -- threw --> Err{"attempts >= 3?"}
+  R -- "not done" --> Cont["save cursor, attempts = 0,<br/>pending (5 min later if the step reported an error)"]
+  R -- "store cooldown" --> Cool["pending at cooldownUntil,<br/>no attempt counted"]
+  R -- threw --> Err{"3rd consecutive failure?"}
   Err -- no --> Retry["pending, runAfter = now + 60s"]
   Err -- yes --> Fail["mark failed"]
 ```
 
-**Enqueue + dedup** (`src/lib/jobs/enqueue.ts`). Before inserting, it returns any existing
-`pending`/`running` job of the same `(steamid, kind)` — so mashing "Refresh" never piles
-up duplicates. A partial unique index in the database (`enrichment_jobs_one_active_per_kind`)
-enforces the same rule even under a race.
+Enqueue (`src/lib/jobs/enqueue.ts`) returns any existing `pending` or `running` job with
+the same `(steamid, kind)`, so pressing Refresh repeatedly does not create duplicates. The
+partial unique index `enrichment_jobs_one_active_per_kind` enforces the same rule under a
+race.
 
-**Scheduling + parallel ticks** (`src/lib/jobs/worker-tick-scheduler.ts`). A timer fires
-`scheduleEnrichmentWorkerTick()`, which is fire-and-forget but caps concurrent ticks at
-`SLM_WORKER_PARALLEL_TICKS` (default 4). That cap is what allows ticks to overlap during
-network waits without unbounded concurrency. In Docker the worker is embedded via
-`src/instrumentation.ts` (`SLM_EMBED_JOB_WORKER=true`); locally a poller / cron route
-drives it.
+Scheduling (`src/lib/jobs/worker-tick-scheduler.ts`): `scheduleEnrichmentWorkerTick()`
+starts a tick without waiting for it and caps concurrent ticks at
+`SLM_WORKER_PARALLEL_TICKS` (default 4), so ticks can overlap during network waits. In
+Docker, `src/instrumentation.ts` runs the worker on an interval when
+`SLM_EMBED_JOB_WORKER=true`. Locally, `scripts/dev-cron-loop.ts` drives it.
 
-**Claiming — atomic + fair** (`src/lib/jobs/worker.ts`). Each claim is a DB transaction:
-select the highest-priority pending job whose `runAfter <= now`, then update it to
-`running` with a lock (`lockedBy`, `lockedAt`). Doing select+update in one transaction is
-what makes it safe across processes — two workers can't grab the same row. A tick claims
-**at most one job per kind**, so a 5,000-game ProtonDB job can't starve `app_details` —
-every kind gets a turn each tick.
+Claiming (`src/lib/jobs/worker.ts`) runs in an `IMMEDIATE` SQLite transaction. It selects
+the highest-priority pending job whose `runAfter` has passed, then sets it to `running`
+only if its status is still `pending`, with `lockedBy`/`lockedAt` and an incremented
+`attempts`. Two workers cannot take the same row. A tick claims at most one job per kind
+(up to `SLM_WORKER_MAX_JOBS_PER_TICK`), so a long ProtonDB job cannot starve
+`app_details`.
 
-**Stepping — cursor + budget + concurrency** (`src/lib/jobs/run-step.ts`; per-appid kinds
-`app_details`, `protondb`, `achievements`, `hltb` share one loop in
-`src/lib/enrichment/sources/run-registered-step.ts`). A step doesn't
-process a whole library; it processes a **slice**: from `cursor`, take `BATCH` items, and
-run them through `runConcurrentBatch` (`src/lib/jobs/run-concurrent-batch.ts`) — N
-concurrent workers, each checking the wall-clock deadline before starting another, with an
-optional stagger between items.
+Stepping: a step processes a slice of the appid list, starting at `cursor`, through
+`runConcurrentBatch` (`src/lib/jobs/run-concurrent-batch.ts`). That runs N workers in
+parallel, each checking the deadline before starting another item, with an optional
+stagger. A step stops at the batch size or at `SLM_WORKER_TICK_BUDGET_MS` (default 50 s),
+whichever comes first, and saves the new cursor and merged `stats`. A killed process
+resumes from the saved cursor.
 
-```
-   appids: [ ............ 5000 items ............ ]
-              ^cursor=0        ^batch (e.g. 50)
-   tick 1 -> process 50 concurrently, save cursor=50, status=pending
-   tick 2 -> cursor 50..100 ...
-   ...
-   tick N -> cursor >= total -> status=completed
-```
 
-A step is bounded by **both** a batch size and a wall-clock deadline
-(`SLM_WORKER_TICK_BUDGET_MS`, default ~50s). It returns "done" (cursor reached the end) or
-"not done" with the advanced cursor saved back into the payload; a killed process resumes
-from that cursor. Accumulated `stats` are merged across ticks so progress is continuous.
+Outcomes:
 
-**Completion, retry, stale locks.**
+- Done: the job is marked `completed` and a coverage follow-up runs.
+- Not done: back to `pending` with the new cursor and `attempts` reset to 0. If the step
+  reported an error, the error is kept on the row and the next run waits 5 minutes.
+- `SteamStoreCooldownError`: back to `pending` with `runAfter` set to the cooldown's end.
+  This does not count as an attempt.
+- Any other thrown error: retry after 60 s. The third consecutive failure marks the job
+  `failed`.
+- Stale lock: `releaseStaleRunningJobs` resets any `running` job locked more than 10
+  minutes ago.
 
-- *Done* → mark `completed`, then run a coverage follow-up (below).
-- *Not done* → back to `pending` with the new cursor, run again next tick.
-- *Threw* → if `attempts < 3`, back to `pending` with `runAfter = now + 60s` (backoff); at
-  3 attempts, mark `failed`.
-- *Crashed mid-run* → `releaseStaleRunningJobs` resets any `running` job whose lock is
-  older than 10 minutes back to `pending`. Self-healing.
+On boot, `prepareWorkerOnBoot()` releases every job left `running` by a crash and deletes
+finished jobs older than 7 days. It runs from `src/instrumentation.ts` (embedded worker),
+from `scripts/dev-cron-loop.ts`, and once per process in `/api/cron/process-jobs` when the
+worker is not embedded.
 
-**Coverage follow-ups** (`src/lib/jobs/enqueue-coverage-followup.ts`). When a batched job
-finishes it checks for gaps: failures trigger a `missingOnly` retry; `app_details` /
-`protondb` re-resolve what's still missing and queue a gap-fill; `denuvo_catalog`
-re-queues if still incomplete. The system converges toward full coverage on its own.
+Coverage follow-ups (`src/lib/jobs/enqueue-coverage-followup.ts`) apply to `app_details`,
+`protondb`, `hltb`, and `anticheat`. If a finished job had failures, it queues a
+`missingOnly` retry. For `app_details` and `protondb` it also queues a gap-fill when
+appids are still missing. Follow-ups stop after 3 rounds so appids that always fail do
+not requeue forever. `denuvo_catalog` re-queues itself while the catalog is incomplete.
 
-**"Checked" beats "has data".** A game counts as done for a source once it has been
-*checked*, even when the answer is "nothing here" — a delisted store page (404), a Steam
-Deck rating of `unknown`, a game with no achievements (Steam 400/500), or a HowLongToBeat
-title with no listed time. Those terminal results are cached with a timestamp (a negative
-cache) instead of re-counted as failures, so the queue drains, the worker goes idle, and
-Data Status reads 100% once every game has been checked — data or not. Only genuinely
-transient errors (rate limits, timeouts) retry. This is what stops the worker from
-re-scanning unanswerable games forever.
+A game counts as done for a source once it has been checked, even when the answer is
+empty: a delisted store page (404), a Deck rating of `unknown`, a game without
+achievements (Steam 400/500), an HLTB title with no times, or an app SteamSpy does not
+know. These results are stored with a timestamp (a negative cache) and are not counted as
+failures, so the queue drains and Data Status reaches 100%. Only transient errors such as
+rate limits and timeouts are retried.
 
-**Two-phase anti-cheat.** The `anticheat` job runs `phase: "catalog"` first (match every
-game against the in-memory AWACY/Levvvel catalogs — fast, no per-game network), and when
-that cursor completes it flips to `phase: "denuvo"` (the slow, throttled store-page scrape)
-by resetting the cursor and continuing as the *same* job. One job, two passes, fast data
-first.
+The `anticheat` job has two phases. `phase: "catalog"` matches every game against the
+in-memory AWACY and Levvvel catalogs with no per-game network calls. When that cursor
+finishes, the same job resets its cursor and switches to `phase: "denuvo"`, the
+throttled store-page scrape.
 
----
+## 8. Matching logic
 
-## 8. Deep dive: matching logic
+Community sources key data by game name, and names rarely line up: Steam has
+`ELDEN RING™`, HowLongToBeat has `Elden Ring`, a catalog may have
+`Elden Ring: Shadow of the Erdtree`.
 
-### Why it's hard
+`normalizeGameName` (`src/lib/utils/normalize-game-name.ts`) lowercases, strips `™®©:`,
+collapses whitespace, removes other non-alphanumerics, and trims. Every exact-name lookup
+uses this form.
 
-Community sources key their data by **game name**, and names never line up: Steam has
-`ELDEN RING™`, HowLongToBeat has `Elden Ring`, a catalog might have
-`Elden Ring: Shadow of the Erdtree`. Every source needs a matcher, and they range from
-simple to quite involved.
+### Denuvo
 
-The shared foundation is **`normalizeGameName`** (`src/lib/utils/normalize-game-name.ts`):
-lowercase → strip `™®©:` → strip non-alphanumerics → collapse whitespace. This canonical
-form is the key for all exact-match lookups.
-
-### Matcher A — Denuvo (signal fusion → display state)
-
-Two stages. First **score** (`src/lib/steam/denuvo/score-denuvo-status.ts`) fuses two
-independent signals — store-page DRM notices and the Denuvo-Watch curator listing:
+`src/lib/steam/denuvo/score-denuvo-status.ts` combines two signals, store-page DRM
+notices and the Denuvo curator list:
 
 ```
 store says "Denuvo Anti-Tamper"               -> true,  HIGH   (store_page)
@@ -390,41 +322,46 @@ only curator lists it (store unchecked)        -> true,  MEDIUM (curator)
 neither                                        -> null,  NONE
 ```
 
-Then **display resolution** (`src/lib/steam/denuvo/resolve-denuvo-display-state.ts`) maps
-the stored fields to a UI state:
+`src/lib/steam/denuvo/resolve-denuvo-display-state.ts` maps stored fields to a display
+state:
 
-| Stored | Display |
+| Stored | Display (tooltip / badge) |
 | --- | --- |
-| true + high | **Denuvo detected** |
-| true + medium/low | **Possible Denuvo** |
-| false + high + store/removal | **No active Denuvo confirmed** |
-| anything else | **DRM status unknown** |
+| true + high | Denuvo detected / Detected |
+| true + medium or low | Possible Denuvo / Possible |
+| false + high + store or removal signal | No active Denuvo confirmed / None |
+| anything else | DRM status unknown / Unknown |
 
-Notably, a `false` only becomes "confirmed absent" with a high-confidence store signal;
-otherwise it degrades to "unknown" rather than over-claiming, and every tooltip carries a
-disclaimer that Steam doesn't reliably expose third-party DRM.
+A `false` shows as confirmed absent only with a high-confidence store signal. Tooltips
+note that Steam does not reliably expose third-party DRM.
 
-### Matcher B — anti-cheat (3-tier name match + cross-reference)
+### Anti-cheat
 
-Catalogs are loaded into indexes once (`src/lib/anticheat/anticheat-indexes.ts`): a
-`bySteamAppId` map, a `byName` map (both O(1)), and a flat array for fuzzy fallback.
-Matching (`src/lib/anticheat/match-from-indexes.ts`) walks three confidence tiers:
+`src/lib/anticheat/anticheat-indexes.ts` loads the catalogs into a `bySteamAppId` map, a
+`byName` map, and a flat array for fuzzy search. `src/lib/anticheat/match-from-indexes.ts`
+tries, in order:
 
 ```
-1. Steam app ID match    -> confidence "appid"        (ground truth)
+1. Steam app ID match    -> confidence "appid"
 2. Exact normalized name -> confidence "exact-title"
 3. Fuzzy (Levenshtein >= 0.85 over all entries) -> "fuzzy-title"
    else -> "none"
 ```
 
-AWACY (Linux status) and Levvvel (kernel anti-cheat) are matched independently then merged;
-a result is persisted only if it's "meaningful" (real status, named anti-cheats, or a
-definite kernel yes/no).
+AWACY and Levvvel are matched separately and merged. A result is saved only if it has a
+real status, named anti-cheats, or a definite kernel yes/no.
 
-### Matcher C — HowLongToBeat (the sophisticated one)
+### HowLongToBeat
 
-A two-gate pipeline. HLTB has no API and messy names, but its search results often embed
-the game's own Steam app ID, which is ground truth when present.
+HLTB has no public API. The client (`src/lib/enrichment/hltb-client.ts`) finds the search
+endpoint by reading HLTB's app JS bundle and looking for the `/api/.../init?` call
+(currently `api/search/site`, also the fallback). It gets a token from that `init` URL.
+Concurrent callers share one session fetch, and a 401/403 drops the session and retries
+once. Searches include DLC (`modifier: ""`) because Steam lists expansions as their own
+apps. Transient errors return `retryable` and are not negative-cached.
+
+Search results often include the game's Steam app ID, which settles the match when
+present.
 
 ```mermaid
 flowchart TB
@@ -440,100 +377,59 @@ flowchart TB
   OK -- no --> Neg["negative cache (don't retry forever)"]
 ```
 
-**Query variants** (`resolveHltbSearchQueries` in `src/lib/enrichment/hltb-match.ts`): the
-full cleaned name, the edition-stripped name, the part before a subtitle colon, the "base
-title" (with ~50 edition stopwords like *definitive, goty, remastered, redux* removed), and
-the base title without a leading "the". Tries them in order, stops at the first confident
-hit.
+Query variants (`resolveHltbSearchQueries` in `src/lib/enrichment/hltb-match.ts`): the
+cleaned name, the name without an edition suffix, the part before a subtitle colon, the
+base title (edition stopwords such as *definitive*, *goty*, *remastered* removed), and the
+base title without a leading "the". The first confident hit wins.
 
-**Search-time gate** (`pickBestHltbHit`), tiered:
+Search-time gate (`pickBestHltbHit`):
 
-1. A hit whose embedded Steam ID equals the app → **confidence 1** (definitive).
-2. Exact normalized name → 1.
-3. Equal base title → ≥ 0.82.
-4. Else the best-scoring hit: `nameSimilarity·0.65 + tokenOverlap·0.35 + 0.15 baseBoost`,
-   penalized ×0.4 if the hit links a *different* Steam ID, ×0.75 if both overlap and
-   similarity are weak; ties break toward more community data. Must clear 0.55.
+1. A hit with the same Steam ID: confidence 1.
+2. Exact normalized name: confidence 1.
+3. Same base title: at least 0.82.
+4. Otherwise the best score, `nameSimilarity·0.65 + tokenOverlap·0.35` plus 0.15 when
+   base titles match. The score is multiplied by 0.75 when overlap and similarity are both
+   weak and by 0.4 when the hit links a different Steam ID. A subtitle rule raises the
+   score to 0.72 when the hit's title before a colon or dash equals the Steam name and
+   that name has more than one word or contains a digit ("WRC 7" matches
+   "WRC 7: World Rally Championship"; "Doom" alone does not). Ties go to the hit with
+   more community data. The minimum is 0.55 (`HLTB_MIN_CONFIDENCE`).
 
-**Detail-time gate** (`evaluateHltbDetailAcceptance`), with thresholds that vary by
-evidence quality:
+Detail-time gate (`evaluateHltbDetailAcceptance`), checked in order:
 
-| Evidence | Threshold | Result |
-| --- | --- | --- |
-| detail's Steam ID == appid | — | accept (confidence 1, `steam_id`) |
-| edition variant (bases align, extras are all stopwords) | — | accept (`edition_variant`) |
-| equal base title **and** search confidence ≥ 0.62 | 0.62 | accept (`base_title`) |
-| detail links a *different* Steam ID | — | **reject** (mismatch) |
-| name only | ≥ 0.72 | accept (`search_confidence`) |
-
-It trusts HLTB's embedded Steam ID as ground truth, falls back to edition-aware name logic,
-and demands higher confidence when name is the only evidence. Rejections are negative-cached
-so the worker stops re-attempting them.
-
-### Matcher D — macOS (AppleGamingWiki, name-only)
-
-AppleGamingWiki's Cargo table carries **no Steam app ID**, so there's no ground-truth anchor —
-name is the only evidence. The catalog is indexed by `normalizeGameName`
-(`src/lib/mac/`); each library game tries an exact normalized-name hit (`exact-title`), then a
-fuzzy fallback (`fuzzy-title`). A hit's `native` / `rosetta_2` / `crossover` / `parallels`
-fields are normalized to a small rating vocabulary — `perfect` / `runs` / `menu` /
-`unplayable` / `na` / `unknown` (the first three count as "playable"). Matching runs after
-each import rather than as a per-game worker job.
-
-The throughline across all four matchers: prefer an exact ID where one exists, then exact
-name, then increasingly cautious fuzzy logic — and always record how the match was made and
-how confident it was.
-
----
-
-## 9. Deep dive: the seed system
-
-### Why it exists
-
-A blank database would show an empty library until the worker slowly caught up, and would
-make every install re-scrape the same popular games. The seed ships **pre-computed data
-for ~2,200 popular games** so the dashboard is useful immediately, and (in Docker) so a new
-container is populated with zero runtime work.
-
-### Choosing which games to seed
-
-`src/lib/seed/resolve-target-appids.ts` picks the appid set, in order:
-
-```mermaid
-flowchart TB
-  Start["resolveTargetAppids(limit)"] --> File{"--appids-file given?"}
-  File -- yes --> UseFile["use that list"]
-  File -- no --> Seed{"top-appids.json or<br/>profile-appids.json present?"}
-  Seed -- yes --> Merge["merge + dedupe + limit"]
-  Seed -- no --> Union["fallback: union of every appid<br/>already in the local DB"]
-```
-
-`top-appids.json` is scraped from Steam's top sellers; `profile-appids.json` is exported
-from real libraries. A helper can even reconstruct the target list from the bundled seeds
-when the live top-sellers fetch is unavailable, so generation never hard-fails.
-
-### Generating the seed (a maintainer task)
-
-```mermaid
-flowchart LR
-  T["target appids"] --> P["prefetch live:<br/>ProtonDB + HLTB + names<br/>(throttled) -> local SQLite"]
-  P --> X["read from local SQLite<br/>(games, app-details, proton, hltb, denuvo)"]
-  X --> J["write 5 seed JSON files + manifest"]
-```
-
-`pnpm seed:generate` (`scripts/generate-seed-metadata.ts`) first live-fetches ProtonDB +
-HLTB into the local DB (`src/lib/seed/prefetch-seed-enrichment.ts`, throttled), then exports
-whatever the local DB now knows. The key mental model: **the seed is a snapshot of a
-well-enriched local database.**
-
-| File | Contents |
+| Evidence | Result |
 | --- | --- |
-| `steam-games.seed.json` | appid → name / icon / store URL |
-| `protondb.seed.json` | Linux tier + report counts |
-| `hltb.seed.json` | beat times + matched name |
-| `denuvo.seed.json` | Denuvo anti-tamper + confidence |
-| `app-details-lite.seed.json` | header image / genres / platforms / Deck / release |
-| `metadata-manifest.json` | version + per-source counts |
+| Detail page's Steam ID equals the appid | accept, confidence 1 (`steam_id`) |
+| Edition variant (same base, extra words are all stopwords) | accept (`edition_variant`) |
+| Same base title and search confidence ≥ 0.62 | accept (`base_title`) |
+| Detail page links a different Steam ID | reject |
+| Search confidence ≥ 0.72 | accept (`search_confidence`) |
+| Otherwise | reject |
+
+Rejections are negative-cached so the worker does not retry them.
+
+### macOS (AppleGamingWiki)
+
+AppleGamingWiki's Cargo table has no Steam app ID, so matching uses the name only. Each
+library game tries an exact normalized-name hit (`exact-title`), then a fuzzy match
+(`fuzzy-title`) (`src/lib/mac/sync-macos-compat.ts`). The `native`, `rosetta_2`,
+`crossover`, and `parallels` fields map to `perfect`, `runs`, `menu`, `unplayable`, `na`,
+or `unknown`. Matching runs after import and after seed hydration, not as a worker job.
+
+## 9. The seed system
+
+The seed ships precomputed data for about 2,200 popular games so the dashboard is useful
+before the worker catches up and every install does not re-scrape the same games.
+
+### Choosing and generating
+
+`src/lib/seed/resolve-target-appids.ts` takes the appids from `--appids-file` if given,
+otherwise merges `data/seed/top-appids.json` (Steam top sellers) and
+`profile-appids.json` (real libraries), and falls back to every appid already in the
+local DB. `pnpm seed:generate` (`scripts/generate-seed-metadata.ts`) fetches ProtonDB and
+HLTB data into the local DB with throttling (`src/lib/seed/prefetch-seed-enrichment.ts`),
+then exports what the local DB knows. The seed is a snapshot of a well-enriched local
+database. The file list is in [`docs/scraping.md`](./scraping.md#bundled-seed-metadata).
 
 ### Hydrating on startup
 
@@ -548,96 +444,74 @@ flowchart TB
   Each --> Meta["record seed_hydration_meta (version, counts)"]
 ```
 
-**Version gate** (`src/lib/seed/should-hydrate-seed.ts`): hydration re-runs only when the
-bundled `manifest.version` is **greater** than the value recorded in `seed_hydration_meta`.
-Therefore **any change to seed content must bump `SEED_MANIFEST_VERSION`** in
-`src/lib/seed/types.ts`, or existing installs silently ignore it. Loading is fail-safe —
-`src/lib/seed/load-seed-files.ts` zod-validates every file and tolerates missing optional
-ones, collecting warnings instead of throwing.
+`src/lib/seed/should-hydrate-seed.ts` re-runs hydration only when the bundled
+`manifest.version` is greater than the one in `seed_hydration_meta`. Any change to seed
+content must bump `SEED_MANIFEST_VERSION` in `src/lib/seed/types.ts`, or existing
+installs ignore it. `src/lib/seed/load-seed-files.ts` validates each file with zod,
+skips missing optional files, and collects warnings instead of throwing.
 
-**Upsert rules** (`src/lib/seed/upsert-rules.ts`) embody the principle that the seed is a
-starting point, never an authority:
+`src/lib/seed/upsert-rules.ts` treats the seed as a starting point:
 
-- `shouldApplySeedTimestamp` — apply a seed row only if its `checkedAt` is newer than the
-  existing row's `lastCheckedAt`, so freshly-fetched live data is never clobbered by older
-  bundled data.
-- `shouldApplySeedDenuvoRow` — never overwrite live Denuvo data that is newer or
-  higher-confidence than the seed.
-- When hydrating Denuvo into an anti-cheat row that has no AWACY data yet, it sets
-  `lastCheckedAt = null` to deliberately mark the row as still needing the live AWACY pass.
+- `shouldApplySeedTimestamp` applies a seed row only if its `checkedAt` is newer than the
+  existing `lastCheckedAt`, so live data is never overwritten by older bundled data.
+- `shouldApplySeedDenuvoRow` never overwrites live Denuvo data that is newer or more
+  confident.
+- When seed Denuvo data creates or updates an anti-cheat row with no AWACY data yet,
+  hydration sets `lastCheckedAt = null` so the live AWACY pass still runs.
 
-### The Docker fast-path
+For Docker, `scripts/build-docker-db-template.ts` runs migrate and hydrate at build time
+and saves `docker/db/matrix.db.template` into the image. On first start the entrypoint
+copies it in, so the container starts fully seeded.
 
-`scripts/build-docker-db-template.ts` runs migrate + hydrate into a throwaway DB at *build*
-time and saves it as `docker/db/matrix.db.template`, baked into the image. On first start
-the entrypoint copies it in, so the container's database is fully seeded with no runtime
-hydration cost.
+## 10. Running it
 
----
+| | Local (development) | Docker (self-hosting) |
+| --- | --- | --- |
+| Run | `pnpm dev:all`: web server + `scripts/dev-cron-loop.ts` poller | One container, worker embedded (`SLM_EMBED_JOB_WORKER=true`) |
+| Database | `./data/matrix.db` | Named volume, seeded from the baked template |
+| Port | Next.js dev server | `127.0.0.1:3001` (loopback only by default) |
 
-## 10. Running it: local vs Docker
-
-```mermaid
-flowchart TB
-  subgraph Local["Local (development)"]
-    L1["Node + pnpm"]
-    L2["web server + separate worker poller"]
-    L3["./data/matrix.db"]
-  end
-  subgraph Docker["Docker (self-hosting)"]
-    D1["one container"]
-    D2["web server + embedded worker"]
-    D3["DB in a named volume + pre-built seed template"]
-  end
-```
-
-- **Local** is for development and hot reload: run the web app plus a small poller that
-  drives the worker (`pnpm dev:all`). Do **not** set `SLM_EMBED_JOB_WORKER` locally.
-- **Docker** is the intended self-host target: a single container with the worker embedded
-  (`SLM_EMBED_JOB_WORKER=true`) and a pre-seeded database ready on first boot.
-
-Both require a free **Steam Web API key**, and the imported profile must be public. Tuning
-knobs (batch sizes, concurrency, intervals, rate limits) are environment variables — see
+Do not set `SLM_EMBED_JOB_WORKER` locally. Both setups need a Steam Web API key, and the
+imported profile must be public. Docker setup is in
+[`docs/self-hosting.md`](./self-hosting.md). Tuning variables are in
 [`docs/env.md`](./env.md).
 
----
+## 11. Security
 
-## 11. Security model
+The app is single-user and meant for a LAN. Details are in
+[`docs/security.md`](./security.md).
 
-This is a LAN-first, single-user app; the defaults aim to be safe on a home network
-(see [`docs/security.md`](./security.md)):
-
-- **Security headers + CSP** (`src/proxy.ts`, `src/lib/security/csp.ts`): nonce-based
-  Content-Security-Policy with `strict-dynamic`, plus `X-Frame-Options`, `X-Content-Type-Options`,
+- `src/proxy.ts` and `src/lib/security/csp.ts` set a nonce-based CSP with
+  `strict-dynamic` (no `upgrade-insecure-requests`). Two sha256 hashes allow the style tag
+  Sonner injects. The proxy also sets `X-Frame-Options`, `X-Content-Type-Options`,
   `Referrer-Policy`, `Permissions-Policy`, and HSTS in production.
-- **Rate limiting** (`src/lib/api/rate-limit.ts`): per-IP, tiered (default vs expensive
-  endpoints).
-- **Input validation**: request bodies are validated with zod; Steam input parsing extracts
-  only an ID/vanity (no SSRF surface).
-- **Cron auth** (`/api/cron/process-jobs`): requires `CRON_SECRET`. All other API routes are open (rate-limited) — keep the app on your LAN.
-
----
+- `src/lib/api/with-api-route.ts` rejects cross-origin non-GET requests by comparing
+  `Origin` with `Host`, then applies rate limiting.
+- `src/lib/api/rate-limit.ts` keeps one global bucket per tier (`default`, `expensive`),
+  not per IP, because `X-Forwarded-For` can be spoofed.
+- Request bodies are validated with zod. Steam input parsing extracts only an ID or vanity
+  name.
+- `/api/cron/process-jobs` requires `CRON_SECRET`. Other API routes are open
+  (rate-limited), so keep the app on your LAN.
+- The Docker container binds to `127.0.0.1:3001`, drops all capabilities except the few
+  the entrypoint needs, and sets `no-new-privileges`.
 
 ## 12. File map
-
-Quick reference to the main pieces described above:
 
 | Area | Key files |
 | --- | --- |
 | Database client / schema | `src/lib/db/client.ts`, `src/lib/db/schema/index.ts`, `db/migrations/` |
 | Dashboard read path | `src/lib/db/dashboard.ts`, `src/lib/db/load-steam-game-join-rows.ts`, `src/lib/db/map-dashboard-game.ts` |
 | Job worker | `src/lib/jobs/worker.ts`, `run-step.ts`, `run-concurrent-batch.ts`, `enqueue.ts`, `worker-tick-scheduler.ts`, `enqueue-coverage-followup.ts`, `batch-config.ts` |
-| Enrichment resolution / TTL | `src/lib/enrichment/resolve-enrichment-appids.ts` |
+| Source registry | `src/lib/enrichment/sources/*` |
+| Enrichment resolution / TTL | `src/lib/enrichment/resolve-enrichment-appids.ts`, `src/lib/enrichment/enrichment-ttl.ts` |
 | Steam APIs | `src/lib/steam/steam-api.ts` (keyed), `steam-store.ts` / `steam-store-fetch.ts` / `fetch-steam-deck-compatibility.ts` (storefront) |
-| ProtonDB / HLTB | `src/lib/enrichment/protondb.ts`, `src/lib/enrichment/hltb-client.ts`, `src/lib/enrichment/hltb-match.ts` |
+| ProtonDB / HLTB / SteamSpy | `src/lib/enrichment/protondb.ts`, `hltb-client.ts`, `hltb-match.ts`, `steamspy.ts` |
 | Anti-cheat / Denuvo | `src/lib/anticheat/*`, `src/lib/steam/denuvo/*` |
-| macOS (AppleGamingWiki) | `src/lib/mac/*` (`fetch-applegamingwiki.ts`, `sync-macos-compat.ts`, `macos-compat-rating.ts`), `src/lib/db/macos-compat.ts` |
+| macOS (AppleGamingWiki) | `src/lib/mac/*`, `src/lib/db/macos-compat.ts` |
 | Backlog | `src/lib/dashboard/backlog.ts`, `src/lib/db/profile-backlog.ts` |
 | Seed system | `src/lib/seed/*`, `scripts/generate-seed-metadata.ts`, `scripts/build-docker-db-template.ts` |
 | Security / env | `src/proxy.ts`, `src/lib/security/csp.ts`, `src/lib/api/*`, `src/lib/env/runtime-env.ts` |
 | Startup / worker embed | `src/instrumentation.ts` |
 
----
-
-*This document describes the architecture as built; for planned work see the "Planned"
-section of [`README.md`](../README.md).*
+For planned work see the "Planned" section of [`README.md`](../README.md).

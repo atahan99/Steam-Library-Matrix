@@ -20,6 +20,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { pickRandomGames } from "@/lib/dashboard/random-game-picker"
+import { useIsClient } from "@/hooks/use-is-client"
 import { resolveGameHeroImageUrl } from "@/lib/utils/steam-image-url"
 import { getSteamStoreUrl } from "@/lib/utils/steam-url"
 import type { DashboardGame } from "@/types/dashboard"
@@ -141,7 +142,14 @@ const PickerCard = ({ label, description, game, steamid }: PickerCardProps) => {
   )
 }
 
+// Random picks only exist in the browser; picking during SSR rendered different games
+// on the server and client (React hydration error #418).
 export const RandomPickerPanel = () => {
+  const isClient = useIsClient()
+  return isClient ? <RandomPicks /> : null
+}
+
+const RandomPicks = () => {
   const { games, profile } = useDashboard()
   const [picks, setPicks] = useState(() => pickRandomGames(games))
 
