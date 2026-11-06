@@ -10,7 +10,8 @@ services:
     # docker/.env first; repo-root .env second (fills STEAM_API_KEY if docker/.env left it blank)
     env_file:
       - .env
-      - ../.env
+      - path: ../.env
+        required: false
     # Loopback only by default; use "3001:3000" or a reverse proxy to expose on your LAN
     ports:
       - "127.0.0.1:3001:3000"
@@ -39,7 +40,6 @@ services:
       SLM_HLTB_BATCH: "16"
       SLM_HLTB_CONCURRENCY: "6"
       SLM_HLTB_STAGGER_MS: "300"
-      SLM_HLTB_SYNC_DELAY_MS: "0"
       SLM_ENRICH_VERBOSE: "true"
     # Live DB in a named volume (avoids WAL corruption on bind mounts). Seed JSON stays read-only from the repo.
     volumes:
