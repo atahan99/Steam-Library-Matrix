@@ -1,26 +1,26 @@
 # Steam Library Matrix
 
-**Your library, decoded.** Import a public Steam profile and explore it in one dashboard — Proton/Linux compatibility, anti-cheat & Denuvo status, how-long-to-beat, Steam Deck rating, Mac/VR support, achievements, and more.
+Import a public Steam profile and see your whole library in one dashboard: Linux and Steam Deck compatibility, anti-cheat and Denuvo status, completion times, Steam reviews, Mac and VR support, achievements and backlog.
 
-**Self-hosted only** — no cloud database or hosted backend. The whole app is one Next.js process plus a single SQLite file.
+It runs on your own machine as one Next.js process and one SQLite file. There is no cloud backend.
 
-> **New here?** [docs/architecture.md](docs/architecture.md) explains how it works end to end — import, the background enrichment queue, cross-source matching, and the bundled seed.
+[docs/architecture.md](docs/architecture.md) explains how it works end to end.
 
 ## Screenshots
 
 | Landing | Overview |
 | :---: | :---: |
-| ![Steam Library Matrix landing page — import form, source orbit, and scrolling game covers](docs/images/landing.png) | ![Dashboard overview — playtime, completion, and top-played charts](docs/images/overview.png) |
-| Paste a public profile URL, vanity name, or SteamID64 | Profile stats, quick metrics, and playtime distribution |
+| ![Landing page with the import form, source orbit and scrolling game covers](docs/images/landing.png) | ![Dashboard overview with playtime, completion and top-played charts](docs/images/overview.png) |
+| Paste a public profile URL, vanity name or SteamID64 | Profile stats, quick metrics and playtime distribution |
 
 | ProtonDB | HowLongToBeat |
 | :---: | :---: |
-| ![ProtonDB page — tier distribution, filters, and compatibility table](docs/images/protondb.png) | ![HowLongToBeat page — completion times with match confidence and missing-data states](docs/images/howlongtobeat.png) |
-| Linux / Steam Deck tiers with a clickable distribution chart | Completion times, match confidence, and why a time is missing |
+| ![ProtonDB page with tier distribution, filters and compatibility table](docs/images/protondb.png) | ![HowLongToBeat page with completion times, match confidence and missing-data states](docs/images/howlongtobeat.png) |
+| Linux and Steam Deck tiers with a clickable chart | Completion times, match confidence, and why a time is missing |
 
-## Engineering highlights
+## How it works
 
-The interesting part is not the dashboard. It is turning seven unreliable, rate-limited, mostly unofficial sources into one consistent library view, inside a single process that a person can run at home.
+Most of the work is turning seven rate-limited, mostly unofficial sources into one consistent view of a library, inside a single process someone can run at home.
 
 ```mermaid
 flowchart LR
@@ -30,61 +30,45 @@ flowchart LR
   W["In-process worker<br/>claims · resumes · retries"] --> Q
   W --> R["Source registry<br/>app details · ProtonDB · HLTB<br/>achievements · SteamSpy"]
   W --> S["Special steps<br/>anti-cheat · catalogs · wishlist"]
-  R & S -->|"store pages"| T["Shared store throttle<br/>+ circuit breaker (in SQLite)"]
-  T --> EXT["Steam · ProtonDB · HowLongToBeat · SteamSpy<br/>AWACY · Levvvel · AppleGamingWiki"]
+  R & S -->|"Steam store pages"| T["Shared store throttle<br/>+ circuit breaker (in SQLite)"]
+  R & S --> EXT["ProtonDB · HowLongToBeat · SteamSpy<br/>AWACY · Levvvel · AppleGamingWiki"]
   R & S -->|"results + 'no data' rows"| DB
-  SEED["Bundled seed<br/>~1500 top sellers"] -->|"hydrate on boot"| DB
+  SEED["Bundled seed<br/>~1,500 top sellers"] -->|"hydrate on boot"| DB
   DB --> UI["Dashboard pages<br/>+ Data Status"]
 ```
 
-- **A store throttle that every process obeys.** Steam's storefront allows about 200 requests per 5 minutes per IP, and it bans abusers. The request budget and a circuit breaker live in a SQLite row, so the web server, the worker and CLI scripts all share one limit instead of each keeping its own. A cooldown pauses the job until `cooldownUntil` instead of burning retries.
-- **A resumable job queue without Redis.** Jobs are rows in `enrichment_jobs`:
-  - A partial unique index allows only one active job per profile and source.
-  - Workers claim jobs inside an `IMMEDIATE` transaction, so two processes never take the same job.
-  - Each step saves a cursor and stops at a time limit, so a 1,000-game library finishes in many short steps and survives restarts.
-  - Locks older than 10 minutes are released, and on boot the worker frees orphaned jobs and prunes old ones.
-  - Follow-up rounds for failed lookups stop after 3.
-- **Fuzzy cross-source matching with honest confidence.** Steam names rarely match community sites exactly ("Rome: Total War - Alexander", "… Definitive Edition").
-  - The HowLongToBeat matcher tries several query variants: the full name, the name without edition words, without the subtitle, and the base title.
-  - It scores every hit for similarity and accepts at 0.72 (0.62 for a base-title match). Anything under 0.55 is rejected.
-  - Low-confidence matches are flagged in the UI, not hidden.
-  - DLC stays searchable, so an expansion matches its own entry, not the base game's times.
-- **"No data" is data.** A confirmed "not on HowLongToBeat" or "no anti-cheat entry" is cached with a time limit, so the queue doesn't loop on it. Temporary failures (network, 429, 5xx, rotated tokens) are not cached and get retried. The UI says which case you're looking at: *N/A*, *Not on HLTB*, *Pending* or *Retrying*.
-- **Scrapers built to break loudly.** HowLongToBeat's search endpoint and token are discovered from its own JavaScript bundle at runtime. Levvvel is parsed from HTML and AWACY from its `games.json`, with saved fixtures in tests. When a site changes, the Data Status page shows that source's last run as failed, with the error. It doesn't silently serve stale data.
-- **Instant first load from a bundled seed.** About 1,500 top-selling games come pre-enriched in `data/seed/` and are loaded into SQLite on first start. A new profile shows most of its data right away while the worker fills in the rest.
-- **Hardened for a LAN app:**
-  - A nonce-based CSP with `strict-dynamic`, and an Origin check on every write route.
-  - A global rate limit that a spoofed `X-Forwarded-For` header can't reset.
-  - A Docker container with dropped capabilities that listens on loopback only.
-  - 416 tests, including real-SQLite tests for the job queue, migrations and import upserts, run in CI.
+- **One store throttle for every process.** Steam's storefront allows about 200 requests per 5 minutes per IP and bans clients that go over. The budget and a circuit breaker live in a SQLite row, so the web server, the worker and CLI scripts share one limit. A cooldown pauses the job until `cooldownUntil` without using up its retries.
+- **A resumable job queue without Redis.** Jobs are rows in `enrichment_jobs`, and a partial unique index allows one active job per profile and source. Workers claim jobs in an `IMMEDIATE` transaction, so two processes never take the same one. Each step saves a cursor and stops at a time limit, so a 1,000-game library finishes in short steps and survives restarts. Stale locks are released after 10 minutes, the worker cleans up orphaned and old jobs on boot, and follow-up rounds for failed lookups stop after 3.
+- **Fuzzy matching with visible confidence.** Steam names rarely match community sites exactly ("Rome: Total War - Alexander", "... Definitive Edition"). The HowLongToBeat matcher tries several query variants, scores each hit, and accepts at 0.72 (0.62 for a base-title match). Low-confidence matches are labeled in the UI. DLC stays searchable, so an expansion gets its own times instead of the base game's.
+- **"No data" is cached, errors are retried.** A confirmed "not on HowLongToBeat" or "no anti-cheat entry" is stored with a time limit, so the queue stops asking. Network errors, 429s, 5xx responses and rotated tokens are retried later. The UI shows which case applies: *N/A*, *Not on HLTB*, *Pending* or *Retrying*.
+- **Scrapers that fail visibly.** The HowLongToBeat client finds its search endpoint and token in the site's own JavaScript at runtime. Levvvel is parsed from HTML and AWACY from its `games.json`, with saved fixtures in tests. When a site changes, Data Status shows that source's last run as failed, with the error.
+- **A bundled seed for a fast first load.** About 1,500 top-selling games ship pre-enriched in `data/seed/` and load into SQLite on first start, so a new profile shows most of its data right away.
+- **Hardening for a LAN app.** A nonce-based CSP with `strict-dynamic`, an Origin check on every write route, a global rate limit that a spoofed `X-Forwarded-For` can't reset, and a Docker container that drops capabilities and listens on loopback only. More than 400 tests cover it, including real-SQLite tests for the job queue, migrations and import upserts.
 
 ### Decisions and trade-offs
 
-| Decision | Why | What it costs |
+| Decision | Why | Cost |
 | --- | --- | --- |
-| **SQLite, one file** instead of Postgres | Nothing to run or back up beyond one file. WAL mode handles one writer plus readers easily. | A single machine only. Concurrent writers need care, hence the `IMMEDIATE` claims and the shared throttle row. |
-| **In-process worker** instead of Redis / BullMQ | No extra service to deploy. The queue is plain rows, so the Data Status page can show it directly. | Throughput is tied to one process. `/api/cron/process-jobs` exists for running the worker from outside. |
-| **HTTP scraping, no headless browser** | Cheap, fast, and easy to test with fixtures. No Chromium in the image. | Fragile when sites redesign, so parsers are small, tested, and their health shows on Data Status. |
-| **Bundled seed data** | A new user sees results in seconds, not after an hour of throttled requests. | A larger repository, and the seed needs regenerating now and then (`pnpm seed:generate`). |
-| **Best effort, with confidence shown** | Community data is incomplete. Showing confidence and "why missing" is more useful than hiding uncertain matches. | Users sometimes see a wrong match, but it's labeled low confidence. |
-| **No login, LAN-first** | It's a personal tool. Accounts would add a lot of code for no benefit at home. | Not safe to expose to the internet as-is (see [docs/security.md](docs/security.md)). The open API is rate-limited and CSRF-protected. |
+| SQLite in one file, instead of Postgres | Nothing to run or back up beyond one file. WAL mode handles one writer and many readers. | One machine only. Concurrent writers need care, hence the `IMMEDIATE` claims and the shared throttle row. |
+| In-process worker, instead of Redis or BullMQ | No extra service to deploy. The queue is plain rows, so Data Status can show it directly. | Throughput is tied to one process. `/api/cron/process-jobs` lets an outside scheduler drive it. |
+| HTTP scraping, no headless browser | Fast, cheap, and easy to test with fixtures. No Chromium in the image. | Breaks when sites redesign, so parsers are small and tested, and their health shows on Data Status. |
+| Bundled seed data | A new user sees results in seconds instead of after an hour of throttled requests. | A bigger repository, and the seed needs regenerating now and then (`pnpm seed:generate`). |
+| Best effort, with confidence shown | Community data is incomplete. Showing confidence and the reason a value is missing helps more than hiding it. | Users sometimes see a wrong match, labeled as low confidence. |
+| No login, LAN first | It's a personal tool, and accounts would add a lot of code for no benefit at home. | Not safe to expose to the internet as is ([docs/security.md](docs/security.md)). The open API is rate-limited and CSRF-protected. |
 
 ## Features
 
-- **Overview** — playtime, completion, and top-played / recently-played charts (plus an external SteamDB calculator link)
-- **Library** — every owned game with OS-support icons, lifetime & recent playtime, Steam review score (via SteamSpy), search, filters (genre / OS / played / game vs DLC), sort, pagination, and CSV export
-- **Achievements** — library-wide achievement progress with completion %, near-100%, and never-started filters
-- **Genres** — store genre analytics: game counts and lifetime playtime per tag
-- **ProtonDB** — Linux & Steam Deck compatibility tiers with a clickable distribution chart
-- **HowLongToBeat** — main / main+extras / completionist times, with match confidence
-- **Anti-Cheat** — Linux anti-cheat status (AWACY), kernel-level anti-cheat (Levvvel), and Denuvo signals
-- **Mac & VR** — Apple Silicon (native), Rosetta 2, and CrossOver compatibility from AppleGamingWiki plus native macOS support; VR support / VR-only
-- **Compare** — line up multiple profiles (intersection of libraries)
-- **Backlog** — pile-of-shame stats, curated picks (quick wins, almost-there, gathering dust), a hand-picked queue with a monthly goal, and a random picker
-- **Enrichment source registry** — app details, ProtonDB, achievements, HowLongToBeat and SteamSpy run behind a shared `EnrichmentSource` contract ([docs/scraping.md](docs/scraping.md)); wishlist, catalog sync and two-phase anti-cheat keep bespoke steps
-- **Global search** (⌘K / Ctrl+K), theme selector, and an About page with data sources & attribution
-
-Enrichment fills in over time via a background worker; **Data Status** shows per-source progress and health.
+- Overview: playtime, completion, top-played and recently played charts, an average Steam review score for the library, and a link to the SteamDB calculator.
+- Library: every owned game with OS icons, playtime, Steam review score, search, filters, sorting and CSV export.
+- Achievements: completion across the library, with near-100% and never-started filters.
+- Backlog: pile-of-shame stats, picks (quick wins, almost there, hidden gems, gathering dust), a personal queue with a monthly goal, and a random picker.
+- Genres: game counts and playtime by Steam store genre or by community tag.
+- ProtonDB: Linux and Steam Deck tiers with a clickable distribution chart.
+- HowLongToBeat: main, extras and completionist times with match confidence.
+- Anti-Cheat: Linux anti-cheat status (AWACY), kernel anti-cheat (Levvvel) and Denuvo signals.
+- Mac and VR: Apple Silicon, Rosetta 2 and CrossOver ratings from AppleGamingWiki, native macOS support, VR support.
+- Compare: the games several profiles have in common.
+- Global search (⌘K / Ctrl+K), themes, an About page with sources and credits, and Data Status with per-source progress and health.
 
 ## Tech stack
 
@@ -93,178 +77,93 @@ Enrichment fills in over time via a background worker; **Data Status** shows per
 | App | [Next.js](https://nextjs.org/) 16 (App Router), React 19, TypeScript |
 | UI | Tailwind CSS 4, [shadcn/ui](https://ui.shadcn.com/) (Base UI), Lucide, Recharts |
 | Data | SQLite ([better-sqlite3](https://github.com/WiseLibs/better-sqlite3)), [Drizzle ORM](https://orm.drizzle.team/), SQL migrations in `db/migrations/` |
-| Enrichment | Steam Web API, ProtonDB API, HowLongToBeat, AWACY / Levvvel / Denuvo catalogs, AppleGamingWiki (macOS compatibility) (HTTP; Cheerio for some HTML sources) |
-| Jobs | In-process enrichment worker (embedded in Docker; separate `dev:jobs` poller for local dev) |
-| Testing | Vitest |
-| Deploy | Node 22 + pnpm (local dev) · Docker + Docker Compose (self-host) |
-
-## Choose how to run
-
-| | Option 1 — Local Next.js | Option 2 — Docker Compose (recommended) |
-| --- | --- | --- |
-| **For** | Development, hot reload | Self-host on a server or LAN |
-| **Requires** | Node 22, pnpm | Docker and Docker Compose only |
-| **Config** | `.env` (repo root) | `docker/.env` |
-| **Database** | `./data/matrix.db` | Docker named volume `matrix_db` |
-| **Start** | `pnpm dev:all` | `docker compose -f docker/compose.yml up --build -d` |
-
-Never commit `.env`, `docker/.env`, `data/*.db`, or `docker/db/*.db`.
+| Sources | Steam Web API and storefront, ProtonDB, HowLongToBeat, SteamSpy, AWACY, Levvvel, Steam curator (Denuvo), AppleGamingWiki |
+| Jobs | In-process worker (embedded in Docker, `dev:jobs` poller in local dev) |
+| Testing | Vitest, GitHub Actions |
+| Deploy | Docker Compose, or Node 22 and pnpm |
 
 ## Get a Steam Web API key
 
-Required for both options. A key is **required for import** — there is no optional slower mode without one. Each self-hoster registers and uses their **own** key; do not share keys across deployments.
+Both setups need your own key, and import doesn't work without one.
 
-1. Sign in at [https://steamcommunity.com/dev/apikey](https://steamcommunity.com/dev/apikey).
-2. Register a new key. For **Domain Name**, use `localhost` (fine for LAN and self-host).
-3. Copy the key into the env file for your chosen option (`STEAM_API_KEY=...`).
-4. The Steam profile you import must be **public** (games visible on the profile).
+1. Sign in at [steamcommunity.com/dev/apikey](https://steamcommunity.com/dev/apikey).
+2. Register a key. Use `localhost` as the domain name.
+3. Put it in your env file as `STEAM_API_KEY=...`.
 
----
+The profile you import must be public, with game details visible.
 
-## Option 1: Local Next.js
+## Run with Docker (recommended)
+
+You only need Docker and Docker Compose.
 
 ```bash
 git clone https://github.com/atahan99/Steam-Library-Matrix.git
 cd Steam-Library-Matrix
+cp docker/.env.example docker/.env
+```
 
+Set `STEAM_API_KEY` in `docker/.env`, and `CRON_SECRET` to the output of `openssl rand -hex 32`. Then start it:
+
+```bash
+docker compose -f docker/compose.yml up --build -d
+```
+
+Open [http://localhost:3001](http://localhost:3001). The first start creates the database from a bundled template, and data stays in the `matrix_db` volume across rebuilds. The container listens on `127.0.0.1` only; [docs/self-hosting.md](docs/self-hosting.md) shows how to open it to your LAN, put it behind a proxy, and back it up.
+
+Check that it's ready before importing:
+
+```bash
+curl -s http://localhost:3001/api/health
+```
+
+It should report `"ok":true` and `"steamApiKey":"ok"`.
+
+## Run locally for development
+
+You need Node 22 and pnpm.
+
+```bash
+git clone https://github.com/atahan99/Steam-Library-Matrix.git
+cd Steam-Library-Matrix
 pnpm install
 cp .env.example .env
 ```
 
-Edit `.env`:
-
-| Variable | What to set |
-| --- | --- |
-| `STEAM_API_KEY` | Key from above |
-| `CRON_SECRET` | `openssl rand -hex 32` |
+Set `STEAM_API_KEY` and `CRON_SECRET` in `.env`, then:
 
 ```bash
 pnpm db:migrate
 pnpm dev:all
 ```
 
-Open [http://localhost:3000](http://localhost:3000). If Docker is already using port 3000, Next.js picks 3001.
+Open [http://localhost:3000](http://localhost:3000). `dev:all` runs the app and the job worker, so leave `SLM_EMBED_JOB_WORKER` unset. On pnpm 11 you may need `pnpm approve-builds better-sqlite3`.
 
-Do **not** set `SLM_EMBED_JOB_WORKER` locally — `dev:all` runs the job worker. On pnpm 11 you may need `pnpm approve-builds better-sqlite3`.
-
----
-
-## Option 2: Docker Compose
-
-No Node or pnpm required on the host.
-
-```bash
-git clone https://github.com/atahan99/Steam-Library-Matrix.git
-cd Steam-Library-Matrix
-
-cp docker/.env.example docker/.env
-```
-
-Edit `docker/.env`:
-
-| Variable | What to set |
+| Command | What it does |
 | --- | --- |
-| `STEAM_API_KEY` | Key from above |
-| `CRON_SECRET` | `openssl rand -hex 32` |
-
-The entrypoint creates `matrix.db` from the bundled template on first start — no manual copy step.
-
-Start:
-
-```bash
-docker compose -f docker/compose.yml up --build -d
-```
-
-Open [http://localhost:3001](http://localhost:3001) (Docker uses **3001** so local dev can keep **3000**).
-
-Check health:
-
-```bash
-curl -s http://localhost:3001/api/health
-```
-
-Expect `"ok":true` and `"steamApiKey":"ok"` before importing.
-
-Stop or rebuild (data in the `matrix_db` volume is kept):
-
-```bash
-docker compose -f docker/compose.yml down
-docker compose -f docker/compose.yml up --build -d
-```
-
-### Docker database
-
-- Stored in the Compose named volume `matrix_db` at `/app/data/db` inside the container.
-- Separate from local `./data/matrix.db`.
-- Details: [docker/db/README.md](docker/db/README.md).
-
-**Backup**:
-
-```bash
-docker compose -f docker/compose.yml exec app cp /app/data/db/matrix.db /tmp/matrix-backup.db
-docker cp "$(docker compose -f docker/compose.yml ps -q app)":/tmp/matrix-backup.db ./matrix-backup.db
-```
-
-**Migrating an older database** (from a previous bind-mount layout into the `matrix_db` volume): see [docker/db/README.md § Migrate from bind mount](docker/db/README.md).
-
----
-
-## First import
-
-1. Paste a **public** profile URL, vanity name, or SteamID64 on the landing page.
-2. You land on `/dashboard/[steamid]`.
-3. **Refresh** re-syncs the library and queues enrichments; **Data Status** shows per-source progress.
-4. Keep your chosen stack running so background jobs can finish.
-
-Wishlist import needs a wishlist visible to the Steam Web API.
-
-## Status & expectations
-
-- Built for **single-user, self-hosted** use on a home machine or LAN — not a public multi-user service. Keep it on your LAN; [docs/security.md](docs/security.md) covers secrets, the CSP, and Docker hardening.
-- Enrichment data is **best-effort**: it's aggregated from community sources via fuzzy name matching, so the occasional value will be missing or wrong. Confidence is shown where it matters (e.g. HowLongToBeat matches, Denuvo signals).
-- Community sources can change without notice. When one breaks, the **Data Status** page surfaces it; a parser fix follows. Expect light, ongoing maintenance.
-
-## Security
-
-Secrets, rate limits, and CSP: [docs/security.md](docs/security.md). Env reference: [docs/env.md](docs/env.md#required).
-
-## Scripts (local development)
-
-| Command | Description |
-| --- | --- |
-| `pnpm dev:all` | Next.js + job worker |
-| `pnpm dev` | Next.js only |
-| `pnpm db:migrate` | Apply SQL migrations (local `./data/`) |
-| `pnpm db:verify` | Verify schema |
-| `pnpm seed:hydrate` | Load bundled seed metadata into SQLite |
-| `pnpm seed:generate` | Regenerate `data/seed/` from local DB |
-| `pnpm seed:verify` | Validate seed JSON files |
+| `pnpm dev:all` | App and job worker |
 | `pnpm test` | Unit tests |
-| `pnpm bootstrap` | Import + enrich via CLI |
+| `pnpm db:migrate` | Apply SQL migrations to `./data/matrix.db` |
+| `pnpm seed:generate` | Regenerate `data/seed/` from the local database |
+| `pnpm bootstrap` | Import and enrich a profile from the command line |
 
-Maintainers may use `pnpm docker:up` / `pnpm docker:down` as shortcuts for Compose; deployment docs use `docker compose` directly.
+Never commit `.env`, `docker/.env`, or any `.db` file. All settings are in [docs/env.md](docs/env.md).
 
-More tuning: [docs/env.md](docs/env.md).
+## After the first import
+
+Paste a public profile URL, vanity name or SteamID64 on the landing page. The dashboard opens right away, and the background worker fills in each source over time. Data Status shows progress per source. Keep the app running until it finishes; Steam's store limits make a large library take a while.
+
+The app is built for one person on a home machine or LAN, not as a public service. Its data comes from community sources and fuzzy name matching, so some values will be missing or wrong. When a source changes its site, Data Status shows it and the parser needs an update.
 
 ## Planned
 
-Not implemented yet — rough order, may change.
+- Richer DLC: parent links and complete-edition views. Steam's public API doesn't list owned DLC (only the logged-in store `dynamicstore/userdata` endpoint does, and the app has no Steam login), so this would cover Steam's DLC catalog and wishlisted DLC only.
+- A prebuilt image on GHCR.
 
-- [ ] Richer DLC — parent appid linkage and complete-edition views beyond the library game/DLC filter
-  Limit: Steam's public Web API doesn't expose owned DLC (`GetOwnedGames` lists games only; owned DLC comes from the logged-in store `dynamicstore/userdata` endpoint, and this app deliberately has no Steam login), so linkage would cover Steam's DLC catalog and wishlisted DLC only.
-- [ ] Publish a prebuilt image to GHCR
-
-Intentionally external (not planned in-app): SteamDB calculator (Overview link only) and price/deals data.
+Prices and deals stay out of scope; the Overview links to the SteamDB calculator instead.
 
 ## Documentation
 
-- [docs/README.md](docs/README.md) — index and reading order
-- [docs/architecture.md](docs/architecture.md) — how the system works (overview + deep dives)
-- [docs/self-hosting.md](docs/self-hosting.md) — Docker hardening, TLS, proxy
-- [docs/env.md](docs/env.md) — environment variables
-- [docs/database.md](docs/database.md) — SQLite, migrate, backup
-- [docs/scraping.md](docs/scraping.md) — data sources and enrichment
-- [docs/security.md](docs/security.md) — open routes, rate limits, CSP, secrets
+[docs/README.md](docs/README.md) lists the docs and a reading order.
 
 ## License
 
