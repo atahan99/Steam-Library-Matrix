@@ -11,8 +11,10 @@ import {
 import {
   UNTAGGED_GENRE,
   buildGenreChartData,
+  labelsForGame,
   matchesGenreChartFilter,
   type GenreChartFilter,
+  type GenreMode,
 } from "@/lib/dashboard/genre-chart-data"
 import { useTableGames } from "@/hooks/use-table-games"
 import { FilterSelectField } from "@/components/tables/filter-select-field"
@@ -108,11 +110,13 @@ const compareGenreGames = (
 
 type GenresTableProps = {
   genreFilter?: GenreChartFilter
+  mode?: GenreMode
   onGenreFilterChange?: (genre: GenreChartFilter) => void
 }
 
 export const GenresTable = ({
   genreFilter: controlledGenreFilter,
+  mode = "genres",
   onGenreFilterChange,
 }: GenresTableProps = {}) => {
   const games = useTableGames()
@@ -144,19 +148,19 @@ export const GenresTable = ({
   }
 
   const genreOptions = useMemo(() => {
-    const chartGenres = buildGenreChartData(games)
+    const chartGenres = buildGenreChartData(games, mode)
       .filter((d) => d.count > 0)
       .map((d) => d.genre)
     return [
-      { value: "all" as const, label: "All genres" },
+      { value: "all" as const, label: mode === "tags" ? "All tags" : "All genres" },
       ...chartGenres.map((genre) => ({ value: genre, label: genre })),
     ]
-  }, [games])
+  }, [games, mode])
 
   const filtered = useMemo(() => {
     return games
       .filter((g) => g.name.toLowerCase().includes(search.toLowerCase()))
-      .filter((g) => matchesGenreChartFilter(g, genreFilter))
+      .filter((g) => matchesGenreChartFilter(g, genreFilter, mode))
       .filter((g) => !playedOnly || g.playtimeForeverMinutes > 0)
       .filter((g) => !neverPlayedOnly || g.playtimeForeverMinutes === 0)
       .sort((a, b) => compareGenreGames(a, b, sortKey, sortDirection))
@@ -164,6 +168,7 @@ export const GenresTable = ({
     games,
     search,
     genreFilter,
+    mode,
     playedOnly,
     neverPlayedOnly,
     sortKey,
@@ -174,7 +179,8 @@ export const GenresTable = ({
   const exportRows = useMemo(
     () =>
       filtered.map((g) => {
-        const labels = parseGenreLabels(g.steamDetails?.genres)
+        const labels =
+          mode === "tags" ? labelsForGame(g, "tags") : parseGenreLabels(g.steamDetails?.genres)
         return [
           g.name,
           g.appid,
@@ -182,7 +188,7 @@ export const GenresTable = ({
           formatPlaytime(g.playtimeForeverMinutes),
         ]
       }),
-    [filtered]
+    [filtered, mode]
   )
   const paged = filtered.slice((safePage - 1) * pageSize, safePage * pageSize)
   const searchHandlers = createTableSearchHandlers(setUrl)
@@ -197,7 +203,7 @@ export const GenresTable = ({
             pinnedGameAppid={game}
             ariaLabel="Search games by genre"
             exportFilename="genres-export.csv"
-            exportHeaders={["Name", "AppID", "Genres", "Playtime"]}
+            exportHeaders={["Name", "AppID", mode === "tags" ? "Top tags" : "Genres", "Playtime"]}
             exportRows={exportRows}
             {...searchHandlers}
           />
@@ -251,7 +257,7 @@ export const GenresTable = ({
           <TableHeader>
             <TableRow>
               <TableHead className={TABLE_GAME_COLUMN_HEAD_CLASS}>Game</TableHead>
-              <TableHead>Genres</TableHead>
+              <TableHead>{mode === "tags" ? "Top tags" : "Genres"}</TableHead>
               <TableHead>Playtime</TableHead>
             </TableRow>
           </TableHeader>
@@ -278,7 +284,10 @@ export const GenresTable = ({
                     />
                   </TableCell>
                   <TableCell className="align-top whitespace-normal">
-                    <GenreListCell genres={g.steamDetails?.genres} />
+                    <GenreListCell
+                      genres={g.steamDetails?.genres}
+                      labels={mode === "tags" ? labelsForGame(g, "tags") : undefined}
+                    />
                   </TableCell>
                   <TableCell>
                     <PlaytimeBadge minutes={g.playtimeForeverMinutes} />

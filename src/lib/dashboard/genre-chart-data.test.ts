@@ -138,3 +138,36 @@ describe("matchesGenreChartFilter", () => {
     expect(matchesGenreChartFilter(actionIndie, UNTAGGED_GENRE)).toBe(false)
   })
 })
+
+describe("community tags mode", () => {
+  const tagged = (appid: number, tags: string[], playtime = 0): DashboardGame => ({
+    appid,
+    name: `Game ${appid}`,
+    playtimeForeverMinutes: playtime,
+    playtime2WeeksMinutes: 0,
+    steamspy: { tags },
+  })
+
+  it("counts each game's top 3 tags, most common first, untagged last", () => {
+    const games = [
+      tagged(1, ["Roguelike", "Indie", "Pixel Graphics", "Difficult"], 60),
+      tagged(2, ["Roguelike", "Story Rich"], 30),
+      game(3, 0),
+    ]
+    const data = buildGenreChartData(games, "tags")
+    expect(data.map((d) => [d.genre, d.count])).toEqual([
+      ["Roguelike", 2],
+      ["Indie", 1],
+      ["Pixel Graphics", 1],
+      ["Story Rich", 1],
+      [UNTAGGED_GENRE, 1],
+    ])
+    expect(data.find((d) => d.genre === "Roguelike")?.playtimeMinutes).toBe(90)
+  })
+
+  it("filters by tag without affecting store-genre mode", () => {
+    const g = tagged(1, ["Roguelike"])
+    expect(matchesGenreChartFilter(g, "Roguelike", "tags")).toBe(true)
+    expect(matchesGenreChartFilter(g, "Roguelike")).toBe(false)
+  })
+})

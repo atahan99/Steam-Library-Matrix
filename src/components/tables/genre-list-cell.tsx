@@ -2,10 +2,12 @@ import { parseGenreLabels } from "@/lib/utils/genre-label"
 
 type GenreListCellProps = {
   genres?: unknown[]
+  /** Precomputed labels (e.g. community tags) instead of parsing store genres. */
+  labels?: string[]
 }
 
-export const GenreListCell = ({ genres }: GenreListCellProps) => {
-  const labels = parseGenreLabels(genres)
+export const GenreListCell = ({ genres, labels: given }: GenreListCellProps) => {
+  const labels = given ?? parseGenreLabels(genres)
 
   if (!labels.length) {
     return <span className="text-muted-foreground">—</span>
