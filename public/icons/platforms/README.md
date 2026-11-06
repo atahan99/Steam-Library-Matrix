@@ -1,9 +1,9 @@
 # Platform icons
 
-Brand SVGs from [thesvg.org](https://thesvg.org):
+SVGs from [thesvg.org](https://thesvg.org).
 
-| File | Slug | Variant |
-|------|------|---------|
-| `windows.svg` | windows | default |
-| `apple.svg` | apple | mono (same as `../brands/apple.svg`) |
-| `linux.svg` | linux | default |
+| File | Slug | Used at runtime |
+|------|------|-----------------|
+| `windows.svg` | windows | Yes, by `PlatformIcon` (`src/components/icons/platform-icon.tsx`) |
+| `linux.svg` | linux | Yes, by `PlatformIcon` |
+| `apple.svg` | apple (mono, same as `../brands/apple.svg`) | No. The Mac badge uses the inline `BrandIcon` |
