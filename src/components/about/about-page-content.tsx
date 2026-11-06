@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { REPO_URL } from "@/lib/brand"
 import { ExternalLinkIcon } from "lucide-react"
 import {
   aboutAffiliation,
@@ -59,13 +60,23 @@ export const AboutPageContent = ({ embedded = false }: AboutPageContentProps) =>
           {aboutHero.subtitle}
         </p>
         <LibraryOrbit variant="about" className="mx-auto mt-6" />
-        <div className="pt-2">
+        <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 pt-2 text-sm">
           <Link
             href="/"
-            className="text-sm text-primary underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="text-primary underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             Import a Steam profile
           </Link>
+          <a
+            href={REPO_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 text-primary underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            Source code on GitHub
+            <ExternalLinkIcon className="size-3 opacity-70" aria-hidden />
+            <span className="sr-only">(opens in new tab)</span>
+          </a>
         </div>
       </header>
 

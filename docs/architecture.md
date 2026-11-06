@@ -469,7 +469,7 @@ copies it in, so the container starts fully seeded.
 | --- | --- | --- |
 | Run | `pnpm dev:all`: web server + `scripts/dev-cron-loop.ts` poller | One container, worker embedded (`SLM_EMBED_JOB_WORKER=true`) |
 | Database | `./data/matrix.db` | Named volume, seeded from the baked template |
-| Port | Next.js dev server | `127.0.0.1:3001` (loopback only by default) |
+| Port | Next.js dev server | `3001` (reachable from the LAN) |
 
 Do not set `SLM_EMBED_JOB_WORKER` locally. Both setups need a Steam Web API key, and the
 imported profile must be public. Docker setup is in
@@ -493,7 +493,7 @@ The app is single-user and meant for a LAN. Details are in
   name.
 - `/api/cron/process-jobs` requires `CRON_SECRET`. Other API routes are open
   (rate-limited), so keep the app on your LAN.
-- The Docker container binds to `127.0.0.1:3001`, drops all capabilities except the few
+- The Docker container publishes port 3001 to the LAN, drops all capabilities except the few
   the entrypoint needs, and sets `no-new-privileges`.
 
 ## 12. File map

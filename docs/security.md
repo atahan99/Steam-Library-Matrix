@@ -53,7 +53,7 @@ The server uses plain HTTP fetches and never drives a browser ([scraping.md](./s
 
 [`docker/compose.yml`](../docker/compose.yml):
 
-- publishes the port on `127.0.0.1:3001` only ([self-hosting.md](./self-hosting.md#lan-access) shows how to open it)
+- publishes port 3001 to your LAN ([self-hosting.md](./self-hosting.md#lan-access) shows how to keep it on the host only)
 - drops all capabilities, then adds back `CHOWN`, `DAC_OVERRIDE`, `FOWNER`, `SETUID` and `SETGID`, which the entrypoint needs to fix ownership of the database directory and switch users
 - sets `no-new-privileges`
 

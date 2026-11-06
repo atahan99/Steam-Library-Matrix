@@ -43,7 +43,7 @@ flowchart LR
 - **"No data" is cached, errors are retried.** A confirmed "not on HowLongToBeat" or "no anti-cheat entry" is stored with a time limit, so the queue stops asking. Network errors, 429s, 5xx responses and rotated tokens are retried later. The UI shows which case applies: *N/A*, *Not on HLTB*, *Pending* or *Retrying*.
 - **Scrapers that fail visibly.** The HowLongToBeat client finds its search endpoint and token in the site's own JavaScript at runtime. Levvvel is parsed from HTML and AWACY from its `games.json`, with saved fixtures in tests. When a site changes, Data Status shows that source's last run as failed, with the error.
 - **A bundled seed for a fast first load.** About 1,500 top-selling games ship pre-enriched in `data/seed/` and load into SQLite on first start, so a new profile shows most of its data right away.
-- **Hardening for a LAN app.** A nonce-based CSP with `strict-dynamic`, an Origin check on every write route, a global rate limit that a spoofed `X-Forwarded-For` can't reset, and a Docker container that drops capabilities and listens on loopback only. More than 400 tests cover it, including real-SQLite tests for the job queue, migrations and import upserts.
+- **Hardening for a LAN app.** A nonce-based CSP with `strict-dynamic`, an Origin check on every write route, a global rate limit that a spoofed `X-Forwarded-For` can't reset, and a Docker container that drops capabilities. More than 400 tests cover it, including real-SQLite tests for the job queue, migrations and import upserts.
 
 ### Decisions and trade-offs
 
@@ -108,7 +108,7 @@ Set `STEAM_API_KEY` in `docker/.env`, and `CRON_SECRET` to the output of `openss
 docker compose -f docker/compose.yml up --build -d
 ```
 
-Open [http://localhost:3001](http://localhost:3001). The first start creates the database from a bundled template, and data stays in the `matrix_db` volume across rebuilds. The container listens on `127.0.0.1` only; [docs/self-hosting.md](docs/self-hosting.md) shows how to open it to your LAN, put it behind a proxy, and back it up.
+Open [http://localhost:3001](http://localhost:3001). The first start creates the database from a bundled template, and data stays in the `matrix_db` volume across rebuilds. Other devices on your network can reach it at `http://<this-machine>:3001`; [docs/self-hosting.md](docs/self-hosting.md) shows how to keep it on this machine only, put it behind a proxy, and back it up.
 
 Check that it's ready before importing:
 
